@@ -81,6 +81,8 @@ void getCpuNumber()
     int cpuNumber = 0;
     int coreNumber = 0;
     char line[256];
+
+    // open cpuinfo file and scrape cpu and core numbers
     FILE *info = fopen("/proc/cpuinfo", "r");
     while (fgets(line, sizeof(line), info))
     {
@@ -94,15 +96,40 @@ void getCpuNumber()
         }
     }
 
-    // Divide the number of cores by number of cpu's to get number of cores for each cpu
+    // divide the number of cores by number of cpu's to get number of cores for each cpu
     int corePerCpu = coreNumber / cpuNumber;
 
     printf("Number of CPU's: %d     Number of Cores for each CPU: %d\n", cpuNumber, corePerCpu);
     fclose(info);
 }
 
+void getCpuUsage(int secondInterval)
+{
+
+    unsigned long long firstMeasure;
+    unsigned long long secondMeasure;
+
+    // open the stat file and scrape inital cpu usage
+    FILE *info = fopen("/proc/stat", "r");
+    fscanf(info, "cpu %llu", &firstMeasure);
+    fclose(info);
+
+    // wait until tdelay/2 to take the second measurement
+    sleep((double)secondInterval / 2);
+
+    // take the second measurement
+    info = fopen("/prop/stat", "r");
+    fscanf(info, "cpu  %llu", &secondMeasure);
+    fclose(info);
+
+    // calculate the percentage
+    double usage = ((double)(secondMeasure - firstMeasure) / firstMeasure) * 100;
+
+    printf("total cpu use = %f", usage);
+}
+
 int main()
 {
-    getCpuNumber();
+    getCpuUsage(1);
     return 0;
 }
