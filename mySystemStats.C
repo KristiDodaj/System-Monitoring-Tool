@@ -4,6 +4,7 @@
 #include <sys/utsname.h>
 #include <utmpx.h>
 #include <unistd.h>
+#include <sys/resource.h>
 
 void getSystemInfo()
 {
@@ -131,11 +132,30 @@ void getCpuUsage(int secondInterval)
     // calculate the percentage
     double usage = ((double)(secondMeasure - firstMeasure) / firstMeasure) * 100;
 
-    printf("total cpu use = %.2f%%", usage);
+    printf("total cpu use = %.2f%%\n", usage);
+}
+
+void header(int samples, int tdelay)
+{
+    // This function will print the header of the program which displays the number of samples and the second delay
+    // as well as the memeory usage of the program using the <sys/resources.h> C library
+    // Example Output:
+    // header(10, 1) returns
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Meory Usage: 4092 kilobytes
+
+    // print sampe and tdelay
+    printf("Nbr of samples: %d -- every %d secs\n", samples, tdelay);
+
+    // find the memory usage
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    printf("Memory Usage: %ld kilobytes", usage.ru_maxrss);
 }
 
 int main()
 {
-    getCpuUsage(1);
+    header(10, 1);
     return 0;
 }
