@@ -105,6 +105,12 @@ void getCpuNumber()
 
 void getCpuUsage(int secondInterval)
 {
+    // This function will print the percentage increase of cpu usage by making two seperate measurements from the /proc/stat
+    // file and calculating the % increase between the two.
+    // Example Output:
+    // getCpuUsage() returns
+    //
+    // total cpu use = 0.18%
 
     unsigned long long firstMeasure;
     unsigned long long secondMeasure;
@@ -118,14 +124,14 @@ void getCpuUsage(int secondInterval)
     sleep((double)secondInterval / 2);
 
     // take the second measurement
-    info = fopen("/prop/stat", "r");
+    info = fopen("/proc/stat", "r");
     fscanf(info, "cpu  %llu", &secondMeasure);
     fclose(info);
 
     // calculate the percentage
     double usage = ((double)(secondMeasure - firstMeasure) / firstMeasure) * 100;
 
-    printf("total cpu use = %f", usage);
+    printf("total cpu use = %.2f%%", usage);
 }
 
 int main()
