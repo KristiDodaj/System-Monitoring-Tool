@@ -76,7 +76,7 @@ void getCpuNumber()
     // Example Ouput:
     // getCpuNumber() returns
     //
-    // Number of CPU's: 12       Number of Cores: 6
+    // Number of CPU's: 12       Number of Cores for each CPU: 6
 
     int cpuNumber = 0;
     int coreNumber = 0;
@@ -93,7 +93,11 @@ void getCpuNumber()
             cpuNumber++;
         }
     }
-    printf("Number of CPU's: %d     Number of Cores: %d\n", cpuNumber, coreNumber);
+
+    // Divide the number of cores by number of cpu's to get number of cores for each cpu
+    int corePerCpu = coreNumber / cpuNumber;
+
+    printf("Number of CPU's: %d     Number of Cores for each CPU: %d\n", cpuNumber, corePerCpu);
     fclose(info);
 }
 
