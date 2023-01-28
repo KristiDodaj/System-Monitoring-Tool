@@ -84,11 +84,11 @@ void getCpuNumber()
 
     // open cpuinfo file and scrape cpu and core numbers
     FILE *info = fopen("/proc/cpuinfo", "r");
-    while (fgets(segment, sizeof(line), info))
+    while (fgets(segment, sizeof(segment), info))
     {
         if (strstr(segment, "cpu cores"))
         {
-            coreNumber += atoi(strchr(line, ':') + 1);
+            coreNumber += atoi(strchr(segment, ':') + 1);
         }
         if (strstr(segment, "processor"))
         {
