@@ -54,8 +54,6 @@ void getUsers()
     // marcelo       pts/3 (tmux(3773782).%3)
     // marcelo       pts/4 (tmux(3773782).%4)
 
-    printf("### Sessions/users ### \n");
-
     struct utmpx *users;
     setutxent(); // rewinds pointer to beginning of utmpx file
 
@@ -182,18 +180,11 @@ void getMemoryUsage()
 
 int main()
 {
-    header(10, 1);
-    printf("---------------------------------------\n");
-    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)\n");
-    getMemoryUsage();
-    printf("---------------------------------------\n");
-    printf("### Sessions/users ### \n");
-    getUsers();
-    printf("---------------------------------------\n");
-    getCpuNumber();
-    getCpuUsage(1);
-    printf("---------------------------------------\n");
-    printf("### System Information ### \n");
-    getSystemInfo();
+    for (int i = 0; i < 5; i++)
+    {
+        getCpuUsage(3);
+        sleep(3);
+    }
+
     return 0;
 }
