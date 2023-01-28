@@ -116,7 +116,7 @@ void getCpuUsage(int secondInterval)
     // total cpu use = 0.18%
 
     //
-    char line = [1000];
+    char line[1000];
     long double firstMeasure[10];
     long double secondMeasure[10];
 
