@@ -5,6 +5,7 @@
 #include <utmpx.h>
 #include <unistd.h>
 #include <sys/resource.h>
+#include <sys/sysinfo.h>
 
 void getSystemInfo()
 {
@@ -151,11 +152,36 @@ void header(int samples, int tdelay)
     // find the memory usage
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
-    printf("Memory Usage: %ld kilobytes", usage.ru_maxrss);
+    printf("Memory Usage: %ld kilobytes \n", usage.ru_maxrss);
+
+    // ASK WHY MAC USING MORE RAM THAN LINUX 950272 VS 2408
+}
+
+void getMemoryUsage()
+{
+    // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
+    // Note that this function defines 1Gb = 1024Kb (i.e the function uses binary prefixes)
+    // Example Outpiut:
+    // getMemoryUsage() returns
+    //
+    // 9.78 GB / 15.37 GB  -- 9.78 GB / 16.33 GB
+
+    // find the used and total physical RAM
+    struct sysinfo info;
+    sysinfo(&info);
+
+    double totalPhysicalRam = (double)info.totalram / (1024 * 1024 * 1024);
+    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1024 * 1024 * 1024);
+
+    // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
+    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1024 * 1024 * 1024);
+    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1024 * 1024 * 1024);
+
+    printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
 int main()
 {
-    header(10, 1);
+    getMemoryUsage();
     return 0;
 }
