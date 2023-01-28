@@ -185,13 +185,13 @@ int main()
     header();
     printf("---------------------------------------\n");
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)\n");
-    getMemoryUsage();
+    getMemoryUsage(10, 1);
     printf("---------------------------------------\n");
     printf("### Sessions/users ### \n");
     getUsers();
     printf("---------------------------------------\n");
     getCpuNumber();
-    getCpuUsage();
+    getCpuUsage(1);
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
