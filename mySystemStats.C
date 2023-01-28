@@ -176,6 +176,6 @@ void getMemoryUsage()
 
 int main()
 {
-    getCpuUsage(2);
+    getMemoryUsage();
     return 0;
 }
