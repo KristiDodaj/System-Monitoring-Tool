@@ -93,7 +93,7 @@ void getCpuNumber()
         if (strstr(segment, "cpu cores") != NULL)
         {
             char *ptr = strchr(segment, ':');
-            coreNumber += atoi(*(ptr + 1));
+            coreNumber += atoi((ptr + 1));
         }
     }
 
