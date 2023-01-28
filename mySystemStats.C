@@ -112,12 +112,15 @@ void getCpuUsage(int secondInterval)
     //
     // total cpu use = 0.18%
 
-    unsigned long long firstMeasure;
-    unsigned long long secondMeasure;
+    unsigned long long firstMeasure[10];
+    unsigned long long secondMeasure[10];
 
     // open the stat file and scrape inital cpu usage
     FILE *info = fopen("/proc/stat", "r");
-    fscanf(info, "cpu %llu", &firstMeasure);
+    fscanf(info, "%*s %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu",
+           &firstMeasure[0], &firstMeasure[1], &firstMeasure[2], &firstMeasure[3],
+           &firstMeasure[4], &firstMeasure[5], &firstMeasure[6], &firstMeasure[7],
+           &firstMeasure[8], &firstMeasure[9]);
     fclose(info);
 
     // wait until tdelay/2 to take the second measurement
@@ -125,14 +128,23 @@ void getCpuUsage(int secondInterval)
 
     // take the second measurement
     info = fopen("/proc/stat", "r");
-    fscanf(info, "cpu  %llu", &secondMeasure);
+    fscanf(info, "%*s %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu",
+           &secondMeasure[0], &secondMeasure[1], &secondMeasure[2], &secondMeasure[3],
+           &secondMeasure[4], &secondMeasure[5], &secondMeasure[6], &secondMeasure[7],
+           &secondMeasure[8], &secondMeasure[9]);
     fclose(info);
 
-    printf("FIRST: %llu\n", firstMeasure);
-    printf("FIRST: %llu\n", secondMeasure);
+    // accumulate to two totals
+    unsigned long long firstTotal = 0;
+    unsigned long long secondTotal = 0;
 
-    // calculate the percentage
-    double usage = ((double)(secondMeasure - firstMeasure) / (double)firstMeasure) * 100;
+    for (int i = 0; i < 10; i++)
+    {
+        firstTotal += firstMeasure[i];
+        secondTotal += secondMeasure[i];
+    }
+
+    double usage = (double)(secondTotal - firstTotal) / (double)(firstTotal)*100;
 
     printf("total cpu use = %.2f%%\n", usage);
 }
