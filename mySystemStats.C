@@ -36,7 +36,7 @@ void getSystemInfo()
     }
     else
     {
-        printf("%s", "Unable to retrieve system information!");
+        printf("%s", "Unable to retrieve system information!\n");
     }
 }
 
@@ -164,7 +164,7 @@ void getMemoryUsage()
     // Example Outpiut:
     // getMemoryUsage() returns
     //
-    // 9.78 GB / 15.37 GB  -- 9.78 GB / 16.33 GB
+    // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
     // find the used and total physical RAM
     struct sysinfo info;
@@ -177,11 +177,23 @@ void getMemoryUsage()
     double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1024 * 1024 * 1024);
     double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1024 * 1024 * 1024);
 
-    printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
+    printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
 int main()
 {
+    header();
+    printf("---------------------------------------\n");
+    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)\n");
     getMemoryUsage();
+    printf("---------------------------------------\n");
+    printf("### Sessions/users ### \n");
+    getUsers();
+    printf("---------------------------------------\n");
+    getCpuNumber();
+    getCpuUsage();
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
     return 0;
 }
