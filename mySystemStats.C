@@ -80,17 +80,17 @@ void getCpuNumber()
 
     int cpuNumber = 0;
     int coreNumber = 0;
-    char line[256];
+    char segment[150];
 
     // open cpuinfo file and scrape cpu and core numbers
     FILE *info = fopen("/proc/cpuinfo", "r");
-    while (fgets(line, sizeof(line), info))
+    while (fgets(segment, sizeof(line), info))
     {
-        if (strstr(line, "cpu cores"))
+        if (strstr(segment, "cpu cores"))
         {
             coreNumber += atoi(strchr(line, ':') + 1);
         }
-        if (strstr(line, "processor"))
+        if (strstr(segment, "processor"))
         {
             cpuNumber++;
         }
@@ -186,23 +186,18 @@ void getMemoryUsage()
     struct sysinfo info;
     sysinfo(&info);
 
-    double totalPhysicalRam = (double)info.totalram / (1024 * 1024 * 1024);
-    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1024 * 1024 * 1024);
+    double totalPhysicalRam = (double)info.totalram / (1073741824);
+    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
 
     // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
-    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1024 * 1024 * 1024);
-    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1024 * 1024 * 1024);
+    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
+    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
 
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
 int main()
 {
-    for (int i = 0; i < 5; i++)
-    {
-        getCpuUsage(3);
-        sleep(3);
-    }
-
+    getCpuNumber();
     return 0;
 }
