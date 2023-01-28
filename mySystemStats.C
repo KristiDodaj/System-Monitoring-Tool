@@ -86,13 +86,14 @@ void getCpuNumber()
     FILE *info = fopen("/proc/cpuinfo", "r");
     while (fgets(segment, sizeof(segment), info))
     {
-        if (strstr(segment, "cpu cores"))
-        {
-            coreNumber += atoi(strchr(segment, ':') + 1);
-        }
-        if (strstr(segment, "processor"))
+        if (strstr(segment, "processor") != NULL)
         {
             cpuNumber++;
+        }
+        if (strstr(segment, "cpu cores") != NULL)
+        {
+            char *ptr = strchr(segment, ':');
+            coreNumber += atoi(*(ptr + 1));
         }
     }
 
@@ -101,6 +102,8 @@ void getCpuNumber()
 
     printf("Number of CPU's: %d     Number of Cores for each CPU: %d\n", cpuNumber, corePerCpu);
     fclose(info);
+
+    // ASK IF I SHOULD RETURN THE TOTAL CORES OR PER CPU
 }
 
 void getCpuUsage(int secondInterval)
