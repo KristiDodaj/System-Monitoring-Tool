@@ -144,6 +144,9 @@ void getCpuUsage(int secondInterval)
         secondTotal += secondMeasure[i];
     }
 
+    printf("FIRST: %llu\n", firstTotal);
+    printf("SECOND: %llu\n", secondTotal);
+
     double usage = (double)(secondTotal - firstTotal) / (double)(firstTotal)*100;
 
     printf("total cpu use = %.2f%%\n", usage);
