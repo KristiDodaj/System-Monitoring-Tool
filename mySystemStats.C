@@ -128,8 +128,11 @@ void getCpuUsage(int secondInterval)
     fscanf(info, "cpu  %llu", &secondMeasure);
     fclose(info);
 
+    printf("FIRST: %llu\n", firstMeasure);
+    printf("FIRST: %llu\n", secondMeasure);
+
     // calculate the percentage
-    double usage = ((double)(secondMeasure - firstMeasure) / firstMeasure) * 100;
+    double usage = ((double)(secondMeasure - firstMeasure) / (double)firstMeasure) * 100;
 
     printf("total cpu use = %.2f%%\n", usage);
 }
