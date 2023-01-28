@@ -182,10 +182,10 @@ void getMemoryUsage()
 
 int main()
 {
-    header();
+    header(10, 1);
     printf("---------------------------------------\n");
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)\n");
-    getMemoryUsage(10, 1);
+    getMemoryUsage();
     printf("---------------------------------------\n");
     printf("### Sessions/users ### \n");
     getUsers();
