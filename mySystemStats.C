@@ -153,7 +153,7 @@ void getCpuUsage(int secondInterval)
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
-    printf("total cpu use = %.2f%", usage);
+    printf("total cpu use = %.5f%", usage);
 
     // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
 }
@@ -223,7 +223,7 @@ void getMemoryUsage()
 
 int main()
 {
-    getCpuUsage(5);
+    cpu(10, 2);
     getSystemInfo();
     return 0;
 }
