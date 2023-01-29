@@ -107,7 +107,7 @@ void getCpuUsage(int secondInterval)
     // This function takes the previous cpu time measurement and compares it to the current measurement done by reading the /proc/stat file and returns
     // an overall percent increase(ex. 0.18%) or decrease(ex. -0.18%).
     // Note: We consider iowait to be idle time so it also subtracted from the overall time spend. We are also condering irq, softirq, and steal as
-    // time spent by the CPU.
+    // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
     // Example Output:
     // getCpuUsage() returns
     //
@@ -133,7 +133,8 @@ void getCpuUsage(int secondInterval)
 
     long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int downTime = idle + iowait;
-    long int firstMeasure = totalMeasure - downTime;
+    long int accountedFor = guest + guest_nice;
+    long int firstMeasure = totalMeasure - downTime - accountedFor;
 
     // tdelay/2 seconds
     sleep(secondInterval / 2);
@@ -145,13 +146,14 @@ void getCpuUsage(int secondInterval)
 
     long int secondTotalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int secondDownTime = idle + iowait;
-    long int secondMeasure = secondTotalMeasure - secondDownTime;
+    long int secondAccountedFor = guest + guest_nice;
+    long int secondMeasure = secondTotalMeasure - secondDownTime - secondAccountedFor;
 
     printf("FIRST: %ld, SECOND: %ld", firstMeasure, secondMeasure);
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
-    printf("total cpu use = %.10f%", usage);
+    printf("total cpu use = %.2f%", usage);
 
     // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
 }
