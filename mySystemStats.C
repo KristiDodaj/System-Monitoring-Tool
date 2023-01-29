@@ -137,12 +137,12 @@ void getCpuUsage(int secondInterval)
     long int firstMeasure = totalMeasure - downTime - accountedFor;
 
     // tdelay/2 seconds
-    sleep(secondInterval / 2);
+    sleep(secondInterval);
 
     // open file and retrieve each value to do the second measurement
-    info = fopen("/proc/stat", "r");
-    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
-    fclose(info);
+    *FILE secondInfo = fopen("/proc/stat", "r");
+    fscanf(secondInfo, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+    fclose(secondInfo);
 
     long int secondTotalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int secondDownTime = idle + iowait;
