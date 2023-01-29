@@ -147,6 +147,8 @@ void getCpuUsage(int secondInterval)
     long int secondDownTime = idle + iowait;
     long int secondMeasure = secondTotalMeasure - secondDownTime;
 
+    printf("FIRST: %ld, SECOND: %ld", firstMeasure, secondMeasure);
+
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
     printf("total cpu use = %.2f%", usage);
