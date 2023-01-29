@@ -72,11 +72,11 @@ void getUsers()
 
 void getCpuNumber()
 {
-    // This function will print out the number of cpu's as well as the number of cores per cpu using the /proc/cpuinfo file to scrape the information.
+    // This function will print out the number of cpu's as well as the total number of cores using the /proc/cpuinfo file to scrape the information.
     // Example Ouput:
     // getCpuNumber() returns
     //
-    // Number of CPU's: 12       Number of Cores for each CPU: 6
+    // Number of CPU's: 3       Number of Cores for each CPU: 3
 
     int cpuNumber = 0;
     int coreNumber = 0;
@@ -97,16 +97,11 @@ void getCpuNumber()
         }
     }
 
-    // divide the number of cores by number of cpu's to get number of cores for each cpu
-    int corePerCpu = coreNumber / cpuNumber;
-
-    printf("Number of CPU's: %d     Number of Cores for each CPU: %d\n", cpuNumber, corePerCpu);
+    printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, corePerCpu);
     fclose(info);
-
-    // ASK IF I SHOULD RETURN THE TOTAL CORES OR PER CPU
 }
 
-void getCpuUsage(long int previousMeasure)
+void getCpuUsage(int secondInterval)
 {
     // This function takes the previous cpu time measurement and compares it to the current measurement done by reading the /proc/stat file and returns
     // an overall percent increase(ex. 0.18%) or decrease(ex. -0.18%).
@@ -130,18 +125,50 @@ void getCpuUsage(long int previousMeasure)
     long int idle;
     long int iowait;
 
-    // open file and retrieve each value to do the measurement
+    // open file and retrieve each value to do the first measurement
     FILE *info = fopen("/proc/stat", "r");
     fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
     fclose(info);
 
     long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int downTime = idle + iowait;
-    long int currentMeasure = totalMeasure - downTime;
+    long int firstMeasure = totalMeasure - downTime;
 
-    float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
+    // tdelay/2 seconds
+    sleep(secondInterval / 2);
 
-    printf("total cpu use = %.2f% \n", usage);
+    // open file and retrieve each value to do the second measurement
+    info = fopen("/proc/stat", "r");
+    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+    fclose(info);
+
+    long int secondTotalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
+    long int secondDownTime = idle + iowait;
+    long int secondMeasure = totalMeasure - downTime;
+
+    float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
+
+    printf("total cpu use = %.2f%", usage);
+
+    // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
+}
+
+void cpu(int samples, int tdelay)
+{
+
+    printf("---------------------------------------\n");
+    getCpuNumber();
+
+    for (int i = 0 i < samples; i++)
+    {
+        getCpuUsage(tdelay);
+        printf("\033\r");
+
+        // clear buffer
+        fflush(stdout);
+        // wait for the next sample
+        sleep(tdelay);
+    }
 }
 
 void header(int samples, int tdelay)
@@ -191,6 +218,7 @@ void getMemoryUsage()
 
 int main()
 {
-    getCpuUsage(48976817);
+    cpu(10, 2);
+    getSystemInfo();
     return 0;
 }
