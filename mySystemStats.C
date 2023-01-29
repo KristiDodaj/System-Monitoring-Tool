@@ -159,7 +159,7 @@ void cpu(int samples, int tdelay)
     printf("---------------------------------------\n");
     getCpuNumber();
 
-    for (int i = 0 i < samples; i++)
+    for (int i = 0; i < samples; i++)
     {
         getCpuUsage(tdelay);
         printf("\033\r");
