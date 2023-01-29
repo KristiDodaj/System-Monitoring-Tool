@@ -153,7 +153,7 @@ void getCpuUsage(int secondInterval)
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
-    printf("total cpu use = %.5f%", usage);
+    printf(" total cpu use = %.5f%", usage);
 
     // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
 }
@@ -167,12 +167,16 @@ void cpu(int samples, int tdelay)
     for (int i = 0; i < samples; i++)
     {
         getCpuUsage(tdelay);
-        printf("\033\r");
 
-        // clear buffer
-        fflush(stdout);
-        // wait for the next sample
-        sleep(tdelay);
+        if (i != (samples - 1))
+        {
+            printf("\033\r");
+
+            // clear buffer
+            fflush(stdout);
+            // wait for the next sample
+            leep(tdelay);
+        }
     }
 }
 
