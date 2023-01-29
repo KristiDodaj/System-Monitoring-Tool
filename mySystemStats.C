@@ -19,6 +19,7 @@ void getSystemInfo()
     // Release = 22.1.0
     // Architecture = arm64
 
+    printf("---------------------------------------\n");
     printf("### System Information ###\n");
 
     // create and populate the struct
@@ -144,7 +145,7 @@ void getCpuUsage(int secondInterval)
 
     long int secondTotalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int secondDownTime = idle + iowait;
-    long int secondMeasure = totalMeasure - downTime;
+    long int secondMeasure = secondTotalMeasure - secondDownTime;
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
@@ -218,7 +219,7 @@ void getMemoryUsage()
 
 int main()
 {
-    cpu(10, 2);
+    getCpuUsage(5);
     getSystemInfo();
     return 0;
 }
