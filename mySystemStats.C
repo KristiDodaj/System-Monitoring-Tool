@@ -140,7 +140,7 @@ void getCpuUsage(int secondInterval)
     sleep(secondInterval);
 
     // open file and retrieve each value to do the second measurement
-    *FILE secondInfo = fopen("/proc/stat", "r");
+    FILE *secondInfo = fopen("/proc/stat", "r");
     fscanf(secondInfo, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
     fclose(secondInfo);
 
