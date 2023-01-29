@@ -139,6 +139,8 @@ void getCpuUsage(long int previousMeasure)
 
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
+    printf("%ld\n ", currentMeasure);
+
     printf("total cpu use = %.2f%%\n", usage);
 }
 
