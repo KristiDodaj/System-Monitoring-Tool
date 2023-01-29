@@ -33,7 +33,7 @@ void getSystemInfo()
         printf("Machine Name = %s \n", info.nodename);
         printf("Version = %s \n", info.version);
         printf("Release = %s \n", info.release);
-        printf("Architecture = %s \n", info.machine);
+        printf("Architecture = %s \n\n", info.machine);
     }
     else
     {
@@ -153,7 +153,7 @@ void getCpuUsage(int secondInterval)
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
-    printf(" total cpu use = %.5f%", usage);
+    printf(" total cpu use = %.10f%", usage);
 
     // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
 }
