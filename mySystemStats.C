@@ -175,7 +175,7 @@ void cpu(int samples, int tdelay)
             // clear buffer
             fflush(stdout);
             // wait for the next sample
-            leep(tdelay);
+            sleep(tdelay);
         }
     }
 }
@@ -227,7 +227,7 @@ void getMemoryUsage()
 
 int main()
 {
-    cpu(10, 2);
+    cpu(10, 1);
     getSystemInfo();
     return 0;
 }
