@@ -72,7 +72,7 @@ void getUsers()
 
 void getCpuNumber()
 {
-    // This function will print out the number of cpu's as well as the number of cores per cpu using the /proc/cpuinfo to scrape the information.
+    // This function will print out the number of cpu's as well as the number of cores per cpu using the /proc/cpuinfo file to scrape the information.
     // Example Ouput:
     // getCpuNumber() returns
     //
@@ -106,28 +106,40 @@ void getCpuNumber()
     // ASK IF I SHOULD RETURN THE TOTAL CORES OR PER CPU
 }
 
-void getCpuUsage(int secondInterval)
+void getCpuUsage(long int previousMeasure)
 {
-    // This function will print the percentage increase of cpu usage by making two seperate measurements from the /proc/stat
-    // file and calculating the % increase between the two.
+    // This function takes the previous cpu time measurement and compares it to the current measurement done by reading the /proc/stat file and returns
+    // an overall percent increase(ex. 0.18%) or decrease(ex. -0.18%).
+    // Note: We consider iowait to be idle time so it also subtracted from the overall time spend. We are also condering irq, softirq, and steal as
+    // time spent by the CPU.
     // Example Output:
     // getCpuUsage() returns
     //
     // total cpu use = 0.18%
 
-    //
-    char line[1000];
-    long double firstMeasure[10];
-    long double secondMeasure[10];
+    // declare and populate all the desired times spent by the CPU
+    long int user;
+    long int nice;
+    long int system;
+    long int irq;
+    long int softirq;
+    long int steal;
+    long int guest;
+    long int guest_nice;
 
-    // open stats file and scrape info from the first cpu line
+    long int idle;
+    long int iowait;
+
+    // open file and retrieve each value to do the measurement
     FILE *info = fopen("/proc/stat", "r");
-    fgets(line, sizeof(line), info);
+    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+    fclose(info);
 
-    // sum of all the cpu values
-    printf("%s", line);
+    long int currentMeasure = (user + nice + system + irq + softirq + steal + guest + guest_nice) - (idle + iowait);
 
-    // printf("total cpu use = %.2f%%\n", usage);
+    float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
+
+    printf("total cpu use = %.2f%%\n", usage);
 }
 
 void header(int samples, int tdelay)
@@ -154,6 +166,7 @@ void header(int samples, int tdelay)
 void getMemoryUsage()
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
+    // This is being done by using the <sys/sysinfo.h> C library.
     // Note that this function defines 1Gb = 1024Kb (i.e the function uses binary prefixes)
     // Example Outpiut:
     // getMemoryUsage() returns
