@@ -97,7 +97,7 @@ void getCpuNumber()
         }
     }
 
-    printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, corePerCpu);
+    printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, coreNumber);
     fclose(info);
 }
 
