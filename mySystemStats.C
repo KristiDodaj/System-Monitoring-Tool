@@ -189,6 +189,6 @@ void getMemoryUsage()
 
 int main()
 {
-    getMemoryUsage();
+    getCpuUsage(-1337773862);
     return 0;
 }
