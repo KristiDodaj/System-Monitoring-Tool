@@ -141,7 +141,7 @@ void getCpuUsage(long int previousMeasure)
 
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
-    printf("total cpu use = %.2f%\n", usage);
+    printf("total cpu use = %.2f% \n", usage);
 }
 
 void header(int samples, int tdelay)
@@ -191,6 +191,6 @@ void getMemoryUsage()
 
 int main()
 {
-    getCpuUsage(47996817);
+    getCpuUsage(47976817);
     return 0;
 }
