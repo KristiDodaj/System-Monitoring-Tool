@@ -135,13 +135,13 @@ void getCpuUsage(long int previousMeasure)
     fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
     fclose(info);
 
-    long int currentMeasure = (user + nice + system + irq + softirq + steal + guest + guest_nice) - (idle + iowait);
+    long int currentMeasure = (user + nice + system + irq + softirq + steal + guest + guest_nice);
 
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
     printf("%ld\n ", currentMeasure);
 
-    printf("total cpu use = %.2f%%\n", usage);
+    printf("total cpu use = %.5f\n", usage);
 }
 
 void header(int samples, int tdelay)
@@ -191,6 +191,6 @@ void getMemoryUsage()
 
 int main()
 {
-    getCpuUsage(-1337773862);
+    getCpuUsage(47996817);
     return 0;
 }
