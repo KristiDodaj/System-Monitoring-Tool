@@ -250,8 +250,11 @@ void allInfoUpdate(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(tdelay);
 
-        sleep(tdelay);
-        printf("\033c");
+        if (i != sample)
+        {
+            sleep(tdelay);
+            printf("\033c");
+        }
     }
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
