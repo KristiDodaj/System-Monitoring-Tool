@@ -200,7 +200,7 @@ void header(int samples, int tdelay)
     // Meory Usage: 4092 kilobytes
 
     // print sampe and tdelay
-    printf("Nbr of samples: %d -- every %d secs\n", samples, tdelay);
+    printf("\nNbr of samples: %d -- every %d secs\n", samples, tdelay);
 
     // find the memory usage
     struct rusage usage;
