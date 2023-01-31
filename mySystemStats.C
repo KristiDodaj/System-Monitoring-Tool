@@ -245,8 +245,6 @@ int main()
         sleep(1);
     }
 
-    printf("----------------------------");
-
     printf("\033[5A"); // Move cursor up 10 lines
     printf("\033[u");
 
@@ -255,6 +253,8 @@ int main()
         printf("hey\n"); // Create a new line
         sleep(1);
     }
+
+    printf("----------------------------");
 
     return 0;
 }
