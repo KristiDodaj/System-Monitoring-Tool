@@ -157,7 +157,7 @@ void getCpuUsage(int secondInterval)
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
-    printf(" total cpu use = %.10f %%", usage);
+    printf(" total cpu use = %.10f %%\n", usage);
 
     // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE OR IRQ AND SOFTIRQ
 }
@@ -237,24 +237,25 @@ void getMemoryUsage()
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
+void allInfoUpdate(int samples, int tdelay)
+{
+    header(samples, tdelay);
+    printf("---------------------------------------\n");
+    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+    getMemoryUsage();
+    printf("---------------------------------------\n");
+    printf("### Sessions/users ###\n");
+    getUsers();
+    printf("---------------------------------------\n");
+    getCpuNumber();
+    getCpuUsage(tdelay);
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+}
+
 int main()
 {
-    for (int i = 0; i < 5; i++)
-    {
-        printf("\n"); // Create a new line
-        sleep(1);
-    }
-
-    printf("\033[5B"); // Move cursor up 10 lines
-    printf("\033[u");
-
-    for (int i = 0; i < 5; i++)
-    {
-        printf("hey\n"); // Create a new line
-        sleep(1);
-    }
-
-    printf("----------------------------");
-
+    allInfoUpdate(1, 2);
     return 0;
 }
