@@ -244,10 +244,10 @@ int main()
         printf("\n"); // Create a new line
     }
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 9; i >= 0; i--)
     {
-        printf("\r");               // Move cursor to the beginning of the line
-        printf("Line %d\n", i + 1); // Print line number
+        printf("\033[%dA", i + 1);   // Move cursor up `i+1` lines
+        printf("Line %d\n", 10 - i); // Print line number
     }
     return 0;
 }
