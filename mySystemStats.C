@@ -166,17 +166,17 @@ void cpuUpdated(int samples, int tdelay)
 
     for (int i = 0; i < samples; i++)
     {
-        getCpuUsage(tdelay);
 
         if (i != (samples - 1))
         {
-            printf("\033[%dD", 1);
-            printf("\033[2K");
-            printf("\033[2K");
+            printf("\033[2K");     // clear line
+            printf("\033[%dD", 1); // move cursor up one line
+            printf("\033[%dG", 0); // move cursor to column 0
 
             // clear buffer
             fflush(stdout);
         }
+        getCpuUsage(tdelay);
     }
 }
 
