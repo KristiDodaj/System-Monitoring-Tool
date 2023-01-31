@@ -244,10 +244,11 @@ int main()
         printf("\n"); // Create a new line
     }
 
-    for (int i = 9; i >= 0; i--)
+    printf("\033[%dA", __LINE__); // Move cursor up `i+1` lines
+
+    for (int i = 0; i < 10; i++)
     {
-        printf("\033[%dA", i + 1);   // Move cursor up `i+1` lines
-        printf("Line %d\n", 10 - i); // Print line number
+        printf("hey"); // Create a new line
     }
     return 0;
 }
