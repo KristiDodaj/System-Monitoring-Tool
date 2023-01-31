@@ -252,7 +252,7 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i != samples - 1)
         {
-            sleep(tdelay);
+            // sleep(tdelay);
             printf("\033c");
         }
     }
