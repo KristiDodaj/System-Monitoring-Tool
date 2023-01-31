@@ -9,6 +9,27 @@
 
 // MAKE SURE THAT EACH FUNCTION EXPLAINS THE PARAMETERS(ALSO TYPE OF PARAMETER) BEING PASSED AND ITS FUNCTION
 
+void header(int samples, int tdelay)
+{
+    // This function will print the header of the program which displays the number of samples and the second delay
+    // as well as the memeory usage of the program using the <sys/resources.h> C library
+    // Example Output:
+    // header(10, 1) returns
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Meory Usage: 4092 kilobytes
+
+    // print sampe and tdelay
+    printf("\nNbr of samples: %d -- every %d secs\n", samples, tdelay);
+
+    // find the memory usage
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    printf("Memory Usage: %ld kilobytes \n", usage.ru_maxrss);
+
+    // ASK WHY MAC USING MORE RAM THAN LINUX 950272 VS 2408
+}
+
 void getSystemInfo()
 {
     // This function will print out the System Information using the <sys/utsname.h> C library
@@ -189,27 +210,6 @@ void cpuUpdated(int samples, int tdelay)
     }
 }
 
-void header(int samples, int tdelay)
-{
-    // This function will print the header of the program which displays the number of samples and the second delay
-    // as well as the memeory usage of the program using the <sys/resources.h> C library
-    // Example Output:
-    // header(10, 1) returns
-    //
-    // Nbr of samples: 10 -- every 1 secs
-    // Meory Usage: 4092 kilobytes
-
-    // print sampe and tdelay
-    printf("\nNbr of samples: %d -- every %d secs\n", samples, tdelay);
-
-    // find the memory usage
-    struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    printf("Memory Usage: %ld kilobytes \n", usage.ru_maxrss);
-
-    // ASK WHY MAC USING MORE RAM THAN LINUX 950272 VS 2408
-}
-
 void getMemoryUsage()
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
@@ -252,7 +252,8 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i != samples - 1)
         {
-            sleep(tdelay);
+            // sleep(tdelay);
+            fflush(stdout);
             printf("\033c");
         }
     }
