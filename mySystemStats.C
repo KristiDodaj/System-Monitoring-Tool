@@ -175,7 +175,7 @@ void cpuUpdated(int samples, int tdelay)
             // clear buffer
             fflush(stdout);
             // wait for the next sample
-            sleep(tdelay);
+            // sleep(tdelay);
         }
     }
 }
