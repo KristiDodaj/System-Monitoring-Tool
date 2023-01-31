@@ -136,7 +136,7 @@ void getCpuUsage(int secondInterval)
     long int accountedFor = guest + guest_nice;
     long int firstMeasure = totalMeasure - downTime - accountedFor;
 
-    // tdelay/2 seconds
+    // tdelay seconds
     sleep(secondInterval);
 
     // open file and retrieve each value to do the second measurement
@@ -158,7 +158,7 @@ void getCpuUsage(int secondInterval)
     // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
 }
 
-void cpu(int samples, int tdelay)
+void cpuUpdated(int samples, int tdelay)
 {
 
     printf("---------------------------------------\n");
@@ -227,7 +227,7 @@ void getMemoryUsage()
 
 int main()
 {
-    cpu(10, 1);
+    cpuUpdated(10, 2);
     getSystemInfo();
     return 0;
 }
