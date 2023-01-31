@@ -239,16 +239,13 @@ void getMemoryUsage()
 
 int main()
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
         printf("\n"); // Create a new line
+        sleep(1);
     }
 
-    printf("\033[%dA", __LINE__); // Move cursor up `i+1` lines
+    printf("\033[5A"); // Move cursor up 10 lines
 
-    for (int i = 0; i < 10; i++)
-    {
-        printf("hey"); // Create a new line
-    }
     return 0;
 }
