@@ -245,7 +245,7 @@ int main()
         sleep(1);
     }
 
-    printf("\033[5A"); // Move cursor up 10 lines
+    printf("\033[5B"); // Move cursor up 10 lines
     printf("\033[u");
 
     for (int i = 0; i < 5; i++)
