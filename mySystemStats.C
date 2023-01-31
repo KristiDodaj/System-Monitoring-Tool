@@ -263,6 +263,6 @@ void allInfoUpdate(int samples, int tdelay)
 
 int main()
 {
-    allInfoUpdate(4, 1);
+    allInfoUpdate(4, 2);
     return 0;
 }
