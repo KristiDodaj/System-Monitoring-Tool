@@ -21,9 +21,6 @@ void getSystemInfo()
     // Release = 22.1.0
     // Architecture = arm64
 
-    printf("\n---------------------------------------\n");
-    printf("### System Information ###\n");
-
     // create and populate the struct
     struct utsname info;
     int res = uname(&info);
