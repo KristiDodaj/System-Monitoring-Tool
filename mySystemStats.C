@@ -7,6 +7,8 @@
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 
+// MAKE SURE THAT EACH FUNCTION EXPLAINS THE PARAMETERS(ALSO TYPE OF PARAMETER) BEING PASSED AND ITS FUNCTION
+
 void getSystemInfo()
 {
     // This function will print out the System Information using the <sys/utsname.h> C library
@@ -100,6 +102,8 @@ void getCpuNumber()
 
     printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, coreNumber);
     fclose(info);
+
+    // ASK IF OUTPUTING TOTAL NUMBER OF CORES IS OK
 }
 
 void getCpuUsage(int secondInterval)
@@ -155,18 +159,20 @@ void getCpuUsage(int secondInterval)
 
     printf(" total cpu use = %.10f %%", usage);
 
-    // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE
+    // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE OR IRQ AND SOFTIRQ
 }
 
 void cpuUpdated(int samples, int tdelay)
 {
     // This fucntion is passed on the size of samples and time delay and will continously update the cpu usage info depending on these inputed
-    // parameters. It is important to note that this function utulizes the getCpuUsage() and getCpuNumber() functions to retrive actual the statitstics,
+    // parameters. It is important to note that this function utulizes the getCpuUsage() and getCpuNumber() functions to retrive THEactual the statitstics,
     // and is only responsible for printing this data and updating itself at the inputed time delay and number of samples.
     // Example Output:
 
     // cpuUpdated() returns
-    //
+    // ---------------------------------------
+    // Number of CPU's: 3     Total Number of Cores: 3
+    // total cpu use = 0.0001915206 %
 
     printf("---------------------------------------\n");
     getCpuNumber();
@@ -233,7 +239,15 @@ void getMemoryUsage()
 
 int main()
 {
-    cpuUpdated(10, 2);
-    getSystemInfo();
+    for (int i = 0; i < 10; i++)
+    {
+        printf("\n"); // Create a new line
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        printf("\r");               // Move cursor to the beginning of the line
+        printf("Line %d\n", i + 1); // Print line number
+    }
     return 0;
 }
