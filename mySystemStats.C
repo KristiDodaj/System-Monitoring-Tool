@@ -249,13 +249,13 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
         getCpuUsage(tdelay);
-        printf("---------------------------------------\n");
-        printf("### System Information ### \n");
-        getSystemInfo();
 
         sleep(tdelay);
         printf("\033c");
     }
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
 }
 
 int main()
