@@ -247,9 +247,10 @@ int main()
 
     printf("----------------------------");
 
-    printf("\033[4A"); // Move cursor up 10 lines
+    printf("\033[5A"); // Move cursor up 10 lines
+    printf "\033[u"
 
-    for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
     {
         printf("hey\n"); // Create a new line
         sleep(1);
