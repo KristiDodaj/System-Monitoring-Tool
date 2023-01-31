@@ -124,7 +124,7 @@ void getCpuNumber()
     // ASK IF OUTPUTING TOTAL NUMBER OF CORES IS OK
 }
 
-void getCpuUsage(int secondInterval)
+long int getCpuUsage(long int previousMeasure)
 {
     // This function takes the previous cpu time measurement and compares it to the current measurement done by reading the /proc/stat file and returns
     // an overall percent increase(ex. 0.18%) or decrease(ex. -0.18%).
@@ -156,28 +156,18 @@ void getCpuUsage(int secondInterval)
     long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int downTime = idle + iowait;
     long int accountedFor = guest + guest_nice;
-    long int firstMeasure = totalMeasure - downTime - accountedFor;
-
-    // tdelay seconds
-    sleep(secondInterval);
-
-    // open file and retrieve each value to do the second measurement
-    FILE *secondInfo = fopen("/proc/stat", "r");
-    fscanf(secondInfo, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
-    fclose(secondInfo);
-
-    long int secondTotalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
-    long int secondDownTime = idle + iowait;
-    long int secondAccountedFor = guest + guest_nice;
-    long int secondMeasure = secondTotalMeasure - secondDownTime - secondAccountedFor;
+    long int currentMeasure = totalMeasure - downTime - accountedFor;
 
     // printf(" FIRST: %ld, SECOND: %ld, ", firstMeasure, secondMeasure);
 
-    float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
+    float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
-    printf(" total cpu use = %.10f %%\n", usage);
+    if (previousMeasure != 0)
+    {
+        printf(" total cpu use = %.10f %%\n", usage);
+    }
 
-    // ASK IF WE SHOULD INCLUDE GUEST AND GUEST_NICE OR IRQ AND SOFTIRQ
+    return currentMeasure;
 }
 
 void cpuUpdated(int samples, int tdelay)
@@ -236,6 +226,7 @@ void getMemoryUsage()
 
 void allInfoUpdate(int samples, int tdelay)
 {
+    long int previousMeasure = getCpuUsage(0);
 
     for (int i = 0; i < samples; i++)
     {
@@ -248,11 +239,11 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(tdelay);
+        previousMeasure = getCpuUsage(previousMeasure);
 
         if (i != samples - 1)
         {
-            sleep(tdelay / 2);
+            sleep(tdelay);
             fflush(stdout);
             printf("\033c");
         }
