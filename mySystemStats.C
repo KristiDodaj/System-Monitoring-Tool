@@ -162,7 +162,7 @@ long int getCpuUsage(long int previousMeasure)
 
     if (previousMeasure != 0)
     {
-        printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
+        // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
         printf(" total cpu use = %.10f %%\n", usage);
     }
 
@@ -254,6 +254,6 @@ void allInfoUpdate(int samples, int tdelay)
 
 int main()
 {
-    allInfoUpdate(4, 5);
+    allInfoUpdate(10, 2);
     return 0;
 }
