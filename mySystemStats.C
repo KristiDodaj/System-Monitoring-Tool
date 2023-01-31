@@ -158,12 +158,11 @@ long int getCpuUsage(long int previousMeasure)
     long int accountedFor = guest + guest_nice;
     long int currentMeasure = totalMeasure - downTime - accountedFor;
 
-    // printf(" FIRST: %ld, SECOND: %ld, ", firstMeasure, secondMeasure);
-
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
     if (previousMeasure != 0)
     {
+        printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
         printf(" total cpu use = %.10f %%\n", usage);
     }
 
@@ -255,6 +254,6 @@ void allInfoUpdate(int samples, int tdelay)
 
 int main()
 {
-    allInfoUpdate(4, 2);
+    allInfoUpdate(4, 5);
     return 0;
 }
