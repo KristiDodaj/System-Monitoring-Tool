@@ -149,7 +149,7 @@ void getCpuUsage(int secondInterval)
     long int secondAccountedFor = guest + guest_nice;
     long int secondMeasure = secondTotalMeasure - secondDownTime - secondAccountedFor;
 
-    printf(" FIRST: %ld, SECOND: %ld, ", firstMeasure, secondMeasure);
+    // printf(" FIRST: %ld, SECOND: %ld, ", firstMeasure, secondMeasure);
 
     float usage = ((float)(secondMeasure - firstMeasure) / (float)firstMeasure) * 100;
 
@@ -160,6 +160,13 @@ void getCpuUsage(int secondInterval)
 
 void cpuUpdated(int samples, int tdelay)
 {
+    // This fucntion is passed on the size of samples and time delay and will continously update the cpu usage info depending on these inputed
+    // parameters. It is important to note that this function utulizes the getCpuUsage() and getCpuNumber() functions to retrive actual the statitstics,
+    // and is only responsible for printing this data and updating itself at the inputed time delay and number of samples.
+    // Example Output:
+
+    // cpuUpdated() returns
+    //
 
     printf("---------------------------------------\n");
     getCpuNumber();
@@ -170,7 +177,8 @@ void cpuUpdated(int samples, int tdelay)
 
         if (i != (samples - 1))
         {
-            printf("\r"); // Move cursor up one line
+            // delete the line
+            printf("\r");
 
             // clear buffer
             fflush(stdout);
