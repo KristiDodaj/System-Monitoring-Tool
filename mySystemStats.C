@@ -236,23 +236,30 @@ void getMemoryUsage()
 
 void allInfoUpdate(int samples, int tdelay)
 {
-    header(samples, tdelay);
-    printf("---------------------------------------\n");
-    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
-    getMemoryUsage();
-    printf("---------------------------------------\n");
-    printf("### Sessions/users ###\n");
-    getUsers();
-    printf("---------------------------------------\n");
-    getCpuNumber();
-    getCpuUsage(tdelay);
-    printf("---------------------------------------\n");
-    printf("### System Information ### \n");
-    getSystemInfo();
+
+    for (int i = 0; i < samples; i++)
+    {
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+        getMemoryUsage();
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        getUsers();
+        printf("---------------------------------------\n");
+        getCpuNumber();
+        getCpuUsage(tdelay);
+        printf("---------------------------------------\n");
+        printf("### System Information ### \n");
+        getSystemInfo();
+
+        sleep(tdelay);
+        printf("\033c");
+    }
 }
 
 int main()
 {
-    allInfoUpdate(1, 2);
+    allInfoUpdate(3, 2);
     return 0;
 }
