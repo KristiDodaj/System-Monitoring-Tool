@@ -250,7 +250,7 @@ void allInfoUpdate(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(tdelay);
 
-        if (i != sample)
+        if (i != samples)
         {
             sleep(tdelay);
             printf("\033c");
