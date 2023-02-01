@@ -238,6 +238,7 @@ void usersUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
         getUsers();
+        printf("---------------------------------------\n");
 
         if (i != samples - 1)
         {
@@ -247,7 +248,6 @@ void usersUpdate(int samples, int tdelay)
             printf("\033c");
         }
     }
-    printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
 }
