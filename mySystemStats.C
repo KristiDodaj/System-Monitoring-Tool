@@ -169,36 +169,6 @@ long int getCpuUsage(long int previousMeasure)
     return currentMeasure;
 }
 
-void cpuUpdated(int samples, int tdelay)
-{
-    // This fucntion is passed on the size of samples and time delay and will continously update the cpu usage info depending on these inputed
-    // parameters. It is important to note that this function utulizes the getCpuUsage() and getCpuNumber() functions to retrive THEactual the statitstics,
-    // and is only responsible for printing this data and updating itself at the inputed time delay and number of samples.
-    // Example Output:
-
-    // cpuUpdated() returns
-    // ---------------------------------------
-    // Number of CPU's: 3     Total Number of Cores: 3
-    // total cpu use = 0.0001915206 %
-
-    printf("---------------------------------------\n");
-    getCpuNumber();
-
-    for (int i = 0; i < samples; i++)
-    {
-        getCpuUsage(tdelay);
-
-        if (i != (samples - 1))
-        {
-            // delete the line
-            printf("\r");
-
-            // clear buffer
-            fflush(stdout);
-        }
-    }
-}
-
 void getMemoryUsage()
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
@@ -225,8 +195,11 @@ void getMemoryUsage()
 
 void allInfoUpdate(int samples, int tdelay)
 {
+    // clear terminal before starting
+    printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
+    // print all information
     for (int i = 0; i < samples; i++)
     {
         header(samples, tdelay);
@@ -243,6 +216,33 @@ void allInfoUpdate(int samples, int tdelay)
         if (i != samples - 1)
         {
             sleep(tdelay);
+            // clear buffer
+            fflush(stdout);
+            printf("\033c");
+        }
+    }
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+}
+
+void usersUpdate(int samples, int tdelay)
+{
+    // clear terminal before starting
+    printf("\033c");
+
+    // print all user information
+    for (int i = 0; i < samples; i++)
+    {
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        getUsers();
+
+        if (i != samples - 1)
+        {
+            sleep(tdelay);
+            // clear buffer
             fflush(stdout);
             printf("\033c");
         }
@@ -254,6 +254,6 @@ void allInfoUpdate(int samples, int tdelay)
 
 int main()
 {
-    allInfoUpdate(10, 2);
+    usersUpdate(10, 2);
     return 0;
 }
