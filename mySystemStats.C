@@ -252,6 +252,32 @@ void usersUpdate(int samples, int tdelay)
     getSystemInfo();
 }
 
+void systemUpdate(int samples, int tdelay)
+{
+    // clear terminal before starting
+    printf("\033c");
+    long int previousMeasure = getCpuUsage(0);
+
+    // print all system info
+    for (int i = 0; i < samples; i++)
+    {
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+        getMemoryUsage();
+        printf("\033[%dB", (samples - 1));
+        previousMeasure = getCpuUsage(previousMeasure);
+
+        if (i != samples - 1)
+        {
+            sleep(tdelay);
+            // clear buffer
+            fflush(stdout);
+            printf("\033c");
+        }
+    }
+}
+
 int main()
 {
     usersUpdate(10, 2);
