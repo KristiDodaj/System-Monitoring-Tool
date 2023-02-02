@@ -333,7 +333,7 @@ void allInfoSequential(int samples, int tdelay)
         {
             if (j == i)
             {
-                getMemoryUsage()
+                getMemoryUsage();
             }
             else
             {
