@@ -317,6 +317,7 @@ void allInfoSequential(int samples, int tdelay)
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
+    // print all info sequentially
     for (int i = 0; i < samples; i++)
     {
         printf(">> Iteration: %d\n", i + 1);
@@ -336,7 +337,9 @@ void allInfoSequential(int samples, int tdelay)
                 printf("\n");
             }
         }
-
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
         getCpuUsage(previousMeasure);
@@ -356,8 +359,21 @@ void allInfoSequential(int samples, int tdelay)
     }
 }
 
+void usersSequential(int samples, int tdelay)
+{
+    // clear terminal before starting
+    printf("\033c");
+
+    for (int i = 0; i < samples; i++)
+    {
+        printf(">> Iteration: %d\n", i + 1);
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+    }
+}
+
 int main()
 {
-    allInfoSequential(5, 2);
+    allInfoSequential(2, 5);
     return 0;
 }
