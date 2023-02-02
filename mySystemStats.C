@@ -280,6 +280,6 @@ void systemUpdate(int samples, int tdelay)
 
 int main()
 {
-    allInfoUpdate(10, 2);
+    usersUpdate(10, 2);
     return 0;
 }
