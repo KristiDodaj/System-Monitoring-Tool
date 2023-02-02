@@ -345,6 +345,14 @@ void allInfoSequential(int samples, int tdelay)
         printf("---------------------------------------\n");
         printf("### System Information ### \n");
         getSystemInfo();
+
+        if (i != samples - 1)
+        {
+            // wait tdelay
+            sleep(tdelay);
+            // clear buffer
+            fflush(stdout);
+        }
     }
 }
 
