@@ -445,8 +445,34 @@ void systemSequential(int samples, int tdelay)
     printf("---------------------------------------\n");
 }
 
-int main()
+void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
 {
-    systemUpdate(20, 2);
+    for (int i = 0; i < argc; i++)
+    {
+        // find if sequential
+        if (strcmp(argv[i], "--sequential") == 0)
+        {
+            *sequential = true;
+        }
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    bool system;
+    bool user;
+    bool sequential;
+    int samples;
+    int tdelay;
+
+    parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
+    if (sequential == true)
+    {
+        printf("true");
+    }
+    else
+    {
+        printf("false");
+    }
     return 0;
 }
