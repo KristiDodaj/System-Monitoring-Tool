@@ -201,15 +201,15 @@ void allInfoUpdate(int samples, int tdelay)
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
     // keep track of lines
-    int lineNumber = samples + 6;
-    int backUpNumber = 6;
+    int memoryLineNumber = samples + 6;
+    int usersLineNumber = 6;
 
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        printf("\033[%d;0H", (backUpNumber)); // move cursor to memory
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
         getMemoryUsage();
-        printf("\033[%d;0H", (lineNumber)); // move cursor to cpu usage
+        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
         printf("\033[J"); // clears everything below the current line
@@ -219,7 +219,7 @@ void allInfoUpdate(int samples, int tdelay)
         previousMeasure = getCpuUsage(previousMeasure);
 
         // update line numbers
-        backUpNumber = backUpNumber + 1;
+        memoryLineNumber = memoryLineNumber + 1;
 
         if (i != samples - 1)
         {
@@ -228,6 +228,8 @@ void allInfoUpdate(int samples, int tdelay)
             fflush(stdout);
         }
     }
+
+    // print the ending system details
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
@@ -257,6 +259,8 @@ void usersUpdate(int samples, int tdelay)
             printf("\033c");
         }
     }
+
+    // print the ending system details
     printf("### System Information ### \n");
     getSystemInfo();
 }
@@ -275,21 +279,21 @@ void systemUpdate(int samples, int tdelay)
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
     // keep track of lines
-    int lineNumber = samples + 6;
-    int backUpNumber = 6;
+    int memoryLineNumber = samples + 6;
+    int cpuLineNumber = 6;
 
     // print all system info
     for (int i = 0; i < samples; i++)
     {
 
-        printf("\033[%d;0H", (backUpNumber)); // move cursor to memory
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
         getMemoryUsage();
-        printf("\033[%d;0H", (lineNumber)); // move cursor to cpu usage
+        printf("\033[%d;0H", (cpuLineNumber)); // move cursor to cpu usage
         getCpuNumber();
         previousMeasure = getCpuUsage(previousMeasure);
 
         // update line numbers
-        backUpNumber = backUpNumber + 1;
+        memoryLineNumber = memoryLineNumber + 1;
 
         if (i != samples - 1)
         {
