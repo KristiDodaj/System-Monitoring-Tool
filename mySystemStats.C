@@ -317,13 +317,9 @@ void allInfoSequential(int samples, int tdelay)
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
-    // keep track of lines
-    int memoryLineNumber = samples + 6;
-    int usersLineNumber = 6;
-
     for (int i = 0; i < samples; i++)
     {
-        printf(">> Iteration: %d \n\n", samples + 1);
+        printf(">> Iteration: %d \n\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
@@ -354,6 +350,6 @@ void allInfoSequential(int samples, int tdelay)
 
 int main()
 {
-    allInfoSequential(2, 5);
+    allInfoSequential(5, 2);
     return 0;
 }
