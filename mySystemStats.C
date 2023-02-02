@@ -284,6 +284,9 @@ void systemUpdate(int samples, int tdelay)
             fflush(stdout);
         }
     }
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
 }
 
 int main()
