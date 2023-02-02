@@ -323,7 +323,7 @@ void allInfoSequential(int samples, int tdelay)
     // print all info sequentially
     for (int i = 0; i < samples; i++)
     {
-        printf(">> Iteration: %d\n", i + 1);
+        printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
@@ -372,11 +372,19 @@ void usersSequential(int samples, int tdelay)
 
     for (int i = 0; i < samples; i++)
     {
-        printf(">> Iteration: %d\n", i + 1);
+        printf(">>>Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Sessions/users ### \n");
         getUsers();
+
+        if (i != samples - 1)
+        {
+            // wait tdelay
+            sleep(tdelay);
+            // clear buffer
+            fflush(stdout);
+        }
     }
 
     // print the ending system details
@@ -388,6 +396,6 @@ void usersSequential(int samples, int tdelay)
 
 int main()
 {
-    allInfoSequential(2, 5);
+    usersSequential(2, 5);
     return 0;
 }
