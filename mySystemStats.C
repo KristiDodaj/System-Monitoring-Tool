@@ -466,13 +466,13 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         }
         // check for flag --samples
         int sampleNumber;
-        if (sscanf(argv[i], "--samples=%d", &sampleNumber) == 0)
+        if (sscanf(argv[i], "--samples=%d", &sampleNumber) == 1)
         {
             *samples = sampleNumber;
         }
         // check for flag --tdelay
         int tdelayNumber;
-        if (sscanf(argv[i], "--tdelay=%d", &tdelayNumber) == 0)
+        if (sscanf(argv[i], "--tdelay=%d", &tdelayNumber) == 1)
         {
             *tdelay = tdelayNumber;
         }
