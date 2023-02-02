@@ -486,7 +486,6 @@ int main(int argc, char *argv[])
     bool sequential = false;
     int samples = 10;
     int tdelay = 1;
-    printf("Samples: %d, Tdelay: %d", samples, tdelay);
 
     parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
 
