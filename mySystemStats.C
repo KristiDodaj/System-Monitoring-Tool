@@ -281,7 +281,7 @@ void systemUpdate(int samples, int tdelay)
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
-            printf("\033c");
+            // printf("\033c");
         }
     }
 }
