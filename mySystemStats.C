@@ -262,8 +262,8 @@ void systemUpdate(int samples, int tdelay)
     printf("---------------------------------------\n");
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
-    int lineNumber = samples + 5;
-    int backUpNumber = 5;
+    int lineNumber = samples + 6;
+    int backUpNumber = 6;
 
     // print all system info
     for (int i = 0; i < samples; i++)
