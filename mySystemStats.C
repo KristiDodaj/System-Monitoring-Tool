@@ -319,7 +319,7 @@ void allInfoSequential(int samples, int tdelay)
 
     for (int i = 0; i < samples; i++)
     {
-        printf(">> Iteration: %d \n\n", i + 1);
+        printf(">> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
