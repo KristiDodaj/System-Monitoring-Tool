@@ -271,6 +271,7 @@ void systemUpdate(int samples, int tdelay)
         printf("\033[%d;0H", (backUpNumber));
         getMemoryUsage();
         printf("\033[%d;0H", (lineNumber)); // move cursor to (sample + 1)nd line, 0th column
+        getCpuNumber();
         previousMeasure = getCpuUsage(previousMeasure);
 
         // update line numbers
@@ -281,7 +282,6 @@ void systemUpdate(int samples, int tdelay)
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
-            // printf("\033c");
         }
     }
 }
