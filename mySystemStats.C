@@ -279,8 +279,8 @@ void systemUpdate(int samples, int tdelay)
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
     // keep track of lines
-    int memoryLineNumber = samples + 6;
-    int cpuLineNumber = 6;
+    int cpuLineNumber = samples + 6;
+    int memoryLineNumber = 6;
 
     // print all system info
     for (int i = 0; i < samples; i++)
@@ -327,13 +327,33 @@ void allInfoSequential(int samples, int tdelay)
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
-        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-        getMemoryUsage();
+
+        // create the needed spaces
+        for (int j = 0; j < samples; j++)
+        {
+            if (j == i)
+            {
+                getMemoryUsage()
+            }
+            else
+            {
+                printf("\n");
+            }
+        }
+
+        printf("---------------------------------------\n");
+        getCpuNumber();
+        getCpuUsage();
+
+        // print the ending system details
+        printf("---------------------------------------\n");
+        printf("### System Information ### \n");
+        getSystemInfo();
     }
 }
 
 int main()
 {
-    allInfoUpdate(2, 5);
+    allInfoSequential(2, 5);
     return 0;
 }
