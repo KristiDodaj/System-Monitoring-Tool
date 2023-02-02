@@ -299,6 +299,6 @@ void systemUpdate(int samples, int tdelay)
 int main()
 {
     // systemUpdate(20, 2);
-    getCpuUsage(10000);
+    getCpuUsage(10000000000000);
     return 0;
 }
