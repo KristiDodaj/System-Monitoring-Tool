@@ -370,6 +370,7 @@ void usersSequential(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
+    // print user info sequentially
     for (int i = 0; i < samples; i++)
     {
         printf(">>>Iteration: %d\n", i + 1);
@@ -402,7 +403,7 @@ void systemSequential(int samples, int tdelay)
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
-    // print all info sequentially
+    // print system info sequentially
     for (int i = 0; i < samples; i++)
     {
         printf(">>> Iteration: %d\n", i + 1);
@@ -446,6 +447,6 @@ void systemSequential(int samples, int tdelay)
 
 int main()
 {
-    systemSequential(5, 2);
+    systemUpdate(10, 2);
     return 0;
 }
