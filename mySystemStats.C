@@ -465,9 +465,9 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
             *user = true;
         }
         // check for flag --samples
-        sscanf(argv[i], "--samples=%d", &samples);
+        sscanf(argv[i], "--samples=%d", *samples);
         // check for flag --tdelay
-        sscanf(argv[i], "--tdelay=%d", &tdelay);
+        sscanf(argv[i], "--tdelay=%d", *tdelay);
     }
 }
 
