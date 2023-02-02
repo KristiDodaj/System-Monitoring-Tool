@@ -396,8 +396,56 @@ void usersSequential(int samples, int tdelay)
     printf("---------------------------------------\n");
 }
 
+void systemSequential(int samples, int tdelay)
+{
+    // clear terminal before starting
+    printf("\033c");
+    long int previousMeasure = getCpuUsage(0);
+
+    // print all info sequentially
+    for (int i = 0; i < samples; i++)
+    {
+        printf(">>> Iteration: %d\n", i + 1);
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+        // create the needed spaces
+        for (int j = 0; j < samples; j++)
+        {
+            if (j == i)
+            {
+                getMemoryUsage();
+            }
+            else
+            {
+                printf("\n");
+            }
+        }
+        printf("---------------------------------------\n");
+        getCpuNumber();
+        getCpuUsage(previousMeasure);
+        printf("\n");
+
+        if (i != samples - 1)
+        {
+            // wait tdelay
+            sleep(tdelay);
+            // clear buffer
+            fflush(stdout);
+        }
+    }
+
+    // print the ending system details
+    printf("\033[1A");
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+    printf("---------------------------------------\n");
+}
+
 int main()
 {
-    usersSequential(2, 5);
+    systemSequential(5, 2);
     return 0;
 }
