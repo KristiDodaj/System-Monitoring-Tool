@@ -377,6 +377,7 @@ void usersSequential(int samples, int tdelay)
         printf("---------------------------------------\n");
         printf("### Sessions/users ### \n");
         getUsers();
+        printf("\n");
 
         if (i != samples - 1)
         {
@@ -388,6 +389,7 @@ void usersSequential(int samples, int tdelay)
     }
 
     // print the ending system details
+    printf("\033[1A");
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
