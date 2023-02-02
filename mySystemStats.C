@@ -447,6 +447,6 @@ void systemSequential(int samples, int tdelay)
 
 int main()
 {
-    systemUpdate(10, 2);
+    systemUpdate(20, 2);
     return 0;
 }
