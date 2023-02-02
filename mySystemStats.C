@@ -310,6 +310,28 @@ void systemUpdate(int samples, int tdelay)
     getSystemInfo();
 }
 
+void allInfoSequential(int samples, int tdelay)
+{
+
+    // clear terminal before starting
+    printf("\033c");
+    long int previousMeasure = getCpuUsage(0);
+
+    // keep track of lines
+    int memoryLineNumber = samples + 6;
+    int usersLineNumber = 6;
+
+    for (int i = 0; i < samples; i++)
+    {
+        printf(">> Iteration: %d \n\n", samples + 1);
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+        getMemoryUsage();
+    }
+}
+
 int main()
 {
     allInfoUpdate(2, 5);
