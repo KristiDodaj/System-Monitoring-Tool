@@ -201,8 +201,8 @@ void allInfoUpdate(int samples, int tdelay)
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
     // keep track of lines
-    int memoryLineNumber = samples + 6;
-    int usersLineNumber = 6;
+    int usersLineNumber = samples + 6;
+    int memoryLineNumber = 6;
 
     // print all information
     for (int i = 0; i < samples; i++)
