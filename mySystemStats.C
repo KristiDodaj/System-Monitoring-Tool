@@ -233,6 +233,7 @@ void allInfoUpdate(int samples, int tdelay)
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
+    printf("---------------------------------------\n");
 }
 
 void usersUpdate(int samples, int tdelay)
@@ -263,6 +264,7 @@ void usersUpdate(int samples, int tdelay)
     // print the ending system details
     printf("### System Information ### \n");
     getSystemInfo();
+    printf("---------------------------------------\n");
 }
 
 void systemUpdate(int samples, int tdelay)
@@ -308,6 +310,7 @@ void systemUpdate(int samples, int tdelay)
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
+    printf("---------------------------------------\n");
 }
 
 void allInfoSequential(int samples, int tdelay)
@@ -344,11 +347,6 @@ void allInfoSequential(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(previousMeasure);
 
-        // print the ending system details
-        printf("---------------------------------------\n");
-        printf("### System Information ### \n");
-        getSystemInfo();
-
         if (i != samples - 1)
         {
             // wait tdelay
@@ -357,6 +355,12 @@ void allInfoSequential(int samples, int tdelay)
             fflush(stdout);
         }
     }
+
+    // print the ending system details
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+    printf("---------------------------------------\n");
 }
 
 void usersSequential(int samples, int tdelay)
@@ -369,7 +373,15 @@ void usersSequential(int samples, int tdelay)
         printf(">> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
+        printf("### Sessions/users ### \n");
+        getUsers();
     }
+
+    // print the ending system details
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+    printf("---------------------------------------\n");
 }
 
 int main()
