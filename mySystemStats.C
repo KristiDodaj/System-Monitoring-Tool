@@ -212,6 +212,7 @@ void allInfoUpdate(int samples, int tdelay)
         printf("\033[%d;0H", (lineNumber)); // move cursor to cpu usage
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
+        printf("\033[J"); // clears everything below the current line
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
