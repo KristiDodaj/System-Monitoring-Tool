@@ -298,6 +298,6 @@ void systemUpdate(int samples, int tdelay)
 
 int main()
 {
-    systemUpdate(1, 4);
+    systemUpdate(2, 4);
     return 0;
 }
