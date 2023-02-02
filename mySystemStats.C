@@ -258,15 +258,23 @@ void systemUpdate(int samples, int tdelay)
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
+    header(samples, tdelay);
+    printf("---------------------------------------\n");
+    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+    int lineNumber = samples + 5;
+    int backUpNumber = 4;
+
     // print all system info
     for (int i = 0; i < samples; i++)
     {
-        header(samples, tdelay);
-        printf("---------------------------------------\n");
-        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+        printf("\033[%d;0H", (backUpNumber));
         getMemoryUsage();
-        printf("\033[%dB", (samples - 1));
+        printf("\033[%d;0H", (lineNumber)); // move cursor to (sample + 1)nd line, 0th column
         previousMeasure = getCpuUsage(previousMeasure);
+
+        // update line numbers
+        backUpNumber = backUpNumber + 1;
 
         if (i != samples - 1)
         {
@@ -280,6 +288,6 @@ void systemUpdate(int samples, int tdelay)
 
 int main()
 {
-    usersUpdate(10, 2);
+    systemUpdate(10, 2);
     return 0;
 }
