@@ -26,8 +26,6 @@ void header(int samples, int tdelay)
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
     printf("Memory Usage: %ld kilobytes \n", usage.ru_maxrss);
-
-    // ASK WHY MAC USING MORE RAM THAN LINUX 950272 VS 2408
 }
 
 void getSystemInfo()
@@ -77,8 +75,6 @@ void getUsers()
 
     struct utmpx *users;
     setutxent(); // rewinds pointer to beginning of utmpx file
-
-    // ASK IF CHECKING THAT THIS IS A USER_PROCESS
 
     while ((users = getutxent()) != NULL)
     {
@@ -162,7 +158,7 @@ long int getCpuUsage(long int previousMeasure)
 
     if (previousMeasure != 0)
     {
-        // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
+        printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
         printf(" total cpu use = %.10f %%\n", usage);
     }
 
@@ -218,6 +214,7 @@ void allInfoUpdate(int samples, int tdelay)
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
+            // clear screen
             printf("\033c");
         }
     }
@@ -242,9 +239,11 @@ void usersUpdate(int samples, int tdelay)
 
         if (i != samples - 1)
         {
+            // wait tdelay
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
+            // clear screen
             printf("\033c");
         }
     }
@@ -256,21 +255,26 @@ void systemUpdate(int samples, int tdelay)
 {
     // clear terminal before starting
     printf("\033c");
+
+    // store a first per measure for the cpu usage
     long int previousMeasure = getCpuUsage(0);
 
+    // print headers
     header(samples, tdelay);
     printf("---------------------------------------\n");
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
+    // keep track of lines
     int lineNumber = samples + 6;
     int backUpNumber = 6;
 
     // print all system info
     for (int i = 0; i < samples; i++)
     {
-        printf("\033[%d;0H", (backUpNumber));
+
+        printf("\033[%d;0H", (backUpNumber)); // move cursor to memory
         getMemoryUsage();
-        printf("\033[%d;0H", (lineNumber)); // move cursor to (sample + 1)nd line, 0th column
+        printf("\033[%d;0H", (lineNumber)); // move cursor to cpu usage
         getCpuNumber();
         previousMeasure = getCpuUsage(previousMeasure);
 
@@ -279,11 +283,14 @@ void systemUpdate(int samples, int tdelay)
 
         if (i != samples - 1)
         {
+            // wait tdelay
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
         }
     }
+
+    // print the ending system details
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
