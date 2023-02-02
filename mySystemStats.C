@@ -158,7 +158,7 @@ long int getCpuUsage(long int previousMeasure)
 
     if (previousMeasure != 0)
     {
-        printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
+        // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
         printf(" total cpu use = %.10f %%\n", usage);
     }
 
@@ -195,13 +195,21 @@ void allInfoUpdate(int samples, int tdelay)
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
+    // print headers
+    header(samples, tdelay);
+    printf("---------------------------------------\n");
+    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+    // keep track of lines
+    int lineNumber = samples + 6;
+    int backUpNumber = 6;
+
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        header(samples, tdelay);
-        printf("---------------------------------------\n");
-        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+        printf("\033[%d;0H", (backUpNumber)); // move cursor to memory
         getMemoryUsage();
+        printf("\033[%d;0H", (lineNumber)); // move cursor to cpu usage
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
         getUsers();
@@ -209,13 +217,14 @@ void allInfoUpdate(int samples, int tdelay)
         getCpuNumber();
         previousMeasure = getCpuUsage(previousMeasure);
 
+        // update line numbers
+        backUpNumber = backUpNumber + 1;
+
         if (i != samples - 1)
         {
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
-            // clear screen
-            printf("\033c");
         }
     }
     printf("---------------------------------------\n");
@@ -298,6 +307,6 @@ void systemUpdate(int samples, int tdelay)
 
 int main()
 {
-    systemUpdate(10, 2);
+    allInfoUpdate(10, 2);
     return 0;
 }
