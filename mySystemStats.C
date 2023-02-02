@@ -51,7 +51,7 @@ void getSystemInfo()
         printf("Machine Name = %s \n", info.nodename);
         printf("Version = %s \n", info.version);
         printf("Release = %s \n", info.release);
-        printf("Architecture = %s \n\n", info.machine);
+        printf("Architecture = %s \n", info.machine);
     }
     else
     {
@@ -346,6 +346,7 @@ void allInfoSequential(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
         getCpuUsage(previousMeasure);
+        printf("\n");
 
         if (i != samples - 1)
         {
