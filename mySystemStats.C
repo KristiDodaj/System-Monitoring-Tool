@@ -343,7 +343,7 @@ void allInfoSequential(int samples, int tdelay)
 
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage();
+        getCpuUsage(previousMeasure);
 
         // print the ending system details
         printf("---------------------------------------\n");
