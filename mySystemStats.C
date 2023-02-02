@@ -449,30 +449,38 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
 {
     for (int i = 0; i < argc; i++)
     {
-        // find if sequential
+        // find if --sequential was called
         if (strcmp(argv[i], "--sequential") == 0)
         {
             *sequential = true;
         }
+        // check if --system was called
+        if (strcmp(argv[i], "--system") == 0)
+        {
+            *system = true;
+        }
+        // check if --user was called
+        if (strcmp(argv[i], "--user") == 0)
+        {
+            *user = true;
+        }
+        // check for flag --samples
+        sscanf(argv[i], "--samples=%d", &samples);
+        // check for flag --tdelay
+        sscanf(argv[i], "--tdelay=%d", &tdelay);
     }
 }
 
 int main(int argc, char *argv[])
 {
-    bool system;
-    bool user;
-    bool sequential;
-    int samples;
-    int tdelay;
+    bool system = false;
+    bool user = false;
+    bool sequential = false;
+    int samples = 10;
+    int tdelay = 1;
 
     parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
-    if (sequential == true)
-    {
-        printf("true");
-    }
-    else
-    {
-        printf("false");
-    }
+
+    printf("Samples: %d, Tdelay: %d", samples, tdelay);
     return 0;
 }
