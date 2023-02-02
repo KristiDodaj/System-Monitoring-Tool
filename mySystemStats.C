@@ -358,6 +358,7 @@ void allInfoSequential(int samples, int tdelay)
     }
 
     // print the ending system details
+    printf("\033[1A");
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
     getSystemInfo();
