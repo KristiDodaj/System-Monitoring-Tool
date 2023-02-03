@@ -526,7 +526,7 @@ bool validateArguments(int argc, char *argv[])
         int dummyValue;
         if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1)
         {
-            printf("ONE OF YOUR ARGUMENTS IS MISTYPED. TRY AGAIN!");
+            printf("ONE OF YOUR ARGUMENTS IS MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
             return false;
         }
 
@@ -593,15 +593,20 @@ bool validateArguments(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    bool answer = validateArguments(argc, argv);
+    // bool answer = validateArguments(argc, argv);
 
-    if (answer == true)
+    //  if (answer == true)
+    // {
+    //     printf("CORRECT \n");
+    // }
+    // else
+    // {
+    //      printf("WRONG\n");
+    // }
+
+    for (int i = 0 i < argc; i++)
     {
-        printf("CORRECT \n");
-    }
-    else
-    {
-        printf("WRONG\n");
+        printf("%s\n", argv[i]);
     }
 
     return 0;
