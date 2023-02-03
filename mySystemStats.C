@@ -483,7 +483,7 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         int samplesPostionalArgument;
         if (argc > 1)
         {
-            if (sscanf(argv[1], "%d", &samplesPostionalArgument) == 1)
+            if (sscanf(argv[1], "%d", &samplesPostionalArgument) == 1 && samplesPostionalArgument > 0)
             {
                 *samples = samplesPostionalArgument;
             }
@@ -492,7 +492,7 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         int tdelayPositionalArgument;
         if (argc > 2)
         {
-            if (sscanf(argv[2], "%d", &tdelayPositionalArgument) == 1)
+            if (sscanf(argv[2], "%d", &tdelayPositionalArgument) == 1 && tdelayPositionalArgument > 0)
             {
                 *tdelay = tdelayPositionalArgument;
             }
