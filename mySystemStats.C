@@ -504,6 +504,14 @@ bool validateArguments(int argc, char *argv[])
 {
     // This wil validate the inputed args
 
+    // keep track of how many times each arg is called
+    int sequentialArgCount = 0;
+    int systemArgCount = 0;
+    int userArgCount = 0;
+    int samplesArgCount = 0;
+    int tdelayArgCount = 0;
+    int positionalArgCount = 0;
+
     // check number of arguments
     if (argc > 5)
     {
@@ -523,12 +531,6 @@ bool validateArguments(int argc, char *argv[])
         }
 
         // check if there are repeated arguments
-        int sequentialArgCount = 0;
-        int systemArgCount = 0;
-        int userArgCount = 0;
-        int samplesArgCount = 0;
-        int tdelayArgCount = 0;
-        int positionalArgCount = 0;
 
         if (strcmp(argv[i], "--sequential") == 0)
         {
