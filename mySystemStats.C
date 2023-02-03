@@ -517,7 +517,8 @@ bool validateArguments(int argc, char *argv[])
         {
             return false;
         }
-        else if (sscanf(argv[i], "--samples=%d") != 1 || sscanf(argv[i], "--tdelay=%d") != 1 || sscanf(argv[1], "%d") != 1)
+        int dummy;
+        else if (sscanf(argv[i], "--samples=%d", &dummy) != 1 || sscanf(argv[i], "--tdelay=%d", &dummy) != 1 || sscanf(argv[1], "%d", &dummy) != 1)
         {
             return false;
         }
