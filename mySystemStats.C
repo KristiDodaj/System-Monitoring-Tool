@@ -513,7 +513,7 @@ bool validateArguments(int argc, char *argv[])
 
     int dummy;
 
-    for (int i = 0; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         // check if all the flags are correctly formated
         if (strcmp(argv[i], "--sequential") != 0 || strcmp(argv[i], "--system") != 0 || strcmp(argv[i], "--user") != 0)
