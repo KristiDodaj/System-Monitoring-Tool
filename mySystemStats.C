@@ -595,20 +595,15 @@ bool validateArguments(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    // bool answer = validateArguments(argc, argv);
+    bool answer = validateArguments(argc, argv);
 
-    //  if (answer == true)
-    // {
-    //     printf("CORRECT \n");
-    // }
-    // else
-    // {
-    //      printf("WRONG\n");
-    // }
-
-    for (int i = 0; i < argc; i++)
+    if (answer == true)
     {
-        printf("%s\n", argv[i]);
+        printf("CORRECT \n");
+    }
+    else
+    {
+        printf("WRONG\n");
     }
 
     return 0;
