@@ -447,6 +447,9 @@ void systemSequential(int samples, int tdelay)
 
 void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
 {
+    // Note: Assume that positional arguments for samples and tdelay are in this order and will be the first two arguments
+    // Also, If --tdelay and --samples are repeated the last call will override the first
+
     for (int i = 0; i < argc; i++)
     {
         // find if --sequential was called
@@ -475,6 +478,18 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         if (sscanf(argv[i], "--tdelay=%d", &tdelayNumber) == 1)
         {
             *tdelay = tdelayNumber;
+        }
+        // check for samples positional argument
+        int samplesPostionalArgument;
+        if (sscanf(argv[1], "%d", &samplesPostionalArgument) == 1)
+        {
+            *samples = samplesPostionalArgument;
+        }
+        // check for tdelay positional argument
+        int tdelayPositionalArgument;
+        if (sscanf(argv[2], "%d", &tdelayPositionalArgument) == 1)
+        {
+            *tdelay = tdelayPositionalArgument;
         }
     }
 }
