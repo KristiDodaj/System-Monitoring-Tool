@@ -516,12 +516,7 @@ bool validateArguments(int argc, char *argv[])
     {
         // check if all the flags are correctly formated
         int dummyValue;
-        if (strcmp(argv[i], "--sequential") != 0 || strcmp(argv[i], "--system") != 0 || strcmp(argv[i], "--user") != 0)
-        {
-            printf("ONE OF YOUR ARGUMENTS IS MISTYPED. TRY AGAIN!");
-            return false;
-        }
-        else if (sscanf(argv[i], "--samples=%d", &dummyValue) != 1 || sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1 || sscanf(argv[1], "%d", &dummyValue) != 1 || sscanf(argv[2], "%d", &dummyValue) != 1)
+        if (strcmp(argv[i], "--sequential") != 0 || strcmp(argv[i], "--system") != 0 || strcmp(argv[i], "--user") != 0 || sscanf(argv[i], "--samples=%d", &dummyValue) != 1 || sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1 || sscanf(argv[1], "%d", &dummyValue) != 1 || sscanf(argv[2], "%d", &dummyValue) != 1)
         {
             printf("ONE OF YOUR ARGUMENTS IS MISTYPED. TRY AGAIN!");
             return false;
