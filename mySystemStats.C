@@ -469,13 +469,13 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         }
         // check for flag --samples
         int sampleNumber;
-        if (sscanf(argv[i], "--samples=%d", &sampleNumber) == 1)
+        if (sscanf(argv[i], "--samples=%d", &sampleNumber) == 1 && sampleNumber > 0)
         {
             *samples = sampleNumber;
         }
         // check for flag --tdelay
         int tdelayNumber;
-        if (sscanf(argv[i], "--tdelay=%d", &tdelayNumber) == 1)
+        if (sscanf(argv[i], "--tdelay=%d", &tdelayNumber) == 1 && tdelayNumber > 0)
         {
             *tdelay = tdelayNumber;
         }
@@ -500,16 +500,44 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
     }
 }
 
+bool validateArguments(int argc, char *argv[])
+{
+    // This wil validate the inputed args
+
+    // check number of arguments
+    if (argc > 4)
+    {
+        printf("TOO MANY ARGUMENTS. TRY AGAIN!") return false;
+    }
+
+    for (int i = 0; i < argc; i++)
+    {
+        // check if all the flags are correctly formated
+        if (strcmp(argv[i], "--sequential") != 0 || strcmp(argv[i], "--system") != 0 || strcmp(argv[i], "--user") != 0)
+        {
+            return false;
+        }
+        else if (sscanf(argv[i], "--samples=%d") != 1 || sscanf(argv[i], "--tdelay=%d") != 1 || sscanf(argv[1], "%d") != 1)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 int main(int argc, char *argv[])
 {
-    bool system = false;
-    bool user = false;
-    bool sequential = false;
-    int samples = 10;
-    int tdelay = 1;
+    bool answer = validateArguments(argc, argv);
 
-    parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
+    if (answer == true)
+    {
+        printf("CORRECRT \n");
+    }
+    else
+    {
+        printf("WRONG\n");
+    }
 
-    printf("Samples: %d, Tdelay: %d", samples, tdelay);
     return 0;
 }
