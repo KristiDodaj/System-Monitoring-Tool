@@ -519,7 +519,7 @@ bool validateArguments(int argc, char *argv[])
         return false;
     }
 
-    int dummyValue;
+    int dummyValue = 0;
 
     // iterate argv to check for correctness
     for (int i = 1; i < argc; i++)
