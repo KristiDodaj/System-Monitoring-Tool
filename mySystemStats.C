@@ -511,6 +511,8 @@ bool validateArguments(int argc, char *argv[])
         return false;
     }
 
+    int dummy;
+
     for (int i = 0; i < argc; i++)
     {
         // check if all the flags are correctly formated
@@ -518,7 +520,6 @@ bool validateArguments(int argc, char *argv[])
         {
             return false;
         }
-        int dummy;
         else if (sscanf(argv[i], "--samples=%d", &dummy) != 1 || sscanf(argv[i], "--tdelay=%d", &dummy) != 1 || sscanf(argv[1], "%d", &dummy) != 1)
         {
             return false;
