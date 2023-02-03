@@ -524,6 +524,7 @@ bool validateArguments(int argc, char *argv[])
     // iterate argv to check for correctness
     for (int i = 1; i < argc; i++)
     {
+        printf("here 1");
 
         // check if all the flags are correctly formated
 
