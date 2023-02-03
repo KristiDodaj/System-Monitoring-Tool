@@ -524,13 +524,11 @@ bool validateArguments(int argc, char *argv[])
     // iterate argv to check for correctness
     for (int i = 1; i < argc; i++)
     {
-
+        // check if all the flags are correctly formated
         char *firstPostinalArg;
         char *secondPositionalArg;
         strtol(argv[1], &firstPostinalArg, 10);
         strtol(argv[2], &secondPositionalArg, 10);
-
-        // check if all the flags are correctly formated
 
         if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1 && *firstPostinalArg != '\0' && *secondPositionalArg != '\0')
         {
