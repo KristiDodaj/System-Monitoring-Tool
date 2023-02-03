@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <sys/utsname.h>
 #include <utmpx.h>
 #include <unistd.h>
@@ -525,11 +524,17 @@ bool validateArguments(int argc, char *argv[])
     // iterate argv to check for correctness
     for (int i = 1; i < argc; i++)
     {
+
         // check if all the flags are correctly formated
-        if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1 && !isdigit(argv[1]) && !isdigit(argv[2]))
+
+        if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
         {
-            printf("ONE OF YOUR ARGUMENTS IS MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
-            return false;
+            printf("here");
+            if (sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1)
+            {
+                printf("ONE OF YOUR ARGUMENTS IS MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
+                return false;
+            }
         }
 
         // check if there are repeated arguments
