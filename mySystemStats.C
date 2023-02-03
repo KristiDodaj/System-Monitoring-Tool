@@ -505,24 +505,89 @@ bool validateArguments(int argc, char *argv[])
     // This wil validate the inputed args
 
     // check number of arguments
-    if (argc > 4)
+    if (argc > 5)
     {
         printf("TOO MANY ARGUMENTS. TRY AGAIN!");
         return false;
     }
 
-    int dummy;
-
+    // iterate argv to check for correctness
     for (int i = 1; i < argc; i++)
     {
         // check if all the flags are correctly formated
+        int dummyValue;
         if (strcmp(argv[i], "--sequential") != 0 || strcmp(argv[i], "--system") != 0 || strcmp(argv[i], "--user") != 0)
         {
+            printf("ONE OF YOUR ARGUMENTS IS MISTYPED. TRY AGAIN!");
             return false;
         }
         else if (sscanf(argv[i], "--samples=%d", &dummy) != 1 || sscanf(argv[i], "--tdelay=%d", &dummy) != 1 || sscanf(argv[1], "%d", &dummy) != 1)
         {
+            printf("ONE OF YOUR ARGUMENTS IS MISTYPED. TRY AGAIN!");
             return false;
+        }
+
+        // check if there are repeated arguments
+        int sequentialArgCount = 0;
+        int systemArgCount = 0;
+        int userArgCount = 0;
+        int samplesArgCount = 0;
+        int tdelayArgCount = 0;
+        int positionalArgCount = 0;
+
+        if (strcmp(argv[i], "--sequential") == 0)
+        {
+            sequentialArgCount++;
+            if (sequentialArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                return false;
+            }
+        }
+        else if (strcmp(argv[i], "--system") == 0)
+        {
+            systemArgCount++;
+            if (systemArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                return false;
+            }
+        }
+        else if (strcmp(argv[i], "--user") == 0)
+        {
+            userArgCount++;
+            if (userArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                return false;
+            }
+        }
+        else if (sscanf(argv[i], "--samples=%d", &dummy) == 1)
+        {
+            samplesArgCount++;
+            if (samplesArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                return false;
+            }
+        }
+        else if (sscanf(argv[i], "--tdelay=%d", &dummy) == 1)
+        {
+            tdelayArgCount++;
+            if (tdelayArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                return false;
+            }
+        }
+        else if (sscanf(argv[1], "%d", &dummy) == 1)
+        {
+            positionalArgCount++;
+            if (positionalArgCount > 2)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                return false;
+            }
         }
     }
 
@@ -535,7 +600,7 @@ int main(int argc, char *argv[])
 
     if (answer == true)
     {
-        printf("CORRECRT \n");
+        printf("CORRECT \n");
     }
     else
     {
