@@ -524,14 +524,22 @@ bool validateArguments(int argc, char *argv[])
     // iterate argv to check for correctness
     for (int i = 1; i < argc; i++)
     {
-        printf("here 1");
+
+        char *first;
+        char *second;
+        char *third;
+        chat *fourth;
+
+        strtol(argv[1], &first, 10);
+        strtol(argv[2], &second, 10);
+        strtol(argv[i], &third, 10);
 
         // check if all the flags are correctly formated
 
         if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0)
         {
             printf("here");
-            if (sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (*first != '\0' && *second != '\0' && *third != "--samples=" && *third != "--tdelay=")
             {
                 printf("ONE OF YOUR ARGUMENTS IS MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
                 return false;
