@@ -481,9 +481,12 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         }
         // check for samples positional argument
         int samplesPostionalArgument;
-        if (sscanf(argv[1], "%d", &samplesPostionalArgument) == 1)
+        if (argc > 1)
         {
-            *samples = samplesPostionalArgument;
+            if (sscanf(argv[1], "%d", &samplesPostionalArgument) == 1)
+            {
+                *samples = samplesPostionalArgument;
+            }
         }
         // check for tdelay positional argument
         int tdelayPositionalArgument;
