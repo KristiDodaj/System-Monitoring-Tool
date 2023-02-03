@@ -487,9 +487,12 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         }
         // check for tdelay positional argument
         int tdelayPositionalArgument;
-        if (argc > 1 && sscanf(argv[2], "%d", &tdelayPositionalArgument) == 1)
+        if (argc > 1)
         {
-            *tdelay = tdelayPositionalArgument;
+            if (sscanf(argv[2], "%d", &tdelayPositionalArgument) == 1)
+            {
+                *tdelay = tdelayPositionalArgument;
+            }
         }
     }
 }
