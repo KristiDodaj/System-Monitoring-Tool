@@ -31,4 +31,6 @@ HIGH-LEVEL FUNCTIONS:
 
 Notice the first 6 functions are split into two versions (update and sequential). Every 3 functions for both sequential and updating cases handle the different flags (everything, --system, --user). Lastly, the seventh function (navigate) serves as a method to navigate to each one of these 6 versions depending on the given command line arguments. 
 
+SIDE NOTE: When displaying the CPU usage in the first iteration, the program will take two measurements back to back with no time being waited. This choice            is made because if tdelay was set to 10, we would have to wait 10 seconds to see the first output for the CPU usage. This is obviously quite                inefficient, thus the first output will not abide by the tdelay interval to carry the calculations but the rest will.
+
 FOR FURTHER INFORMATION ON EACH FUNCTION'S ROLE AND COMPOSITION PLEASE REFER TO THE SOURCE CODE FILE.
