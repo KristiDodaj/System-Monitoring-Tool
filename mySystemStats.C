@@ -732,7 +732,7 @@ bool validateArguments(int argc, char *argv[])
     // validateArguments(int argc, char *argv[]) returns true
     // Example Output 2:
     // Suppose we execute as follows: ./a.out --sequential --sequential
-    // validateArguments(int argc, char *argv[]) returns true and prints:
+    // validateArguments(int argc, char *argv[]) returns true and prints: REPEATED ARGUMENTS. TRY AGAIN!
 
     // keep track of how many times each arg is called
     int sequentialArgCount = 0;
@@ -745,7 +745,7 @@ bool validateArguments(int argc, char *argv[])
     // check number of arguments
     if (argc > 6)
     {
-        printf("TOO MANY ARGUMENTS. TRY AGAIN!");
+        printf("TOO MANY ARGUMENTS. TRY AGAIN!\n");
         return false;
     }
 
@@ -760,7 +760,7 @@ bool validateArguments(int argc, char *argv[])
         {
             if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
-                printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
+                printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -769,7 +769,7 @@ bool validateArguments(int argc, char *argv[])
         {
             if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
-                printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
+                printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -780,7 +780,7 @@ bool validateArguments(int argc, char *argv[])
             sequentialArgCount++;
             if (sequentialArgCount > 1)
             {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -789,7 +789,7 @@ bool validateArguments(int argc, char *argv[])
             systemArgCount++;
             if (systemArgCount > 1)
             {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -798,7 +798,7 @@ bool validateArguments(int argc, char *argv[])
             userArgCount++;
             if (userArgCount > 1)
             {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -807,7 +807,7 @@ bool validateArguments(int argc, char *argv[])
             samplesArgCount++;
             if (samplesArgCount > 1)
             {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -816,7 +816,7 @@ bool validateArguments(int argc, char *argv[])
             tdelayArgCount++;
             if (tdelayArgCount > 1)
             {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                printf("REPEATED ARGUMENTS. TRY AGAIN\n!");
                 return false;
             }
         }
@@ -825,7 +825,7 @@ bool validateArguments(int argc, char *argv[])
             positionalArgCount++;
             if (positionalArgCount > 2)
             {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!");
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
             }
         }
@@ -838,11 +838,62 @@ void navigate(int argc, char *argv[])
 {
     // This function will take in int argc, char *argv[] and will validate/parse the inputted arguments as well as help navigate to the right output
     // depening on the command line arguments given.
+    // Example Output 1:
+    // Suppose we execute as follows: ./a.out
+    // navigate(int argc, char *argv[]) prints
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GBsed/Tot)
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    //  total cpu use = 0.0001081957 %
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
+    //
+    // Example Output 1:
+    // Suppose we execute as follows: ./a.out --user
+    // navigate(int argc, char *argv[]) prints
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
 
     if (validateArguments(argc, argv) == true)
     {
 
-        // gather the called functions
+        // interpret the called arguments
         bool system = false;
         bool user = false;
         bool sequential = false;
