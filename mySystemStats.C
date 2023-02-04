@@ -606,20 +606,53 @@ bool validateArguments(int argc, char *argv[])
 
 void navigate(int argc, char *argv[])
 {
+    // check if arguments are valid
+    validateArguments(argc, argv);
+
+    // gather the called functions
+    bool *system;
+    bool *user;
+    bool *sequential;
+    int *samples;
+    int *tdelay;
+    parseArguments(argc, *argv, system, user, sequential, samples, tdelay);
+
+    // check if sequential
+    if (sequential)
+    {
+        if (user)
+        {
+            usersSequential(samples, tdelay);
+        }
+        else if (system)
+        {
+            systemSequential(samples, tdelay);
+        }
+        else if ((!system && !user) || (system & user))
+        {
+            allInfoSequential(samples, tdelay);
+        }
+    }
+    else
+    {
+        if (user)
+        {
+            usersUpdate(samples, tdelay);
+        }
+        else if (system)
+        {
+            systemUpdate(samples, tdelay);
+        }
+        else if ((!system && !user) || (system & user))
+        {
+            allInfoUpdate(samples, tdelay);
+        }
+    }
 }
 
 int main(int argc, char *argv[])
 {
-    bool answer = validateArguments(argc, argv);
-
-    if (answer == true)
-    {
-        printf("CORRECT \n");
-    }
-    else
-    {
-        printf("WRONG\n");
-    }
-
+    // call the navigate function which will redirect to the right output depeneding on the arguments
+    navigate(argc, argv);
     return 0;
 }
