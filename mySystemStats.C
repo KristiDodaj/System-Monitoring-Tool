@@ -125,9 +125,9 @@ long int getCpuUsage(long int previousMeasure)
     // Note: We consider iowait to be idle time so it also subtracted from the overall time spent. We are also considering irq, softirq, and steal as
     // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
     // Example Output:
-    // getCpuUsage()
+    // getCpuUsage(921263)
     //
-    // prints: total cpu use = 0.18%
+    // prints: total cpu use = 0.0219400000 %
     // returns: 921265
 
     // declare and populate all the desired times spent by the CPU
@@ -156,8 +156,11 @@ long int getCpuUsage(long int previousMeasure)
 
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
-    // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
-    printf(" total cpu use = %.10f %%\n", usage);
+    if (previousMeasure != 0)
+    {
+        // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
+        printf(" total cpu use = %.10f %%\n", usage);
+    }
 
     return currentMeasure;
 }
@@ -176,6 +179,7 @@ void getMemoryUsage()
     struct sysinfo info;
     sysinfo(&info);
 
+    // find the used and total physical RAM
     double totalPhysicalRam = (double)info.totalram / (1073741824);
     double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
 
@@ -183,12 +187,50 @@ void getMemoryUsage()
     double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
     double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
 
+    // print final results
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
+// NOTE: Discuss the fact that first measurement of cpu usage wont be with the given tdelay amount
+
 void allInfoUpdate(int samples, int tdelay)
 {
-    // clear terminal before starting
+    // This function will take in int samples and tdelay and prints out all the system information that will update
+    // in the specified time interval and the specified number of samples. The information given includes memory usage,
+    // user logs, cpu information, system information and are implemented through the above listed functions.
+    // Example Output:
+    // allInfoUpdate(10, 1) prints
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GBsed/Tot)
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // 2.99 GB / 15.32 GB  --  2.99 GB / 16.28 GB
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    //  total cpu use = 0.0001081957 %
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
+
+    // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
 
@@ -213,13 +255,14 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        previousMeasure = getCpuUsage(previousMeasure);
+        previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
 
         if (i != samples - 1)
         {
+            // wait for given amount
             sleep(tdelay);
             // clear buffer
             fflush(stdout);
@@ -235,6 +278,27 @@ void allInfoUpdate(int samples, int tdelay)
 
 void usersUpdate(int samples, int tdelay)
 {
+    // This function will take in int samples and tdelay and prints out all the user information that will update
+    // in the specified time interval and the specified number of samples. The information given includes users logged in,
+    // their individual sessions, and system information.
+    // Example Output:
+    // usersUpdate(10, 1) prints
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
+
     // clear terminal before starting
     printf("\033c");
 
@@ -266,6 +330,36 @@ void usersUpdate(int samples, int tdelay)
 
 void systemUpdate(int samples, int tdelay)
 {
+    // This function will take in int samples and tdelay and prints out the system information that will update
+    // in the specified time interval and the specified number of samples. The information given includes memory usage,
+    // cpu information, system information and are implemented through the above listed functions.
+    // Example Output:
+    // systemUpdate(10, 1) prints
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GBsed/Tot)
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
+    // 2.97 GB / 15.32 GB  --  2.97 GB / 16.28 GB
+    // Number of CPU's: 12     Total Number of Cores: 72
+    //  total cpu use = 0.0002161870 %
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
+
     // clear terminal before starting
     printf("\033c");
 
@@ -312,6 +406,51 @@ void systemUpdate(int samples, int tdelay)
 
 void allInfoSequential(int samples, int tdelay)
 {
+    // This function will take in int samples and tdelay and prints out all the system information that will print sequentially
+    // in the specified time interval and the specified number of samples. The information given includes memory usage,
+    // user logs, cpu information, system information and are implemented through the above listed functions.
+    // Example Output:
+    // allInfoSequential(2, 2) prints
+    //
+    // >>> Iteration: 1
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
+    //
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    // total cpu use = 0.0000000000 %
+    //
+    // >>> Iteration: 2
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    //
+    // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    //  total cpu use = 0.0004304505 %
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
 
     // clear terminal before starting
     printf("\033c");
@@ -364,6 +503,38 @@ void allInfoSequential(int samples, int tdelay)
 
 void usersSequential(int samples, int tdelay)
 {
+    // This function will take in int samples and tdelay and prints out all the user information that will print sequentially
+    // in the specified time interval and the specified number of samples. The information given includes users logged in,
+    // their individual sessions, and system information.
+    // Example Output:
+    // usersSequential(2, 2) prints
+    //
+    // >>>Iteration: 1
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    //
+    // >>>Iteration: 2
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
+
     // clear terminal before starting
     printf("\033c");
 
@@ -396,6 +567,44 @@ void usersSequential(int samples, int tdelay)
 
 void systemSequential(int samples, int tdelay)
 {
+    // This function will take in int samples and tdelay and prints out the system information that will print sequentially
+    // in the specified time interval and the specified number of samples. The information given includes memory usage,
+    // cpu information, system information and are implemented through the above listed functions.
+    // Example Output:
+    // systemSequential(2, 2) prints
+    //
+    // >>> Iteration: 1
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
+    //
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    // total cpu use = 0.0000000000 %
+    //
+    // >>> Iteration: 2
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    //
+    // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    //  total cpu use = 0.0004301672 %
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    //---------------------------------------
+
     // clear terminal before starting
     printf("\033c");
     long int previousMeasure = getCpuUsage(0);
@@ -444,8 +653,24 @@ void systemSequential(int samples, int tdelay)
 
 void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
 {
-    // Note: Assume that positional arguments for samples and tdelay are in this order and will be the first two arguments
-    // Also, If --tdelay and --samples are repeated the last call will override the first
+    // This function will take in int argc and char *argv[] and will update the boolean pointers (user, sequential, samples) and int
+    // pointers (samples, tdelay) according to the command line arguments inputted.
+    // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will be the first two arguments inputted.
+    // Example Output 1:
+    // Suppose we execute as follows: ./a.out 5 2 --user
+    // parseArguments(argc, argv, system, user, sequential, samples, tdelay) will set
+    //
+    // samples = 5
+    // tdelay = 2
+    // user = true
+    //
+    //// Example Output 2:
+    // Suppose we execute as follows: ./a.out --sequential --tdelay=3 --samples=2
+    // parseArguments(argc, argv, system, user, sequential, samples, tdelay) will set
+    //
+    // samples = 2
+    // tdelay = 3
+    // sequential = true
 
     for (int i = 0; i < argc; i++)
     {
@@ -499,7 +724,15 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
 
 bool validateArguments(int argc, char *argv[])
 {
-    // This wil validate the inputed args
+    // This functions takes int argc and char *argv[] and validates the command line arguments inputted by returning true if they are correct and
+    // false if they are not. The validation includes checking for repeated arguments, mistyped arguments, too many argumenys, and correct use of positional arguments.
+    // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will be the first two arguments inputted.
+    // Example Output 1:
+    // Suppose we execute as follows: ./a.out --sequential --tdelay=3 --samples=2
+    // validateArguments(int argc, char *argv[]) returns true
+    // Example Output 2:
+    // Suppose we execute as follows: ./a.out --sequential --sequential
+    // validateArguments(int argc, char *argv[]) returns true and prints:
 
     // keep track of how many times each arg is called
     int sequentialArgCount = 0;
@@ -603,7 +836,9 @@ bool validateArguments(int argc, char *argv[])
 
 void navigate(int argc, char *argv[])
 {
-    // check if arguments are valid
+    // This function will take in int argc, char *argv[] and will validate/parse the inputted arguments as well as help navigate to the right output
+    // depening on the command line arguments given.
+
     validateArguments(argc, argv);
 
     // gather the called functions
@@ -617,6 +852,7 @@ void navigate(int argc, char *argv[])
     // check if sequential
     if (sequential)
     {
+        // redirect to the right output depending on booleans
         if ((!system && !user) || (system && user))
         {
             allInfoSequential(samples, tdelay);
@@ -632,6 +868,7 @@ void navigate(int argc, char *argv[])
     }
     else
     {
+        // redirect to the right output depending on booleans
         if ((!system && !user) || (system && user))
         {
             allInfoUpdate(samples, tdelay);
