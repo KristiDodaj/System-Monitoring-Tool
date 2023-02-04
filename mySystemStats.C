@@ -654,6 +654,26 @@ int main(int argc, char *argv[])
 {
     // call the navigate function which will redirect to the right output depeneding on the arguments
     // navigate(argc, argv);
-    allInfoUpdate(10, 1);
+
+    bool system;
+    bool user;
+    bool sequential;
+    int samples = 10;
+    int tdelay = 1;
+    parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
+
+    if (system == true)
+    {
+        printf("System True");
+    }
+    if (user == true)
+    {
+        printf("User True");
+    }
+    if (sequential == true)
+    {
+        printf("Sequential True");
+    }
+
     return 0;
 }
