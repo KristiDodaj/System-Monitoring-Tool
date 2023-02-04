@@ -528,7 +528,7 @@ bool validateArguments(int argc, char *argv[])
         char *first;
         char *second;
         char *third;
-        chat *fourth;
+        // chat *fourth;
 
         strtol(argv[1], &first, 10);
         strtol(argv[2], &second, 10);
