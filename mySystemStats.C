@@ -617,6 +617,11 @@ void navigate(int argc, char *argv[])
     int tdelay = 1;
     parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
 
+    if (system == true)
+    {
+        printf("TRUEEEEE");
+    }
+
     // check if sequential
     if (sequential)
     {
