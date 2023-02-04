@@ -535,6 +535,7 @@ bool validateArguments(int argc, char *argv[])
                 printf("ONE OF YOUR ARGUMENTS IS MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
                 return false;
             }
+            return false;
         }
 
         // check if there are repeated arguments
