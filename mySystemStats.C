@@ -617,15 +617,14 @@ void navigate(int argc, char *argv[])
     int tdelay = 1;
     parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
 
-    if (system == true)
-    {
-        printf("TRUEEEEE");
-    }
-
     // check if sequential
     if (sequential)
     {
-        if (user)
+        if ((!system && !user) || (system && user))
+        {
+            allInfoSequential(samples, tdelay);
+        }
+        else if (user)
         {
             usersSequential(samples, tdelay);
         }
@@ -633,24 +632,20 @@ void navigate(int argc, char *argv[])
         {
             systemSequential(samples, tdelay);
         }
-        else if ((!system && !user) || (system && user))
-        {
-            allInfoSequential(samples, tdelay);
-        }
     }
     else
     {
-        if (user)
+        if ((!system && !user) || (system && user))
+        {
+            allInfoUpdate(samples, tdelay);
+        }
+        else if (user)
         {
             usersUpdate(samples, tdelay);
         }
         else if (system)
         {
             systemUpdate(samples, tdelay);
-        }
-        else if ((!system && !user) || (system && user))
-        {
-            allInfoUpdate(samples, tdelay);
         }
     }
 }
