@@ -639,14 +639,14 @@ void navigate(int argc, char *argv[])
         {
             allInfoUpdate(samples, tdelay);
         }
-        else if (user)
-        {
-            usersUpdate(samples, tdelay);
-        }
-        else if (system)
-        {
-            systemUpdate(samples, tdelay);
-        }
+        // else if (user)
+        //{
+        //     usersUpdate(samples, tdelay);
+        // }
+        // else if (system)
+        //{
+        //    systemUpdate(samples, tdelay);
+        //}
     }
 }
 
