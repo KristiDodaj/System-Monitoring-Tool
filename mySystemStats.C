@@ -11,18 +11,18 @@
 
 void header(int samples, int tdelay)
 {
-    // This function will print the header of the program which displays the number of samples and the second delay
-    // as well as the memeory usage of the program using the <sys/resources.h> C library
+    // This function will take in int samples and int tdelay as parameters and print the header of the program which displays the
+    // number of samples and the second delay as well as the memory usage of the program using the <sys/resources.h> C library
     // Example Output:
-    // header(10, 1) returns
+    // header(10, 1) prints
     //
     // Nbr of samples: 10 -- every 1 secs
-    // Meory Usage: 4092 kilobytes
+    // Memory Usage: 4092 kilobytes
 
     // print sampe and tdelay
     printf("\nNbr of samples: %d -- every %d secs\n", samples, tdelay);
 
-    // find the memory usage
+    // find and print the memory usage
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
     printf("Memory Usage: %ld kilobytes \n", usage.ru_maxrss);
@@ -32,7 +32,7 @@ void getSystemInfo()
 {
     // This function will print out the System Information using the <sys/utsname.h> C library
     // Examle Output:
-    // getSystemInfo() returns
+    // getSystemInfo() prints
     //
     // System Name = Darwin
     // Machine Name = Kristis-MacBook-Air.local
@@ -62,20 +62,18 @@ void getSystemInfo()
 void getUsers()
 {
     // This function will print out the list of users along with each of their connected sessions using the <utmpx.h> C library
-    // and reading through the utmpx user log file.
+    // and reading through the utmp user log file.
     // Example Output:
-    // getUsers() returns
+    // getUsers() prints
     //
-    // marcelo       pts/0 (138.51.12.217)
-    // marcelo       pts/1 (tmux(3773782).%0)
-    // alberto       tty7 (:0)
-    // marcelo       pts/2 (tmux(3773782).%1)
-    // marcelo       pts/3 (tmux(3773782).%3)
-    // marcelo       pts/4 (tmux(3773782).%4)
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/2 (tmux(97972).%2)
+    // dodajkri      pts/0 (138.51.8.149)
 
-    struct utmpx *users;
-    setutxent(); // rewinds pointer to beginning of utmpx file
+    struct utmpx *users; // initialize utmpx struct
+    setutxent();         // rewinds pointer to beginning of utmp file
 
+    // read through utmp file
     while ((users = getutxent()) != NULL)
     {
         // validate that this is a user process
@@ -84,52 +82,53 @@ void getUsers()
             printf("%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
         }
     }
-    endutxent(); // close the utmpx file
+    endutxent(); // close the utmp file
 }
 
 void getCpuNumber()
 {
     // This function will print out the number of cpu's as well as the total number of cores using the /proc/cpuinfo file to scrape the information.
     // Example Ouput:
-    // getCpuNumber() returns
+    // getCpuNumber() prints
     //
-    // Number of CPU's: 3       Number of Cores for each CPU: 3
+    // Number of CPU's: 12     Total Number of Cores: 72
 
+    // initialize variables to store information
     int cpuNumber = 0;
     int coreNumber = 0;
-    char segment[150];
+    char line[200];
 
-    // open cpuinfo file and scrape cpu and core numbers
+    // open the /proc/cpuinfo file and scrape the cpu and core numbers
     FILE *info = fopen("/proc/cpuinfo", "r");
-    while (fgets(segment, sizeof(segment), info))
+    while (fgets(line, sizeof(line), info))
     {
-        if (strstr(segment, "processor") != NULL)
+        if (strstr(line, "processor") != NULL)
         {
             cpuNumber++;
         }
-        if (strstr(segment, "cpu cores") != NULL)
+        if (strstr(line, "cpu cores") != NULL)
         {
-            char *ptr = strchr(segment, ':');
-            coreNumber += atoi((ptr + 1));
+            char *ptr = strchr(line, ':'); // pointer to first occurrence of ':'
+            coreNumber += atoi((ptr + 1)); // converts string to int
         }
     }
 
+    // print final output
     printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, coreNumber);
     fclose(info);
-
-    // ASK IF OUTPUTING TOTAL NUMBER OF CORES IS OK
 }
 
 long int getCpuUsage(long int previousMeasure)
 {
-    // This function takes the previous cpu time measurement and compares it to the current measurement done by reading the /proc/stat file and returns
-    // an overall percent increase(ex. 0.18%) or decrease(ex. -0.18%).
-    // Note: We consider iowait to be idle time so it also subtracted from the overall time spend. We are also condering irq, softirq, and steal as
+    // This function takes the previous cpu time measurement (long int previousMeasure), and compares it to the current measurement done by reading the /proc/stat file.
+    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) and return the current measurement as a long int.
+    // Note: We consider iowait to be idle time so it also subtracted from the overall time spent. We are also considering irq, softirq, and steal as
     // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
     // Example Output:
-    // getCpuUsage() returns
+    // getCpuUsage()
     //
-    // total cpu use = 0.18%
+    // prints: total cpu use = 0.18%
+    // returns: 921265
 
     // declare and populate all the desired times spent by the CPU
     long int user;
@@ -149,6 +148,7 @@ long int getCpuUsage(long int previousMeasure)
     fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
     fclose(info);
 
+    // get the final measure
     long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
     long int downTime = idle + iowait;
     long int accountedFor = guest + guest_nice;
@@ -156,11 +156,8 @@ long int getCpuUsage(long int previousMeasure)
 
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
-    if (previousMeasure != 0)
-    {
-        // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
-        printf(" total cpu use = %.10f %%\n", usage);
-    }
+    // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
+    printf(" total cpu use = %.10f %%\n", usage);
 
     return currentMeasure;
 }
@@ -620,7 +617,7 @@ void navigate(int argc, char *argv[])
     // check if sequential
     if (sequential)
     {
-        if ((system == false && user == false) || (system == true && user == true))
+        if ((!system && !user) || (system && user))
         {
             allInfoSequential(samples, tdelay);
         }
@@ -635,7 +632,7 @@ void navigate(int argc, char *argv[])
     }
     else
     {
-        if ((system == false && user == false) || (system == true && user == true))
+        if ((!system && !user) || (system && user))
         {
             allInfoUpdate(samples, tdelay);
         }
