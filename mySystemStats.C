@@ -839,47 +839,49 @@ void navigate(int argc, char *argv[])
     // This function will take in int argc, char *argv[] and will validate/parse the inputted arguments as well as help navigate to the right output
     // depening on the command line arguments given.
 
-    validateArguments(argc, argv);
-
-    // gather the called functions
-    bool system = false;
-    bool user = false;
-    bool sequential = false;
-    int samples = 10;
-    int tdelay = 1;
-    parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
-
-    // check if sequential
-    if (sequential)
+    if (validateArguments(argc, argv) == true)
     {
-        // redirect to the right output depending on booleans
-        if ((!system && !user) || (system && user))
+
+        // gather the called functions
+        bool system = false;
+        bool user = false;
+        bool sequential = false;
+        int samples = 10;
+        int tdelay = 1;
+        parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
+
+        // check if sequential
+        if (sequential)
         {
-            allInfoSequential(samples, tdelay);
+            // redirect to the right output depending on booleans
+            if ((!system && !user) || (system && user))
+            {
+                allInfoSequential(samples, tdelay);
+            }
+            else if (user)
+            {
+                usersSequential(samples, tdelay);
+            }
+            else if (system)
+            {
+                systemSequential(samples, tdelay);
+            }
         }
-        else if (user)
+        else
         {
-            usersSequential(samples, tdelay);
-        }
-        else if (system)
-        {
-            systemSequential(samples, tdelay);
-        }
-    }
-    else
-    {
-        // redirect to the right output depending on booleans
-        if ((!system && !user) || (system && user))
-        {
-            allInfoUpdate(samples, tdelay);
-        }
-        else if (user)
-        {
-            usersUpdate(samples, tdelay);
-        }
-        else if (system)
-        {
-            systemUpdate(samples, tdelay);
+            // redirect to the right output depending on booleans
+            if ((!system && !user) || (system && user))
+            {
+                allInfoUpdate(samples, tdelay);
+            }
+            else if (user)
+            {
+                usersUpdate(samples, tdelay);
+            }
+            else if (system)
+            {
+                systemUpdate(samples, tdelay);
+            }
         }
     }
 }
