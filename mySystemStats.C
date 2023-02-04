@@ -653,6 +653,7 @@ void navigate(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    navigate(argc, argv);
+    // navigate(argc, argv);
+    allInfoUpdate(10, 1);
     return 0;
 }
