@@ -2,13 +2,13 @@
 
 NOTE: The actual function descriptions are provided within the source code.
 
-##GENERAL OVERVIEW:
+## GENERAL OVERVIEW:
 
 This project was approached in a very modular structure where smaller functions serve as building blocks for bigger ones.
 I was able to break things down into two classes of functions, low-level and high-level. Below is a list of each category
 and how the pieces interconnect.
 
-LOW-LEVEL FUNCTIONS:
+## LOW-LEVEL FUNCTIONS:
 1. header(int samples, int tdelay) //prints header info
 2. getSystemInfo() //prints system info
 3. getUsers() //prints user info
@@ -20,7 +20,7 @@ LOW-LEVEL FUNCTIONS:
 
 Notice that all these functions are responsible for getting the information and each has a singular responsibility.
 
-##HIGH-LEVEL FUNCTIONS:
+## HIGH-LEVEL FUNCTIONS:
 1. allInfoUpdate(int samples, int tdelay) //prints all info by updating itself
 2. usersUpdate(int samples, int tdelay) //prints user info by updating itself
 3. systemUpdate(int samples, int tdelay) //print system info by updating itself
