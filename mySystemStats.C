@@ -615,7 +615,7 @@ void navigate(int argc, char *argv[])
     bool sequential;
     int samples;
     int tdelay;
-    parseArguments(argc, *argv, &system, &user, &sequential, &samples, &tdelay);
+    parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
 
     // check if sequential
     if (sequential)
