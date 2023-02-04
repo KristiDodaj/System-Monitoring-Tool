@@ -620,7 +620,7 @@ void navigate(int argc, char *argv[])
     // check if sequential
     if (sequential)
     {
-        if ((!system && !user) || (system && user))
+        if ((system == false && user == false) || (system == true && user == true))
         {
             allInfoSequential(samples, tdelay);
         }
