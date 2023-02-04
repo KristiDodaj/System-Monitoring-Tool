@@ -610,12 +610,12 @@ void navigate(int argc, char *argv[])
     validateArguments(argc, argv);
 
     // gather the called functions
-    bool *system;
-    bool *user;
-    bool *sequential;
-    int *samples;
-    int *tdelay;
-    parseArguments(argc, *argv, system, user, sequential, samples, tdelay);
+    bool system;
+    bool user;
+    bool sequential;
+    int samples;
+    int tdelay;
+    parseArguments(argc, *argv, &system, &user, &sequential, &samples, &tdelay);
 
     // check if sequential
     if (sequential)
@@ -628,7 +628,7 @@ void navigate(int argc, char *argv[])
         {
             systemSequential(samples, tdelay);
         }
-        else if ((!system && !user) || (system & user))
+        else if ((!system && !user) || (system && user))
         {
             allInfoSequential(samples, tdelay);
         }
@@ -643,7 +643,7 @@ void navigate(int argc, char *argv[])
         {
             systemUpdate(samples, tdelay);
         }
-        else if ((!system && !user) || (system & user))
+        else if ((!system && !user) || (system && user))
         {
             allInfoUpdate(samples, tdelay);
         }
