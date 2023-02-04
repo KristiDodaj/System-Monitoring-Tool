@@ -13,7 +13,7 @@ LOW-LEVEL FUNCTIONS:
 2. getSystemInfo() //prints system info
 3. getUsers() //prints user info
 4. getCpuNumber() //prints cpu and core numbers
-5. getCpuUsage(long int previousMeasure) //prints cpu usage based on two differemt measurements taken at an interval of tdelay seconds
+5. getCpuUsage(long int previousMeasure) //prints cpu usage based on two different measurements taken at an interval of tdelay seconds
 6. getMemoryUsage() //prints memory info
 7. parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay) //parses command line arguments passed
 8. validateArguments(int argc, char *argv[]) //validates the command line arguments passed
@@ -27,7 +27,7 @@ HIGH-LEVEL FUNCTIONS:
 4. allInfoSequential(int samples, int tdelay) //prints all info sequentially
 5. usersSequential(int samples, int tdelay) //prints user info sequentially
 6. systemSequential(int samples, int tdelay) //print system info sequentially
-7. navigate(int argc, char *argv[]) //navigates to needed output given my the command line arguments
+7. navigate(int argc, char *argv[]) //navigates to needed output given the command line arguments
 
 Notice the first 6 functions are split into two versions (update and sequential). Every 3 functions for both sequential and updating cases handle the different flags (everything, --system, --user). Lastly, the seventh function (navigate) serves as a method to navigate to each one of these 6 versions depending on the given command line arguments. 
 
