@@ -539,7 +539,7 @@ bool validateArguments(int argc, char *argv[])
         if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0)
         {
             printf("here");
-            if (*first != '\0' && *second != '\0' && strcmp(*third, "--samples=") != 0 && strcmp(*third, "--tdelay=") != 0)
+            if (*first != '\0' && *second != '\0' && strcmp(third, "--samples=") != 0 && strcmp(third, "--tdelay=") != 0)
             {
                 printf("ONE OF YOUR ARGUMENTS IS MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!");
                 return false;
