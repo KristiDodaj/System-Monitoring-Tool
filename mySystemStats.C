@@ -325,7 +325,7 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
     // keep track of lines
-    int usersLineNumber = samples + 16;
+    int usersLineNumber = samples + 6;
     int memoryLineNumber = 6;
     int cpuGraphic = samples + 7;
 
@@ -351,6 +351,8 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
         }
         else
         {
+            usersLineNumber = samples + 16;
+
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             getMemoryUsage();
             printf("\033[%d;0H", (4 + samples)); // move cursor to cpu
