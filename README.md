@@ -1,4 +1,4 @@
-# System-Monitoring-Tool
+# System-Monitoring-Tool 📈
 
 NOTE: The actual function descriptions are provided within the source code.
 
