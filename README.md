@@ -39,6 +39,6 @@ FOR FURTHER INFORMATION ON EACH FUNCTION'S ROLE AND DESCRIPTION PLEASE REFER TO 
 ## HOW TO RUN
 
 RUN THE FOLLOWING COMMANDS IN SEQUENCE:
-''' gcc -o mySystemStats mySystemStats.C
-''' ./mySystemStats [insert flags or positional args here]
+``` gcc -o mySystemStats mySystemStats.C ```
+``` ./mySystemStats [insert flags or positional args here] ```
 
