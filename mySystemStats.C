@@ -121,7 +121,8 @@ void getCpuNumber()
 long int getCpuUsage(long int previousMeasure)
 {
     // This function takes the previous cpu time measurement (long int previousMeasure), and compares it to the current measurement done by reading the /proc/stat file.
-    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) and return the current measurement as a long int.
+    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) rounded to 10 decimal places and return the current measurement as a long int.
+    // FORMULA FOR CALCULATION: ((current measure - previous measure) / previous measure) * 100 where each measurement = (user + nice + system + irq + softirq + steal) - (idle + iowait)
     // Note: We consider iowait to be idle time so it also subtracted from the overall time spent. We are also considering irq, softirq, and steal as
     // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
     // Example Output:
@@ -191,7 +192,48 @@ void getMemoryUsage()
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
-// NOTE: Discuss the fact that first measurement of cpu usage wont be with the given tdelay amount
+void getMemoryUsage(double previousUsedMemory)
+{
+    // find the used and total physical RAM
+    struct sysinfo info;
+    sysinfo(&info);
+
+    // find the used and total physical RAM
+    double totalPhysicalRam = (double)info.totalram / (1073741824);
+    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
+
+    // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
+    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
+    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
+
+    // find difference
+    double difference = usedPhysicalRam - previousUsedMemory;
+    int graphicElementCount = (int)(difference / 0.1);
+
+    // print final results
+    printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB   |", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
+
+    if (difference > 0)
+    {
+        for (int i = 0; i < graphicElementCount; i++)
+        {
+            printf("#");
+        }
+        printf("* %f (%f)", difference, usedVirtualRam);
+    }
+    else if (difference < 0)
+    {
+        for (int i = 0; i < graphicElementCount; i++)
+        {
+            printf(":");
+        }
+        printf("@ %f (%f)", difference, usedVirtualRam);
+    }
+    else
+    {
+        printf("o %f (%f)", difference, usedVirtualRam);
+    }
+}
 
 void allInfoUpdate(int samples, int tdelay)
 {
@@ -655,7 +697,7 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
 {
     // This function will take in int argc and char *argv[] and will update the boolean pointers (user, sequential, samples) and int
     // pointers (samples, tdelay) according to the command line arguments inputted.
-    // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will be the first two arguments inputted.
+    // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will ALWAYS be the first two arguments inputted.
     // Example Output 1:
     // Suppose we execute as follows: ./a.out 5 2 --user
     // parseArguments(argc, argv, system, user, sequential, samples, tdelay) will set
@@ -726,7 +768,7 @@ bool validateArguments(int argc, char *argv[])
 {
     // This functions takes int argc and char *argv[] and validates the command line arguments inputted by returning true if they are correct and
     // false if they are not. The validation includes checking for repeated arguments, mistyped arguments, too many argumenys, and correct use of positional arguments.
-    // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will be the first two arguments inputted.
+    // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will ALWAYS be the first two arguments inputted.
     // Example Output 1:
     // Suppose we execute as follows: ./a.out --sequential --tdelay=3 --samples=2
     // validateArguments(int argc, char *argv[]) returns true
@@ -940,7 +982,9 @@ void navigate(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    navigate(argc, argv);
+    // navigate(argc, argv);
+
+    getMemoryUsage(3.03);
 
     return 0;
 }
