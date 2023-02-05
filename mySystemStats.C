@@ -360,9 +360,9 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
             printf("\033[A");
 
             char line[35];
-            double percent;
+            float percent;
             fgets(line, 35, stdin);
-            sscanf(line, " total cpu use = %f %", &percent);
+            sscanf(line, " total cpu use = %f %%", &percent);
             printf("\033[%d;0H", (cpuGraphic)); // move cursor to cpu graphic
             getCpuUsageGraphic(percent);
 
@@ -1057,7 +1057,7 @@ void navigate(int argc, char *argv[])
             // redirect to the right output depending on booleans
             if ((!system && !user) || (system && user))
             {
-                allInfoUpdate(samples, tdelay);
+                allInfoUpdate(samples, tdelay, graphics);
             }
             else if (user)
             {
