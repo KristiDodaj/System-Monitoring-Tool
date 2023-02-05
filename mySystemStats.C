@@ -208,7 +208,7 @@ void getMemoryUsage(double previousUsedMemory)
 
     // find difference
     double difference = usedPhysicalRam - previousUsedMemory;
-    int graphicElementCount = (int)(difference / 0.1);
+    int graphicElementCount = (int)(difference / 0.01);
 
     // print final results
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB   |", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
