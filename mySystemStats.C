@@ -1,3 +1,7 @@
+
+// BY: KRISTI DODAJ
+// COURSE: CSCB09
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -6,8 +10,6 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
-
-// MAKE SURE THAT EACH FUNCTION EXPLAINS THE PARAMETERS(ALSO TYPE OF PARAMETER) BEING PASSED AND ITS FUNCTION
 
 void header(int samples, int tdelay)
 {
@@ -155,8 +157,10 @@ long int getCpuUsage(long int previousMeasure)
     long int accountedFor = guest + guest_nice;
     long int currentMeasure = totalMeasure - downTime - accountedFor;
 
+    // measure and print percentage
     float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
 
+    // if previousMeausure is 0 it means this is our very first measurement which means nothing is printed yet
     if (previousMeasure != 0)
     {
         printf(" total cpu use = %.10f %%\n", usage);
@@ -728,10 +732,10 @@ bool validateArguments(int argc, char *argv[])
     // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will ALWAYS be the first two arguments inputted.
     // Example Output 1:
     // Suppose we execute as follows: ./a.out --sequential --tdelay=3 --samples=2
-    // validateArguments(int argc, char *argv[]) returns true
+    // validateArguments(argc, argv[]) returns true
     // Example Output 2:
     // Suppose we execute as follows: ./a.out --sequential --sequential
-    // validateArguments(int argc, char *argv[]) returns true and prints: REPEATED ARGUMENTS. TRY AGAIN!
+    // validateArguments(argc, argv[]) returns true and prints: REPEATED ARGUMENTS. TRY AGAIN!
 
     // keep track of how many times each arg is called
     int sequentialArgCount = 0;
