@@ -278,7 +278,7 @@ void getMemoryUsageGraphic(double previousUsedMemory)
     }
 }
 
-void allInfoUpdate(int samples, int tdelay)
+void allInfoUpdate(int samples, int tdelay, bool graphic)
 {
     // This function will take in int samples and tdelay and prints out all the system information that will update
     // in the specified time interval and the specified number of samples. The information given includes memory usage,
@@ -325,25 +325,58 @@ void allInfoUpdate(int samples, int tdelay)
     printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
 
     // keep track of lines
-    int usersLineNumber = samples + 6;
+    int usersLineNumber = samples + 16;
     int memoryLineNumber = 6;
+    int cpuGraphic = samples + 7;
 
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-        getMemoryUsage();
-        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-        printf("---------------------------------------\n");
-        printf("### Sessions/users ###\n");
-        printf("\033[J"); // clears everything below the current line
-        getUsers();
-        printf("---------------------------------------\n");
-        getCpuNumber();
-        previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
+        // print graphical or non graphical output
+        if (!graphic)
+        {
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            getMemoryUsage();
+            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+            printf("---------------------------------------\n");
+            printf("### Sessions/users ###\n");
+            printf("\033[J"); // clears everything below the current line
+            getUsers();
+            printf("---------------------------------------\n");
+            getCpuNumber();
+            previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
 
-        // update line numbers
-        memoryLineNumber = memoryLineNumber + 1;
+            // update line numbers
+            memoryLineNumber = memoryLineNumber + 1;
+        }
+        else
+        {
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            getMemoryUsage();
+            printf("\033[%d;0H", (4 + samples)); // move cursor to cpu
+            printf("---------------------------------------\n");
+            getCpuNumber();
+            previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
+            printf("\033[A");
+
+            char line[35];
+            double percent;
+            fgets(line, 35, stdin);
+            sscanf(line, " total cpu use = %f %", &percent);
+            printf("\033[%d;0H", (cpuGraphic)); // move cursor to cpu graphic
+            getCpuUsageGraphic(percent);
+
+            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+            printf("---------------------------------------\n");
+            printf("### Sessions/users ###\n");
+            printf("\033[J"); // clears everything below the current line
+            getUsers();
+
+            // update line numbers
+
+            memoryLineNumber = memoryLineNumber + 1;
+            cpuGraphic = cpuGraphic + 1;
+        }
 
         if (i != samples - 1)
         {
