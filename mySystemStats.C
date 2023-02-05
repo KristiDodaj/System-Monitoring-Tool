@@ -363,7 +363,7 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
 
             char line[35];
             float percent;
-            fgets(line, 35, stdin);
+            scanf("%[^\n]", line);
             sscanf(line, " total cpu use = %f %%", &percent);
             printf("\033[%d;0H", (cpuGraphic)); // move cursor to cpu graphic
             getCpuUsageGraphic(percent);
