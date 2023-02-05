@@ -362,7 +362,7 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
             printf("\033[A");
 
             char *line = (char *)malloc(35 * sizeof(char));
-            int size = 35;
+            size_t size = 35;
             float percent;
             getline(&line, &size, stdin);
             sscanf(line, " total cpu use = %f %%", &percent);
