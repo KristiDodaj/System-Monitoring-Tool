@@ -219,7 +219,7 @@ void getMemoryUsage(double previousUsedMemory)
         {
             printf("#");
         }
-        printf("* %f (%f)", difference, usedVirtualRam);
+        printf("* %.2f (%.2f)", difference, usedVirtualRam);
     }
     else if (difference < 0)
     {
@@ -227,11 +227,11 @@ void getMemoryUsage(double previousUsedMemory)
         {
             printf(":");
         }
-        printf("@ %f (%f)", difference, usedVirtualRam);
+        printf("@ %.2f (%.2f)", difference, usedVirtualRam);
     }
     else
     {
-        printf("o %f (%f)", difference, usedVirtualRam);
+        printf("o %.2f (%.2f)", difference, usedVirtualRam);
     }
 }
 
