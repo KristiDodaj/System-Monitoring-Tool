@@ -367,12 +367,13 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
             sscanf(line, " total cpu use = %f %%", &percent);
             printf("\033[%d;0H", (cpuGraphic)); // move cursor to cpu graphic
             getCpuUsageGraphic(percent);
+            printf("THIS IS IT: %f", percent);
 
-            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-            printf("---------------------------------------\n");
-            printf("### Sessions/users ###\n");
-            printf("\033[J"); // clears everything below the current line
-            getUsers();
+            // printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+            // printf("---------------------------------------\n");
+            // printf("### Sessions/users ###\n");
+            // printf("\033[J"); // clears everything below the current line
+            // getUsers();
 
             // update line numbers
 
