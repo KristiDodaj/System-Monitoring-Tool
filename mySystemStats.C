@@ -736,9 +736,9 @@ void systemSequential(int samples, int tdelay)
     printf("---------------------------------------\n");
 }
 
-void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
+void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, bool *graphics, int *samples, int *tdelay)
 {
-    // This function will take in int argc and char *argv[] and will update the boolean pointers (user, sequential, samples) and int
+    // This function will take in int argc and char *argv[] and will update the boolean pointers (user, sequential, system, graphics) and int
     // pointers (samples, tdelay) according to the command line arguments inputted.
     // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will ALWAYS be the first two arguments inputted.
     // Example Output 1:
@@ -773,6 +773,11 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         if (strcmp(argv[i], "--user") == 0)
         {
             *user = true;
+        }
+        // check if --graphics was called
+        if (strcmp(argv[i], "--graphics") == 0)
+        {
+            *graphics = true;
         }
         // check for flag --samples
         int sampleNumber;
@@ -821,6 +826,7 @@ bool validateArguments(int argc, char *argv[])
 
     // keep track of how many times each arg is called
     int sequentialArgCount = 0;
+    int graphicsArgCount = 0;
     int systemArgCount = 0;
     int userArgCount = 0;
     int samplesArgCount = 0;
@@ -828,7 +834,7 @@ bool validateArguments(int argc, char *argv[])
     int positionalArgCount = 0;
 
     // check number of arguments
-    if (argc > 6)
+    if (argc > 7)
     {
         printf("TOO MANY ARGUMENTS. TRY AGAIN!\n");
         return false;
@@ -843,7 +849,7 @@ bool validateArguments(int argc, char *argv[])
         // check if all the flags are correctly formated
         if (argc >= 3)
         {
-            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--graphics") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
                 printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
@@ -852,7 +858,7 @@ bool validateArguments(int argc, char *argv[])
 
         if (argc < 3)
         {
-            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--graphics") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
                 printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
@@ -864,6 +870,15 @@ bool validateArguments(int argc, char *argv[])
         {
             sequentialArgCount++;
             if (sequentialArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
+                return false;
+            }
+        }
+        if (strcmp(argv[i], "--graphics") == 0)
+        {
+            graphicsArgCount++;
+            if (graphicsArgCount > 1)
             {
                 printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
@@ -982,9 +997,10 @@ void navigate(int argc, char *argv[])
         bool system = false;
         bool user = false;
         bool sequential = false;
+        bool graphics = false;
         int samples = 10;
         int tdelay = 1;
-        parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
+        parseArguments(argc, argv, &system, &user, &sequential, &graphics, &samples, &tdelay);
 
         // check if sequential
         if (sequential)
@@ -1025,9 +1041,7 @@ void navigate(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    // navigate(argc, argv);
-
-    getCpuUsageGraphic(-0.0003200000);
+    navigate(argc, argv);
 
     return 0;
 }
