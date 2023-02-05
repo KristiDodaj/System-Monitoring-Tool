@@ -159,7 +159,53 @@ long int getCpuUsage(long int previousMeasure)
 
     if (previousMeasure != 0)
     {
-        // printf(" FIRST: %ld, SECOND: %ld, ", previousMeasure, currentMeasure);
+        printf(" total cpu use = %.10f %%\n", usage);
+    }
+
+    return currentMeasure;
+}
+
+long int getCpuUsageGraphic(long int previousMeasure)
+{
+    // This function takes the previous cpu time measurement (long int previousMeasure), and compares it to the current measurement done by reading the /proc/stat file.
+    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) rounded to 10 decimal places and return the current measurement as a long int.
+    // FORMULA FOR CALCULATION: ((current measure - previous measure) / previous measure) * 100 where each measurement = (user + nice + system + irq + softirq + steal) - (idle + iowait)
+    // Note: We consider iowait to be idle time so it also subtracted from the overall time spent. We are also considering irq, softirq, and steal as
+    // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
+    // Example Output:
+    // getCpuUsage(921263)
+    //
+    // prints: total cpu use = 0.0219400000 %
+    // returns: 921265
+
+    // declare and populate all the desired times spent by the CPU
+    long int user;
+    long int nice;
+    long int system;
+    long int irq;
+    long int softirq;
+    long int steal;
+    long int guest;
+    long int guest_nice;
+
+    long int idle;
+    long int iowait;
+
+    // open file and retrieve each value to do the first measurement
+    FILE *info = fopen("/proc/stat", "r");
+    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+    fclose(info);
+
+    // get the final measure
+    long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
+    long int downTime = idle + iowait;
+    long int accountedFor = guest + guest_nice;
+    long int currentMeasure = totalMeasure - downTime - accountedFor;
+
+    float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
+
+    if (previousMeasure != 0)
+    {
         printf(" total cpu use = %.10f %%\n", usage);
     }
 
@@ -171,8 +217,8 @@ void getMemoryUsage()
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
     // Note that this function defines 1Gb = 1024Kb (i.e the function uses binary prefixes)
-    // Example Outpiut:
-    // getMemoryUsage() returns
+    // Example Output:
+    // getMemoryUsage() prints
     //
     // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
@@ -192,8 +238,17 @@ void getMemoryUsage()
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
-void getMemoryUsage(double previousUsedMemory)
+void getMemoryUsageGraphic(double previousUsedMemory)
 {
+    // This function takes in double previousMemory and prints the value of used/total Physical RAM, used/total Virtual RAM as well as
+    // a graphic for the net change in memory usage compared to the previous measure. This is being done by using the <sys/sysinfo.h> C library.
+    // GRAPHIC CONVENTIONS: ::::::@  = total relative negative change, ######* = total relative positive change, |o = zero change, where # and : mean a change of 0.01.
+    // Note that this function defines 1Gb = 1024Kb (i.e the function uses binary prefixes)
+    // Example Output:
+    // getMemoryUsageGraphic(3.03) prints
+    //
+    // 3.27 GB / 15.32 GB  --  3.27 GB / 16.28 GB   |########################* 0.24 (3.27)
+
     // find the used and total physical RAM
     struct sysinfo info;
     sysinfo(&info);
@@ -219,7 +274,7 @@ void getMemoryUsage(double previousUsedMemory)
         {
             printf("#");
         }
-        printf("* %.2f (%.2f)", difference, usedVirtualRam);
+        printf("* %.2f (%.2f)\n", difference, usedVirtualRam);
     }
     else if (difference < 0)
     {
@@ -227,11 +282,11 @@ void getMemoryUsage(double previousUsedMemory)
         {
             printf(":");
         }
-        printf("@ %.2f (%.2f)", difference, usedVirtualRam);
+        printf("@ %.2f (%.2f)\n", difference, usedVirtualRam);
     }
     else
     {
-        printf("o %.2f (%.2f)", difference, usedVirtualRam);
+        printf("o %.2f (%.2f)\n", difference, usedVirtualRam);
     }
 }
 
@@ -982,7 +1037,7 @@ void navigate(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    // navigate(argc, argv);
+    navigate(argc, argv);
 
     getMemoryUsage(3.03);
 
