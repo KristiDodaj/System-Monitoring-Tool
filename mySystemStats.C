@@ -165,41 +165,6 @@ long int getCpuUsage(long int previousMeasure)
     return currentMeasure;
 }
 
-void getCpuUsageGraphic(double usage)
-{
-    // This function will recieve double usage which is a percentage change in cpu usage and print put a graphical represantation of the difference.
-    // GRAPHIC CONVENTIONS: ::::::  = total relative negative change, ||||||| = total relative positive change, |o = zero change, where | and : mean a change of 0.0001%.
-    // Example Output:
-    // getCpuUsageGraphic(0.00032) prints
-    //
-    // |||  0.0003200000  %
-
-    // get amount of graphic components needed
-    int graphicElementCount = (int)(abs(usage) / 0.0001);
-
-    // print graphic output
-    if (usage < 0)
-    {
-        for (int i = 0; i < graphicElementCount; i++)
-        {
-            printf(":");
-        }
-        printf("  %0.10f %% \n", usage);
-    }
-    else if (usage > 0)
-    {
-        for (int i = 0; i < graphicElementCount; i++)
-        {
-            printf("|");
-        }
-        printf("  %0.10f %% \n", usage);
-    }
-    else
-    {
-        printf("|o  %0.10f %% \n", usage);
-    }
-}
-
 void getMemoryUsage()
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
@@ -226,59 +191,7 @@ void getMemoryUsage()
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
-void getMemoryUsageGraphic(double previousUsedMemory)
-{
-    // This function takes in double previousMemory and prints the value of used/total Physical RAM, used/total Virtual RAM as well as
-    // a graphic for the net change in memory usage compared to the previous measure. This is being done by using the <sys/sysinfo.h> C library.
-    // GRAPHIC CONVENTIONS: ::::::@  = total relative negative change, ######* = total relative positive change, |o = zero change, where # and : mean a change of 0.01.
-    // Note that this function defines 1Gb = 1024Kb (i.e the function uses binary prefixes)
-    // Example Output:
-    // getMemoryUsageGraphic(3.03) prints
-    //
-    // 3.27 GB / 15.32 GB  --  3.27 GB / 16.28 GB   |########################* 0.24 (3.27)
-
-    // find the used and total physical RAM
-    struct sysinfo info;
-    sysinfo(&info);
-
-    // find the used and total physical RAM
-    double totalPhysicalRam = (double)info.totalram / (1073741824);
-    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
-
-    // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
-    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
-    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
-
-    // find difference
-    double difference = usedPhysicalRam - previousUsedMemory;
-    int graphicElementCount = (int)(abs(difference) / 0.01);
-
-    // print final results
-    printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB   |", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
-
-    if (difference > 0)
-    {
-        for (int i = 0; i < graphicElementCount; i++)
-        {
-            printf("#");
-        }
-        printf("* %.2f (%.2f)\n", difference, usedVirtualRam);
-    }
-    else if (difference < 0)
-    {
-        for (int i = 0; i < graphicElementCount; i++)
-        {
-            printf(":");
-        }
-        printf("@ %.2f (%.2f)\n", difference, usedVirtualRam);
-    }
-    else
-    {
-        printf("o %.2f (%.2f)\n", difference, usedVirtualRam);
-    }
-}
-
-void allInfoUpdate(int samples, int tdelay, bool graphic)
+void allInfoUpdate(int samples, int tdelay)
 {
     // This function will take in int samples and tdelay and prints out all the system information that will update
     // in the specified time interval and the specified number of samples. The information given includes memory usage,
@@ -327,68 +240,32 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
     // keep track of lines
     int usersLineNumber = samples + 6;
     int memoryLineNumber = 6;
-    int cpuGraphic = samples + 7;
 
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        // print graphical or non graphical output
-        if (!graphic)
-        {
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            getMemoryUsage();
-            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-            printf("---------------------------------------\n");
-            printf("### Sessions/users ###\n");
-            printf("\033[J"); // clears everything below the current line
-            getUsers();
-            printf("---------------------------------------\n");
-            getCpuNumber();
-            previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
+        // print output
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+        getMemoryUsage();
+        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        printf("\033[J"); // clears everything below the current line
+        getUsers();
+        printf("---------------------------------------\n");
+        getCpuNumber();
+        previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
 
-            // update line numbers
-            memoryLineNumber = memoryLineNumber + 1;
-        }
-        else
-        {
-            usersLineNumber = samples + 16;
+        // update line numbers
+        memoryLineNumber = memoryLineNumber + 1;
+    }
 
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            getMemoryUsage();
-            printf("\033[%d;0H", (4 + samples)); // move cursor to cpu
-            printf("---------------------------------------\n");
-            getCpuNumber();
-            previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
-            printf("\033[A");
-
-            char *line = (char *)malloc(35 * sizeof(char));
-            size_t size = 35;
-            float percent;
-            getline(&line, &size, stdin);
-            sscanf(line, " total cpu use = %f %%", &percent);
-            printf("\033[%d;0H", (cpuGraphic)); // move cursor to cpu graphic
-            getCpuUsageGraphic(percent);
-            printf("THIS IS IT: %f", percent);
-
-            // printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-            // printf("---------------------------------------\n");
-            // printf("### Sessions/users ###\n");
-            // printf("\033[J"); // clears everything below the current line
-            // getUsers();
-
-            // update line numbers
-
-            memoryLineNumber = memoryLineNumber + 1;
-            cpuGraphic = cpuGraphic + 1;
-        }
-
-        if (i != samples - 1)
-        {
-            // wait for given amount
-            sleep(tdelay);
-            // clear buffer
-            fflush(stdout);
-        }
+    if (i != samples - 1)
+    {
+        // wait for given amount
+        sleep(tdelay);
+        // clear buffer
+        fflush(stdout);
     }
 
     // print the ending system details
@@ -773,7 +650,7 @@ void systemSequential(int samples, int tdelay)
     printf("---------------------------------------\n");
 }
 
-void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, bool *graphics, int *samples, int *tdelay)
+void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
 {
     // This function will take in int argc and char *argv[] and will update the boolean pointers (user, sequential, system, graphics) and int
     // pointers (samples, tdelay) according to the command line arguments inputted.
@@ -810,11 +687,6 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         if (strcmp(argv[i], "--user") == 0)
         {
             *user = true;
-        }
-        // check if --graphics was called
-        if (strcmp(argv[i], "--graphics") == 0)
-        {
-            *graphics = true;
         }
         // check for flag --samples
         int sampleNumber;
@@ -863,7 +735,6 @@ bool validateArguments(int argc, char *argv[])
 
     // keep track of how many times each arg is called
     int sequentialArgCount = 0;
-    int graphicsArgCount = 0;
     int systemArgCount = 0;
     int userArgCount = 0;
     int samplesArgCount = 0;
@@ -871,7 +742,7 @@ bool validateArguments(int argc, char *argv[])
     int positionalArgCount = 0;
 
     // check number of arguments
-    if (argc > 7)
+    if (argc > 6)
     {
         printf("TOO MANY ARGUMENTS. TRY AGAIN!\n");
         return false;
@@ -886,7 +757,7 @@ bool validateArguments(int argc, char *argv[])
         // check if all the flags are correctly formated
         if (argc >= 3)
         {
-            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--graphics") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
                 printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
@@ -895,7 +766,7 @@ bool validateArguments(int argc, char *argv[])
 
         if (argc < 3)
         {
-            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--graphics") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
                 printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
@@ -907,15 +778,6 @@ bool validateArguments(int argc, char *argv[])
         {
             sequentialArgCount++;
             if (sequentialArgCount > 1)
-            {
-                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
-                return false;
-            }
-        }
-        if (strcmp(argv[i], "--graphics") == 0)
-        {
-            graphicsArgCount++;
-            if (graphicsArgCount > 1)
             {
                 printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
@@ -1034,10 +896,9 @@ void navigate(int argc, char *argv[])
         bool system = false;
         bool user = false;
         bool sequential = false;
-        bool graphics = false;
         int samples = 10;
         int tdelay = 1;
-        parseArguments(argc, argv, &system, &user, &sequential, &graphics, &samples, &tdelay);
+        parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
 
         // check if sequential
         if (sequential)
@@ -1061,7 +922,7 @@ void navigate(int argc, char *argv[])
             // redirect to the right output depending on booleans
             if ((!system && !user) || (system && user))
             {
-                allInfoUpdate(samples, tdelay, graphics);
+                allInfoUpdate(samples, tdelay);
             }
             else if (user)
             {
