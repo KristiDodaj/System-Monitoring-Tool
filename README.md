@@ -42,3 +42,14 @@ RUN THE FOLLOWING COMMANDS IN SEQUENCE:
 <br /> ``` gcc -o mySystemStats mySystemStats.C ```
 <br /> ``` ./mySystemStats [insert flags or positional args here] ```
 
+THE ARGUMENT OPTIONS INCLUDE:
+1. --system (prints system info)
+2. --user (prints user info)
+3. --tdeleay=N (sets second interval between outputs)
+4. --samples=N (sets number of sample outputs)
+5. --sequential (prints samples sequentially)
+6. You can also set tdelay and samples by simply inputing two seperate integers as your first two arguments (ex /mySystemStats 10 1)
+
+NOTE: Calling the program with no arguments will deafult to samples=10, tdelay=1, and prints both system and user info by updating itself.
+
+
