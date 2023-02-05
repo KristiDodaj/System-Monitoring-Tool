@@ -258,14 +258,14 @@ void allInfoUpdate(int samples, int tdelay)
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
-    }
 
-    if (i != samples - 1)
-    {
-        // wait for given amount
-        sleep(tdelay);
-        // clear buffer
-        fflush(stdout);
+        if (i != samples - 1)
+        {
+            // wait for given amount
+            sleep(tdelay);
+            // clear buffer
+            fflush(stdout);
+        }
     }
 
     // print the ending system details
