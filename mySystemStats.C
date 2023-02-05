@@ -165,48 +165,41 @@ long int getCpuUsage(long int previousMeasure)
     return currentMeasure;
 }
 
-long int getCpuUsageGraphic(long int previousMeasure)
+void getCpuUsageGraphic(float usage)
 {
-    // This function takes the previous cpu time measurement (long int previousMeasure), and compares it to the current measurement done by reading the /proc/stat file.
-    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) rounded to 10 decimal places and return the current measurement as a long int.
-    // FORMULA FOR CALCULATION: ((current measure - previous measure) / previous measure) * 100 where each measurement = (user + nice + system + irq + softirq + steal) - (idle + iowait)
-    // Note: We consider iowait to be idle time so it also subtracted from the overall time spent. We are also considering irq, softirq, and steal as
-    // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
+    // This function will recieve float usage which is a percentage change in cpu usage and print put a graphical represantation of the difference.
+    // GRAPHIC CONVENTIONS: ::::::  = total relative negative change, ||||||| = total relative positive change, |o = zero change, where | and : mean a change of 0.0001%.
     // Example Output:
-    // getCpuUsage(921263)
+    // getCpuUsageGraphic(0.00032) prints
     //
-    // prints: total cpu use = 0.0219400000 %
-    // returns: 921265
+    // |||  0.0003200000  %
 
-    // declare and populate all the desired times spent by the CPU
-    long int user;
-    long int nice;
-    long int system;
-    long int irq;
-    long int softirq;
-    long int steal;
-    long int guest;
-    long int guest_nice;
+    // get amount of graphic components needed
+    int graphicElementCount = (int)(usage / 0.0001);
 
-    long int idle;
-    long int iowait;
-
-    // open file and retrieve each value to do the first measurement
-    FILE *info = fopen("/proc/stat", "r");
-    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
-    fclose(info);
-
-    // get the final measure
-    long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
-    long int downTime = idle + iowait;
-    long int accountedFor = guest + guest_nice;
-    long int currentMeasure = totalMeasure - downTime - accountedFor;
-
-    float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
-
+    // print graphic output
     if (previousMeasure != 0)
     {
-        printf(" total cpu use = %.10f %%\n", usage);
+        if (usage < 0)
+        {
+            for (int i = 0; i < graphicElementCount; i++)
+            {
+                printf(":");
+            }
+            printf("  %0.10f %% \n");
+        }
+        else if (usage > 0)
+        {
+            for (int i = 0; i < graphicElementCount; i++)
+            {
+                printf("|");
+            }
+            printf("  %0.10f %% \n");
+        }
+        else
+        {
+            printf("|o  %0.10f %% \n");
+        }
     }
 
     return currentMeasure;
@@ -1037,7 +1030,9 @@ void navigate(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    navigate(argc, argv);
+    // navigate(argc, argv);
+
+    getCpuUsageGraphic(0.0003200000);
 
     return 0;
 }
