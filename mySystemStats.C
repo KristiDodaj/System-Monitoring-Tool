@@ -361,9 +361,10 @@ void allInfoUpdate(int samples, int tdelay, bool graphic)
             previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
             printf("\033[A");
 
-            char line[35];
+            char *line = (char *)malloc(35 * sizeof(char));
+            int size = 35;
             float percent;
-            getline(line, 35, stdin);
+            getline(&line, &size, stdin);
             sscanf(line, " total cpu use = %f %%", &percent);
             printf("\033[%d;0H", (cpuGraphic)); // move cursor to cpu graphic
             getCpuUsageGraphic(percent);
