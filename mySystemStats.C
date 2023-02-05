@@ -184,7 +184,7 @@ void getCpuUsageGraphic(double usage)
         {
             printf(":");
         }
-        printf("  %0.10f %% \n");
+        printf("  %0.10f %% \n", usage);
     }
     else if (usage > 0)
     {
@@ -192,11 +192,11 @@ void getCpuUsageGraphic(double usage)
         {
             printf("|");
         }
-        printf("  %0.10f %% \n");
+        printf("  %0.10f %% \n", usage);
     }
     else
     {
-        printf("|o  %0.10f %% \n");
+        printf("|o  %0.10f %% \n", usage);
     }
 }
 
