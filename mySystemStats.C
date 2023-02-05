@@ -165,9 +165,9 @@ long int getCpuUsage(long int previousMeasure)
     return currentMeasure;
 }
 
-void getCpuUsageGraphic(float usage)
+void getCpuUsageGraphic(double usage)
 {
-    // This function will recieve float usage which is a percentage change in cpu usage and print put a graphical represantation of the difference.
+    // This function will recieve double usage which is a percentage change in cpu usage and print put a graphical represantation of the difference.
     // GRAPHIC CONVENTIONS: ::::::  = total relative negative change, ||||||| = total relative positive change, |o = zero change, where | and : mean a change of 0.0001%.
     // Example Output:
     // getCpuUsageGraphic(0.00032) prints
@@ -178,31 +178,26 @@ void getCpuUsageGraphic(float usage)
     int graphicElementCount = (int)(usage / 0.0001);
 
     // print graphic output
-    if (previousMeasure != 0)
+    if (usage < 0)
     {
-        if (usage < 0)
+        for (int i = 0; i < graphicElementCount; i++)
         {
-            for (int i = 0; i < graphicElementCount; i++)
-            {
-                printf(":");
-            }
-            printf("  %0.10f %% \n");
+            printf(":");
         }
-        else if (usage > 0)
-        {
-            for (int i = 0; i < graphicElementCount; i++)
-            {
-                printf("|");
-            }
-            printf("  %0.10f %% \n");
-        }
-        else
-        {
-            printf("|o  %0.10f %% \n");
-        }
+        printf("  %0.10f %% \n");
     }
-
-    return currentMeasure;
+    else if (usage > 0)
+    {
+        for (int i = 0; i < graphicElementCount; i++)
+        {
+            printf("|");
+        }
+        printf("  %0.10f %% \n");
+    }
+    else
+    {
+        printf("|o  %0.10f %% \n");
+    }
 }
 
 void getMemoryUsage()
