@@ -34,4 +34,4 @@ Notice the first 6 functions are split into two versions (update and sequential)
 ## NOTES
 When displaying the CPU usage in the first iteration, the program will take two measurements back to back with no time being waited. This choice            is made because if tdelay was set to 10, we would have to wait 10 seconds to see the first output for the CPU usage. This is obviously quite                inefficient, thus the first output will not abide by the tdelay interval to carry the calculations but the rest will.
 
-FOR FURTHER INFORMATION ON EACH FUNCTION'S ROLE AND COMPOSITION PLEASE REFER TO THE SOURCE CODE FILE.
+FOR FURTHER INFORMATION ON EACH FUNCTION'S ROLE AND DESCRIPTION PLEASE REFER TO THE SOURCE CODE FILE.
