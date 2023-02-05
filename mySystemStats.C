@@ -175,7 +175,7 @@ void getCpuUsageGraphic(double usage)
     // |||  0.0003200000  %
 
     // get amount of graphic components needed
-    int graphicElementCount = (int)(usage / 0.0001);
+    int graphicElementCount = (int)(abs(usage) / 0.0001);
 
     // print graphic output
     if (usage < 0)
@@ -251,7 +251,7 @@ void getMemoryUsageGraphic(double previousUsedMemory)
 
     // find difference
     double difference = usedPhysicalRam - previousUsedMemory;
-    int graphicElementCount = (int)(difference / 0.01);
+    int graphicElementCount = (int)(abs(difference) / 0.01);
 
     // print final results
     printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB   |", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
