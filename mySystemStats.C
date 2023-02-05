@@ -1039,7 +1039,5 @@ int main(int argc, char *argv[])
     // call the navigate function which will redirect to the right output depeneding on the arguments
     navigate(argc, argv);
 
-    getMemoryUsage(3.03);
-
     return 0;
 }
