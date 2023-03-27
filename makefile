@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall
-OBJ = stats_function.c mySystemStats.C
+OBJ = stats_function.o mySystemStats.o
 
 all: monitor
 
