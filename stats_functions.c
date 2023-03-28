@@ -119,17 +119,15 @@ void getCpuNumber()
     fclose(info);
 }
 
-long int getCpuUsage(long int previousMeasure)
+void getCpuUsage(int tdelay)
 {
-    // This function takes the previous cpu time measurement (long int previousMeasure), and compares it to the current measurement done by reading the /proc/stat file.
-    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) rounded to 10 decimal places and return the current measurement as a long int.
-    // FORMULA FOR CALCULATION: ((current measure - previous measure) / previous measure) * 100 where each measurement = (user + nice + system + irq + softirq + steal) - (idle + iowait)
-    // Note: We consider iowait to be idle time so it also subtracted from the overall time spent. We are also considering irq, softirq, and steal as
-    // time spent by the CPU. Lastly, guest and guest_nice values are included in the value of user and nice, so they will be subtracted from the overall calculation.
+    // This function takes the second interval (int tdelay), and compares two measurements that are 0.8 * tdelay seconds apart done by reading the /proc/stat file.
+    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places.
+    // FORMULA FOR CALCULATION: (U2-U1/T2-T1) * 100 WHERE T IS TOTAL TIME AND U IS TOTAL TIME WITHOUT IDLE TIME
+    // Note: We choose to wat 80% of tdelay before making out second measurement
     // Example Output:
-    // getCpuUsage(921263)
+    // getCpuUsage(1)
     //
-    // prints: total cpu use = 0.0219400000 %
     // returns: 921265
 
     // declare and populate all the desired times spent by the CPU
@@ -150,22 +148,27 @@ long int getCpuUsage(long int previousMeasure)
     fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
     fclose(info);
 
-    // get the final measure
-    long int totalMeasure = (user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice);
-    long int downTime = idle + iowait;
-    long int accountedFor = guest + guest_nice;
-    long int currentMeasure = totalMeasure - downTime - accountedFor;
+    // calculate first measure
+    long int T1 = (user + nice + system + idle + iowait + irq + softirq);
+    long int U1 = T1 - idle;
+
+    // calculaet time to be waited and sleep
+    float time = (float)(tdelay * 0.8);
+    usleep(time * 1000);
+
+    // open file and retrieve each value to do the second measurement
+    FILE *info = fopen("/proc/stat", "r");
+    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+    fclose(info);
+
+    // calculate second measure
+    long int T2 = (user + nice + system + idle + iowait + irq + softirq);
+    long int U2 = T2 - idle;
 
     // measure and print percentage
-    float usage = ((float)(currentMeasure - previousMeasure) / (float)previousMeasure) * 100;
+    float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
 
-    // if previousMeausure is 0 it means this is our very first measurement which means nothing is printed yet
-    if (previousMeasure != 0)
-    {
-        printf(" total cpu use = %.10f %%\n", usage);
-    }
-
-    return currentMeasure;
+    printf(" total cpu use = %.10f %%\n", usage);
 }
 
 void getMemoryUsage()
@@ -233,7 +236,6 @@ void allInfoUpdate(int samples, int tdelay)
 
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
-    long int previousMeasure = getCpuUsage(0);
 
     // print headers
     header(samples, tdelay);
@@ -257,18 +259,15 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        previousMeasure = getCpuUsage(previousMeasure); // take and print current measurement for cpu usage which becomes previousMeasure in the next iteration
+        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
+        usleep(time * 1000);                                // sleep
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
 
-        if (i != samples - 1)
-        {
-            // wait for given amount
-            sleep(tdelay);
-            // clear buffer
-            fflush(stdout);
-        }
+        // clear buffer
+        fflush(stdout);
     }
 
     // print the ending system details
@@ -365,9 +364,6 @@ void systemUpdate(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
-    // store a first per measure for the cpu usage
-    long int previousMeasure = getCpuUsage(0);
-
     // print headers
     header(samples, tdelay);
     printf("---------------------------------------\n");
@@ -385,18 +381,15 @@ void systemUpdate(int samples, int tdelay)
         getMemoryUsage();
         printf("\033[%d;0H", (cpuLineNumber)); // move cursor to cpu usage
         getCpuNumber();
-        previousMeasure = getCpuUsage(previousMeasure);
+        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
+        usleep(time * 1000);                                // sleep
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
 
-        if (i != samples - 1)
-        {
-            // wait tdelay
-            sleep(tdelay);
-            // clear buffer
-            fflush(stdout);
-        }
+        // clear buffer
+        fflush(stdout);
     }
 
     // print the ending system details
@@ -456,7 +449,6 @@ void allInfoSequential(int samples, int tdelay)
 
     // clear terminal before starting
     printf("\033c");
-    long int previousMeasure = getCpuUsage(0);
 
     // print all info sequentially
     for (int i = 0; i < samples; i++)
@@ -483,16 +475,12 @@ void allInfoSequential(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(previousMeasure);
+        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
+        usleep(time * 1000);                                // sleep
         printf("\n");
 
-        if (i != samples - 1)
-        {
-            // wait tdelay
-            sleep(tdelay);
-            // clear buffer
-            fflush(stdout);
-        }
+        fflush(stdout);
     }
 
     // print the ending system details
@@ -609,7 +597,6 @@ void systemSequential(int samples, int tdelay)
 
     // clear terminal before starting
     printf("\033c");
-    long int previousMeasure = getCpuUsage(0);
 
     // print system info sequentially
     for (int i = 0; i < samples; i++)
@@ -633,16 +620,13 @@ void systemSequential(int samples, int tdelay)
         }
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(previousMeasure);
+        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
+        usleep(time * 1000);                                // sleep
         printf("\n");
 
-        if (i != samples - 1)
-        {
-            // wait tdelay
-            sleep(tdelay);
-            // clear buffer
-            fflush(stdout);
-        }
+        // clear buffer
+        fflush(stdout);
     }
 
     // print the ending system details
