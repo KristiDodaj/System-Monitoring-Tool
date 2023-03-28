@@ -154,7 +154,7 @@ void getCpuUsage(int tdelay)
 
     // calculaet time to be waited and sleep
     float time = (float)(tdelay * 0.8);
-    usleep(time * 1000);
+    usleep(time * 1000000);
 
     // open file and retrieve each value to do the second measurement
     FILE *info2 = fopen("/proc/stat", "r");
@@ -261,7 +261,7 @@ void allInfoUpdate(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000);                                // sleep
+        usleep(time * 1000000);                             // sleep
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
@@ -383,7 +383,7 @@ void systemUpdate(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000);                                // sleep
+        usleep(time * 1000000);                             // sleep
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
@@ -477,7 +477,7 @@ void allInfoSequential(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000);                                // sleep
+        usleep(time * 1000000);                             // sleep
         printf("\n");
 
         fflush(stdout);
@@ -622,7 +622,7 @@ void systemSequential(int samples, int tdelay)
         getCpuNumber();
         getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000);                                // sleep
+        usleep(time * 1000000);                             // sleep
         printf("\n");
 
         // clear buffer
