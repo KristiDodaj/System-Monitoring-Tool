@@ -157,9 +157,9 @@ void getCpuUsage(int tdelay)
     usleep(time * 1000);
 
     // open file and retrieve each value to do the second measurement
-    FILE *info = fopen("/proc/stat", "r");
-    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
-    fclose(info);
+    FILE *info2 = fopen("/proc/stat", "r");
+    fscanf(info2, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+    fclose(info2);
 
     // calculate second measure
     long int T2 = (user + nice + system + idle + iowait + irq + softirq);
@@ -259,7 +259,7 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
         usleep(time * 1000);                                // sleep
 
@@ -381,7 +381,7 @@ void systemUpdate(int samples, int tdelay)
         getMemoryUsage();
         printf("\033[%d;0H", (cpuLineNumber)); // move cursor to cpu usage
         getCpuNumber();
-        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
         usleep(time * 1000);                                // sleep
 
@@ -475,7 +475,7 @@ void allInfoSequential(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
         usleep(time * 1000);                                // sleep
         printf("\n");
@@ -620,7 +620,7 @@ void systemSequential(int samples, int tdelay)
         }
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(previousMeasure);                       // print current measurement for cpu usage
+        getCpuUsage(tdelay);                                // print current measurement for cpu usage
         float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
         usleep(time * 1000);                                // sleep
         printf("\n");
