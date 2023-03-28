@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stats_functions.h>
+#include "stats_functions.h"
 
 void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
 {
