@@ -10,7 +10,7 @@ void header(int samples, int tdelay);
 void getSystemInfo();
 void getUsers();
 void getCpuNumber();
-long int getCpuUsage(long int previousMeasure);
+void getCpuUsage(int tdelay);
 void getMemoryUsage();
 void allInfoUpdate(int samples, int tdelay);
 void usersUpdate(int samples, int tdelay);
