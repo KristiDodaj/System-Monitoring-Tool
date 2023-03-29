@@ -119,10 +119,10 @@ void getCpuNumber()
     fclose(info);
 }
 
-void getCpuUsage(int tdelay)
+float getCpuUsage(int tdelay)
 {
     // This function takes the second interval (int tdelay), and compares two measurements that are 0.8 * tdelay seconds apart done by reading the /proc/stat file.
-    // The function will print the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places.
+    // The function will return the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places.
     // FORMULA FOR CALCULATION: (U2-U1/T2-T1) * 100 WHERE T IS TOTAL TIME AND U IS TOTAL TIME WITHOUT IDLE TIME
     // Note: We choose to wat 80% of tdelay before making out second measurement
     // Example Output:
@@ -152,8 +152,8 @@ void getCpuUsage(int tdelay)
     long int T1 = (user + nice + system + idle + iowait + irq + softirq);
     long int U1 = T1 - idle;
 
-    // calculaet time to be waited and sleep
-    float time = (float)(tdelay * 0.8);
+    // calculate time to be waited and sleep
+    float time = (float)(tdelay);
     usleep(time * 1000000);
 
     // open file and retrieve each value to do the second measurement
@@ -168,7 +168,9 @@ void getCpuUsage(int tdelay)
     // measure and print percentage
     float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
 
-    printf(" total cpu use = %.10f %%\n", usage);
+    // printf(" total cpu use = %.10f %%\n", usage);
+
+    return usage;
 }
 
 void getMemoryUsage()
@@ -245,6 +247,7 @@ void allInfoUpdate(int samples, int tdelay)
     // keep track of lines
     int usersLineNumber = samples + 6;
     int memoryLineNumber = 6;
+    float usage;
 
     // print all information
     for (int i = 0; i < samples; i++)
@@ -259,10 +262,11 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(tdelay);                                // print current measurement for cpu usage
-        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000000);                             // sleep
-
+        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+        if (i > 0)
+        {
+            printf(" total cpu use = %.10f %%\n", usage);
+        }
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
 
