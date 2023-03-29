@@ -269,6 +269,7 @@ void allInfoUpdate(int samples, int tdelay)
         {
             // print usage for last iteration
             printf(" total cpu use = %.10f %%\n", usage);
+            printf("here");
         }
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
