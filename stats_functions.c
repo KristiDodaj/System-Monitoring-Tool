@@ -121,10 +121,9 @@ void getCpuNumber()
 
 float getCpuUsage(int tdelay)
 {
-    // This function takes the second interval (int tdelay), and compares two measurements that are 0.8 * tdelay seconds apart done by reading the /proc/stat file.
+    // This function takes the second interval (int tdelay), and compares two measurements that are tdelay seconds apart done by reading the /proc/stat file.
     // The function will return the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places.
     // FORMULA FOR CALCULATION: (U2-U1/T2-T1) * 100 WHERE T IS TOTAL TIME AND U IS TOTAL TIME WITHOUT IDLE TIME
-    // Note: We choose to wat 80% of tdelay before making out second measurement
     // Example Output:
     // getCpuUsage(1)
     //
@@ -167,8 +166,6 @@ float getCpuUsage(int tdelay)
 
     // measure and print percentage
     float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
-
-    // printf(" total cpu use = %.10f %%\n", usage);
 
     return usage;
 }
@@ -261,12 +258,12 @@ void allInfoUpdate(int samples, int tdelay)
         printf("\033[J"); // clears everything below the current line
         getUsers();
         printf("---------------------------------------\n");
+        getCpuNumber();
         if (i > 0)
         {
             // print usage
             printf(" total cpu use = %.10f %%\n", usage);
         }
-        getCpuNumber();
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
