@@ -261,18 +261,15 @@ void allInfoUpdate(int samples, int tdelay)
         getCpuNumber();
         if (i > 0)
         {
-            printf("here");
-            if (i != samples - 1)
-            {
-                // print usage
-                printf("1 total cpu use = %.10f %%\n", usage);
-            }
+
+            // print usage
+            printf(" total cpu use = %.10f %%\n", usage);
         }
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
         if (i == samples - 1)
         {
             // print usage for last iteration
-            printf("2 total cpu use = %.10f %%\n", usage);
+            printf(" total cpu use = %.10f %%\n", usage);
         }
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
