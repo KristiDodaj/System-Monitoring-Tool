@@ -261,12 +261,13 @@ void allInfoUpdate(int samples, int tdelay)
         printf("\033[J"); // clears everything below the current line
         getUsers();
         printf("---------------------------------------\n");
-        getCpuNumber();
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
         if (i > 0)
         {
+            // print usage
             printf(" total cpu use = %.10f %%\n", usage);
         }
+        getCpuNumber();
+        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
 
