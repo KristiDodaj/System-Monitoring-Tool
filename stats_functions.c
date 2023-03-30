@@ -708,6 +708,9 @@ void systemSequential(int samples, int tdelay)
     // print system info sequentially
     for (int i = 0; i < samples; i++)
     {
+
+        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+
         printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
@@ -727,9 +730,9 @@ void systemSequential(int samples, int tdelay)
         }
         printf("---------------------------------------\n");
         getCpuNumber();
-        getCpuUsage(tdelay);                                // print current measurement for cpu usage
-        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000000);                             // sleep
+        // print usage
+        printf(" total cpu use = %.10f %%\n", usage);
+
         printf("\n");
 
         // clear buffer
