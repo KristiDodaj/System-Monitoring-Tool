@@ -343,8 +343,8 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i == samples - 1)
         {
-            // print usage for last iteration
-            printf("\r");
+            printf("\033[1A"); // move the cursor up one line
+            printf("\033[2K"); // clear the entire line
         }
 
         // update line numbers
