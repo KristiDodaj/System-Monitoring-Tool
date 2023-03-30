@@ -334,7 +334,7 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i > 0)
         {
-            if (i != (sample - 1))
+            if (i != (samples - 1))
             {
                 // print usage
                 printf(" total cpu use = %.10f %%\n", usage);
