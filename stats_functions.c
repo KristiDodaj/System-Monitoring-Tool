@@ -91,8 +91,8 @@ void getUsers()
             printf("%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
         }
 
-        // NOTE: No need to error check getutxent since it returns NULL when there are no entries
-        //       thus not causing any issues to the program
+        // NOTE: No need to error check since it returns NULL when there are no entries
+        //       thus not causing any issues to the program.
     }
 
     // close the utmp file
@@ -160,7 +160,7 @@ float getCpuUsage(int tdelay)
     // Example Output:
     // getCpuUsage(1)
     //
-    // returns: 921265
+    // returns: 15.0000010000
 
     // declare and populate all the desired times spent by the CPU
     long int user;
