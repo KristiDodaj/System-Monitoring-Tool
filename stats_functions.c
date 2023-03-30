@@ -25,7 +25,14 @@ void header(int samples, int tdelay)
 
     // find and print the memory usage
     struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
+    if (getrusage(RUSAGE_SELF, &usage) == -1)
+    {
+        // error checking for system resources
+        perror("getrusage: failed to fetch the program memory usage");
+
+        // NOTE: The program will exit since printing from usage would fail given the usage object is not populated
+    }
+
     printf("Memory Usage: %ld kilobytes \n", usage.ru_maxrss);
 }
 
@@ -43,21 +50,20 @@ void getSystemInfo()
 
     // create and populate the struct
     struct utsname info;
-    int res = uname(&info);
 
-    // check if function worked and print result
-    if (res == 0)
+    if (uname(&info) == -1)
     {
-        printf("System Name = %s \n", info.sysname);
-        printf("Machine Name = %s \n", info.nodename);
-        printf("Version = %s \n", info.version);
-        printf("Release = %s \n", info.release);
-        printf("Architecture = %s \n", info.machine);
+        // error checking for system resources
+        perror("uname: Unable to retrieve system information");
+
+        // NOTE: The program will exit since printing from info would fail given the info object is not populated
     }
-    else
-    {
-        printf("%s", "Unable to retrieve system information!\n");
-    }
+
+    printf("System Name = %s \n", info.sysname);
+    printf("Machine Name = %s \n", info.nodename);
+    printf("Version = %s \n", info.version);
+    printf("Release = %s \n", info.release);
+    printf("Architecture = %s \n", info.machine);
 }
 
 void getUsers()
@@ -72,7 +78,13 @@ void getUsers()
     // dodajkri      pts/0 (138.51.8.149)
 
     struct utmpx *users; // initialize utmpx struct
-    setutxent();         // rewinds pointer to beginning of utmp file
+
+    // rewinds pointer to beginning of utmp file
+    if (setutxent() == -1)
+    {
+        // error checking for system resources
+        perror("setutxent: Failed to rewind the utmp file pointer");
+    }
 
     // read through utmp file
     while ((users = getutxent()) != NULL)
@@ -82,8 +94,17 @@ void getUsers()
         {
             printf("%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
         }
+
+        // NOTE: No need to error check getutxent since it returns NULL when there are no entries
+        //       thus not causing any issues to the program
     }
-    endutxent(); // close the utmp file
+
+    // close the utmp file
+    if (endutxent() == -1)
+    {
+        // error checking for system resources
+        perror("Error: Failed to close the utmp file");
+    }
 }
 
 void getCpuNumber()
@@ -101,7 +122,16 @@ void getCpuNumber()
 
     // open the /proc/cpuinfo file and scrape the cpu and core numbers
     FILE *info = fopen("/proc/cpuinfo", "r");
-    while (fgets(line, sizeof(line), info))
+
+    // error checking for system resources
+    if (info == NULL)
+    {
+        perror("fopen: Failed to open /proc/cpuinfo");
+
+        // NOTE: The program will exit since fgets will fail given the file is not opened
+    }
+
+    while (fgets(line, sizeof(line), info) != NULL)
     {
         if (strstr(line, "processor") != NULL)
         {
@@ -114,9 +144,20 @@ void getCpuNumber()
         }
     }
 
+    // error checking for system resources
+    if (ferror(info))
+    {
+        perror("fgets: Failed to read /proc/cpuinfo");
+        fclose(info);
+    }
+
+    if (fclose(info) != 0)
+    {
+        perror("fclose: Failed to close /proc/cpuinfo");
+    }
+
     // print final output
     printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, coreNumber);
-    fclose(info);
 }
 
 float getCpuUsage(int tdelay)
@@ -144,8 +185,23 @@ float getCpuUsage(int tdelay)
 
     // open file and retrieve each value to do the first measurement
     FILE *info = fopen("/proc/stat", "r");
-    fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
-    fclose(info);
+
+    // error checking for system resources
+    if (info == NULL)
+    {
+        perror("fopen: Error opening /proc/stat for first cpu usage calculation");
+    }
+
+    if (fscanf(info, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice) != 10)
+    {
+        perror("fscanf: Error reading from /proc/stat for first cpu usage calculation");
+        fclose(info);
+    }
+
+    if (fclose(info) != 0)
+    {
+        perror("fclose: Error closing /proc/stat for first cpu usage calculation");
+    }
 
     // calculate first measure
     long int T1 = (user + nice + system + idle + iowait + irq + softirq);
@@ -157,8 +213,26 @@ float getCpuUsage(int tdelay)
 
     // open file and retrieve each value to do the second measurement
     FILE *info2 = fopen("/proc/stat", "r");
-    fscanf(info2, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
-    fclose(info2);
+
+    // error checking for system resources
+    if (info2 == NULL)
+    {
+        perror("fopen: Error opening /proc/stat for second cpu usage calculation");
+    }
+
+    if (fscanf(info2, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice) != 10)
+    {
+        perror("fscanf: Error reading from /proc/stat for second cpu usage calculation");
+        fclose(info2);
+    }
+
+    if (fclose(info2) != 0)
+    {
+        perror("fclose: Error closing /proc/stat for second cpu usage calculation");
+        return -1;
+    }
+
+    // NOTE: The program will exit given a failure to read or open the file since adding unassigned integers will cause a failure
 
     // calculate second measure
     long int T2 = (user + nice + system + idle + iowait + irq + softirq);
@@ -182,7 +256,14 @@ void getMemoryUsage()
 
     // find the used and total physical RAM
     struct sysinfo info;
-    sysinfo(&info);
+
+    // error checking for system resources
+    if (sysinfo(&info) == -1)
+    {
+        perror("sysinfo: Error getting sysinfo on RAM");
+
+        // NOTE: This program will exit given sysinfo fails since we are calling value from an unpopulated object
+    }
 
     // find the used and total physical RAM
     double totalPhysicalRam = (double)info.totalram / (1073741824);
