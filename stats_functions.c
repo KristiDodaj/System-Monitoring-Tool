@@ -200,8 +200,10 @@ float getCpuUsage(int tdelay)
     long int U1 = T1 - idle;
 
     // calculate time to be waited and sleep
-    float time = (float)(tdelay);
-    usleep((time)*1000000);
+    // float time = (float)(tdelay);
+    // usleep((time)*1000000);
+
+    sleep(tdelay);
 
     // open file and retrieve each value to do the second measurement
     FILE *info2 = fopen("/proc/stat", "r");
@@ -333,14 +335,10 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
 
-        if (i != (samples - 1))
+        if (i > 0)
         {
-
-            if (i > 0)
-            {
-                // print usage
-                printf(" total cpu use = %.10f %%\n", usage);
-            }
+            // print usage
+            printf(" total cpu use = %.10f %%\n", usage);
         }
 
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
