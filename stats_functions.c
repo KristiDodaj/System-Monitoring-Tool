@@ -459,6 +459,7 @@ void systemUpdate(int samples, int tdelay)
     // keep track of lines
     int cpuLineNumber = samples + 6;
     int memoryLineNumber = 6;
+    float usage;
 
     // print all system info
     for (int i = 0; i < samples; i++)
@@ -468,9 +469,20 @@ void systemUpdate(int samples, int tdelay)
         getMemoryUsage();
         printf("\033[%d;0H", (cpuLineNumber)); // move cursor to cpu usage
         getCpuNumber();
-        getCpuUsage(tdelay);                                // print current measurement for cpu usage
-        float time = (float)tdelay - (float)(0.8 * tdelay); // calculate left over time to be waited
-        usleep(time * 1000000);                             // sleep
+
+        if (i > 0)
+        {
+            // print usage
+            printf(" total cpu use = %.10f %%\n", usage);
+        }
+
+        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+
+        if (i == samples - 1)
+        {
+            printf("\033[1A"); // move the cursor up one line
+            printf("\033[2K"); // clear the entire line
+        }
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
@@ -478,6 +490,9 @@ void systemUpdate(int samples, int tdelay)
         // clear buffer
         fflush(stdout);
     }
+
+    // print usage
+    printf(" total cpu use = %.10f %%\n", usage);
 
     // print the ending system details
     printf("---------------------------------------\n");
