@@ -356,6 +356,9 @@ void allInfoUpdate(int samples, int tdelay)
         fflush(stdout);
     }
 
+    // print usage
+    printf(" total cpu use = %.10f %%\n", usage);
+
     // print the ending system details
     printf("---------------------------------------\n");
     printf("### System Information ### \n");
