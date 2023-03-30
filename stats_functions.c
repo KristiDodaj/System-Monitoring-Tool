@@ -332,7 +332,7 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
-        if (i > 0)
+        if (i != (samples - 1))
         {
 
             // print usage
@@ -340,6 +340,7 @@ void allInfoUpdate(int samples, int tdelay)
         }
 
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+
         if (i == samples - 1)
         {
             // print usage for last iteration
