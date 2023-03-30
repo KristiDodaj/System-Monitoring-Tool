@@ -339,14 +339,6 @@ void allInfoUpdate(int samples, int tdelay)
             printf(" total cpu use = %.10f %%\n", usage);
         }
 
-        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-        printf("---------------------------------------\n");
-        printf("### Sessions/users ###\n");
-        printf("\033[J"); // clears everything below the current line
-        getUsers();
-        printf("---------------------------------------\n");
-        getCpuNumber();
-
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
 
         // if (i == samples - 1)
@@ -357,6 +349,20 @@ void allInfoUpdate(int samples, int tdelay)
 
         // update line numbers
         memoryLineNumber = memoryLineNumber + 1;
+
+        if (i == samples - 1)
+        {
+            // print output
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            getMemoryUsage();
+            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+            printf("---------------------------------------\n");
+            printf("### Sessions/users ###\n");
+            printf("\033[J"); // clears everything below the current line
+            getUsers();
+            printf("---------------------------------------\n");
+            getCpuNumber();
+        }
 
         // clear buffer
         fflush(stdout);
