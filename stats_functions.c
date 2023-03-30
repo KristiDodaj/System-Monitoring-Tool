@@ -332,11 +332,15 @@ void allInfoUpdate(int samples, int tdelay)
         getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
+
         if (i != (samples - 1))
         {
 
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            if (i > 0)
+            {
+                // print usage
+                printf(" total cpu use = %.10f %%\n", usage);
+            }
         }
 
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
