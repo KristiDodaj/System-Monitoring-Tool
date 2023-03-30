@@ -80,11 +80,7 @@ void getUsers()
     struct utmpx *users; // initialize utmpx struct
 
     // rewinds pointer to beginning of utmp file
-    if (setutxent() == -1)
-    {
-        // error checking for system resources
-        perror("setutxent: Failed to rewind the utmp file pointer");
-    }
+    setutxent();
 
     // read through utmp file
     while ((users = getutxent()) != NULL)
@@ -100,11 +96,7 @@ void getUsers()
     }
 
     // close the utmp file
-    if (endutxent() == -1)
-    {
-        // error checking for system resources
-        perror("Error: Failed to close the utmp file");
-    }
+    endutxent();
 }
 
 void getCpuNumber()
