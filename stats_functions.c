@@ -221,7 +221,6 @@ float getCpuUsage(int tdelay)
     if (fclose(info2) != 0)
     {
         perror("fclose: Error closing /proc/stat for second cpu usage calculation");
-        return -1;
     }
 
     // NOTE: The program will exit given a failure to read or open the file since adding unassigned integers will cause a failure
@@ -335,8 +334,11 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i > 0)
         {
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            if (i != (sample - 1))
+            {
+                // print usage
+                printf(" total cpu use = %.10f %%\n", usage);
+            }
         }
 
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
