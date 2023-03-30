@@ -319,7 +319,7 @@ void allInfoUpdate(int samples, int tdelay)
     float usage;
 
     // print all information
-    for (int i = 0; i < samples; i++)
+    for (int i = 1; i <= samples; i++)
     {
         // print output
         printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
@@ -334,9 +334,11 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i > 0)
         {
-
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            if (i != samples)
+            {
+                // print usage
+                printf(" total cpu use = %.10f %%\n", usage);
+            }
         }
 
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
