@@ -705,6 +705,8 @@ void systemSequential(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
+    float usage;
+
     // print system info sequentially
     for (int i = 0; i < samples; i++)
     {
