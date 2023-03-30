@@ -321,51 +321,34 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        if (i != samples - 1)
+        // print output
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+        getMemoryUsage();
+        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        printf("\033[J"); // clears everything below the current line
+        getUsers();
+        printf("---------------------------------------\n");
+        getCpuNumber();
+
+        if (i > 0)
         {
-            // print output
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            getMemoryUsage();
-            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-            printf("---------------------------------------\n");
-            printf("### Sessions/users ###\n");
-            printf("\033[J"); // clears everything below the current line
-            getUsers();
-            printf("---------------------------------------\n");
-            getCpuNumber();
 
-            if (i > 0)
-            {
-
-                // print usage
-                printf(" total cpu use = %.10f %%\n", usage);
-            }
-
-            usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-
-            // if (i == samples - 1)
-            //{
-            // print usage for last iteration
-            //     printf(" total cpu use = %.10f %%\n", usage);
-            // }
-
-            // update line numbers
-            memoryLineNumber = memoryLineNumber + 1;
+            // print usage
+            printf(" total cpu use = %.10f %%\n", usage);
         }
+
+        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
 
         if (i == samples - 1)
         {
-            // print output
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            getMemoryUsage();
-            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-            printf("---------------------------------------\n");
-            printf("### Sessions/users ###\n");
-            printf("\033[J"); // clears everything below the current line
-            getUsers();
-            printf("---------------------------------------\n");
-            getCpuNumber();
+            // print usage for last iteration
+            printf("\r");
         }
+
+        // update line numbers
+        memoryLineNumber = memoryLineNumber + 1;
 
         // clear buffer
         fflush(stdout);
