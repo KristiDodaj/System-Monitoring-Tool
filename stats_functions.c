@@ -200,10 +200,8 @@ float getCpuUsage(int tdelay)
     long int U1 = T1 - idle;
 
     // calculate time to be waited and sleep
-    // float time = (float)(tdelay);
-    // usleep((time)*1000000);
-
-    sleep(tdelay);
+    float time = (float)(tdelay);
+    usleep((time)*1000000);
 
     // open file and retrieve each value to do the second measurement
     FILE *info2 = fopen("/proc/stat", "r");
