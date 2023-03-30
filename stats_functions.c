@@ -557,6 +557,8 @@ void allInfoSequential(int samples, int tdelay)
     // print all info sequentially
     for (int i = 0; i < samples; i++)
     {
+        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+
         printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
@@ -580,27 +582,13 @@ void allInfoSequential(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
 
-        if (i > 0)
-        {
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
-        }
-
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-
-        if (i == samples - 1)
-        {
-            printf("\033[1A"); // move the cursor up one line
-            printf("\033[2K"); // clear the entire line
-        }
+        // print usage
+        printf(" total cpu use = %.10f %%\n", usage);
 
         printf("\n");
 
         fflush(stdout);
     }
-
-    // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
 
     // print the ending system details
     printf("\033[1A");
