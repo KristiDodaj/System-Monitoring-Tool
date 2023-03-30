@@ -332,7 +332,7 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
 
-        if (i > 0)
+        if (i > 1)
         {
             if (i != samples)
             {
