@@ -558,7 +558,7 @@ void allInfoSequential(int samples, int tdelay)
     for (int i = 0; i < samples; i++)
     {
         usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-
+        printf("\r");                // clear current line in case CTRL C or Z have been called
         printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");

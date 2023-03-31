@@ -302,13 +302,16 @@ void handle_ctrl_c(int signal_number)
     // Example Output: Given that CTRL C IS PRESSED it prints
     //
     // Ctrl-C signal received. Do you want to continue? (y/n):
-    // if y: program exits
-    // if n: program continues
+    // if n: program exits
+    // if y: program continues
 
     char input;
 
+    // get user input
     printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
     input = getchar();
+
+    // exit or continue depending on input
     if (input == 'n' || input == 'N')
     {
         printf("Exiting...\n");
