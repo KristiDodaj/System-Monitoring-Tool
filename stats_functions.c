@@ -8,6 +8,7 @@
 #include <utmpx.h>
 #include <unistd.h>
 #include <sys/resource.h>
+#include <sys/wait.h>
 #include <sys/sysinfo.h>
 
 void header(int samples, int tdelay)
