@@ -342,6 +342,10 @@ void handle_ctrl_c(int signal_number)
             printf("\033[2K");
             printf("\033[1;B");
         }
+        else
+        {
+            printf("\033[1;A");
+        }
     }
 }
 
