@@ -359,10 +359,17 @@ void allInfoUpdate(int samples, int tdelay)
     int memoryLineNumber = 6;
     float usage;
 
+    sigset_t sigset;
+    int sig;
+
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGCONT);
+    sigprocmask(SIG_BLOCK, &sigset, NULL);
+
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        waitpid(memory_pid, NULL, 0);
+        sigwait(&sigset, &sig);
 
         // read and print output
 
