@@ -295,15 +295,16 @@ void navigate(int argc, char *argv[])
     }
 }
 
-// This function will dicatate what will occur when the signal from CTRL Z is activated. Since we want to ingnore this signal
-// the function will do nothing.
-void handle_ctrl_z(int signal_number)
-{
-    // do nothing
-}
-
 void handle_ctrl_c(int signal_number)
 {
+    // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
+    // quit or continue the program through a (y/n) option.
+    // Example Output: Given that CTRL C IS PRESSED it prints
+    //
+    // Ctrl-C signal received. Do you want to continue? (y/n):
+    // if y: program exits
+    // if n: program continues
+
     char input;
 
     printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
@@ -317,11 +318,18 @@ void handle_ctrl_c(int signal_number)
 
 int main(int argc, char *argv[])
 {
-    // redirect incoming signals
+    // redirect incoming signals for CTRL Z
     if (signal(SIGTSTP, SIG_IGN) == SIG_ERR)
     {
         // error check whether signal() worked
         perror("singal: Error registering SIGTSTP handler");
+        exit(1);
+    }
+
+    // redirect incoming signals for CTRL C
+    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    {
+        perror("Error registering SIGINT handler");
         exit(1);
     }
 
