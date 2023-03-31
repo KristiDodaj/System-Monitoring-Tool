@@ -302,10 +302,23 @@ void handle_ctrl_z(int signal_number)
     // do nothing
 }
 
+void handle_ctrl_c(int signal_number)
+{
+    char input;
+
+    printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
+    input = getchar();
+    if (input == 'n' || input == 'N')
+    {
+        printf("Exiting...\n");
+        exit(0);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // redirect incoming signals
-    if (signal(SIGTSTP, handle_ctrl_z) == SIG_ERR)
+    if (signal(SIGTSTP, SIG_IGN) == SIG_ERR)
     {
         // error check whether signal() worked
         perror("singal: Error registering SIGTSTP handler");
