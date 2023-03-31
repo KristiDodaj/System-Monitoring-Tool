@@ -294,8 +294,23 @@ void navigate(int argc, char *argv[])
     }
 }
 
+// This function will dicatate what will occur when the signal from CTRL Z is activated. Since we want to ingnore this signal
+// the function will do nothing.
+void handle_ctrl_z(int signal_number)
+{
+    // do nothing
+}
+
 int main(int argc, char *argv[])
 {
+    // redirect incoming signals
+    if (signal(SIGTSTP, handle_ctrl_z) == SIG_ERR)
+    {
+        // error check whether signal() worked
+        perror("singal: Error registering SIGTSTP handler");
+        exit(1);
+    }
+
     // call the navigate function which will redirect to the right output depeneding on the arguments
     navigate(argc, argv);
 
