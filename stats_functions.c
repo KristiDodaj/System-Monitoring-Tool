@@ -235,7 +235,7 @@ float getCpuUsage(int tdelay)
     return usage;
 }
 
-void getMemoryUsage(int write_pipe)
+void getMemoryUsage(int write_pipe, int tdelay, int samples)
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
@@ -245,34 +245,40 @@ void getMemoryUsage(int write_pipe)
     //
     // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
-    // find the used and total physical RAM
-    struct sysinfo info;
-
-    // error checking for system resources
-    if (sysinfo(&info) == -1)
+    for (int i = 0; i < samples; i++)
     {
-        perror("sysinfo: Error getting sysinfo on RAM");
 
-        // NOTE: This program will exit given sysinfo fails since we are calling value from an unpopulated object
+        // find the used and total physical RAM
+        struct sysinfo info;
+
+        // error checking for system resources
+        if (sysinfo(&info) == -1)
+        {
+            perror("sysinfo: Error getting sysinfo on RAM");
+
+            // NOTE: This program will exit given sysinfo fails since we are calling value from an unpopulated object
+        }
+
+        // find the used and total physical RAM
+        double totalPhysicalRam = (double)info.totalram / (1073741824);
+        double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
+
+        // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
+        double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
+        double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
+
+        // build output string
+        char *buf = calloc(1, 50);
+        sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
+
+        // write output to pipe
+        write(write_pipe, buf, strlen(buf) + 1);
+
+        // free allocated memory
+        free(buf);
+
+        sleep(tdelay);
     }
-
-    // find the used and total physical RAM
-    double totalPhysicalRam = (double)info.totalram / (1073741824);
-    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
-
-    // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
-    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
-    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
-
-    // build output string
-    char *buf = calloc(1, 50);
-    sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
-
-    // write output to pipe
-    write(write_pipe, buf, strlen(buf) + 1);
-
-    // free allocated memory
-    free(buf);
 }
 
 void allInfoUpdate(int samples, int tdelay)
