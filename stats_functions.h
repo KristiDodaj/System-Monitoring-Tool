@@ -11,7 +11,7 @@ void getSystemInfo();
 void getUsers();
 void getCpuNumber();
 float getCpuUsage(int tdelay);
-void getMemoryUsage(int write_pipe, int tdelay, int samples);
+void getMemoryUsage(int write_pipe);
 void allInfoUpdate(int samples, int tdelay);
 void usersUpdate(int samples, int tdelay);
 void systemUpdate(int samples, int tdelay);

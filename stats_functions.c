@@ -235,7 +235,7 @@ float getCpuUsage(int tdelay)
     return usage;
 }
 
-void getMemoryUsage(int write_pipe, int tdelay, int samples)
+void getMemoryUsage(int write_pipe)
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
@@ -245,7 +245,7 @@ void getMemoryUsage(int write_pipe, int tdelay, int samples)
     //
     // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
-    for (int i = 0; i < samples; i++)
+    while (1)
     {
 
         // find the used and total physical RAM
@@ -277,7 +277,8 @@ void getMemoryUsage(int write_pipe, int tdelay, int samples)
         // free allocated memory
         free(buf);
 
-        sleep(tdelay);
+        kill(getppid(), SIGCONT);
+        pause();
     }
 }
 
@@ -356,20 +357,14 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        // use select() to wait for data to be available on each pipe
-        fd_set read_fds;
-        FD_ZERO(&read_fds);
-        FD_SET(memory_pipe[0], &read_fds);
-        select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
+        waitpid(memory_pid, NULL, 0);
 
         // read and print output
-        if (FD_ISSET(memory_pipe[0], &read_fds))
-        {
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            char buf[100];
-            read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            printf("%s", buf);
-        }
+
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+        char buf[100];
+        read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
         printf("---------------------------------------\n");
@@ -399,6 +394,11 @@ void allInfoUpdate(int samples, int tdelay)
 
         // clear buffer
         fflush(stdout);
+
+        if (i < samples - 1)
+        {
+            kill(memory_pid, SIGCONT);
+        }
     }
 
     // print usage
