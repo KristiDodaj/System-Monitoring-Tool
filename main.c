@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <string.h>
 #include "stats_functions.h"
