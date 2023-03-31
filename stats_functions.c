@@ -9,8 +9,6 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 
 void header(int samples, int tdelay)
 {
@@ -237,7 +235,7 @@ float getCpuUsage(int tdelay)
     return usage;
 }
 
-void getMemoryUsage(int write_pipe, int samples)
+void getMemoryUsage(int write_pipe)
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
@@ -247,44 +245,34 @@ void getMemoryUsage(int write_pipe, int samples)
     //
     // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
-    for (int i = 0; i < samples; i++)
+    // find the used and total physical RAM
+    struct sysinfo info;
+
+    // error checking for system resources
+    if (sysinfo(&info) == -1)
     {
+        perror("sysinfo: Error getting sysinfo on RAM");
 
-        // find the used and total physical RAM
-        struct sysinfo info;
-
-        // error checking for system resources
-        if (sysinfo(&info) == -1)
-        {
-            perror("sysinfo: Error getting sysinfo on RAM");
-
-            // NOTE: This program will exit given sysinfo fails since we are calling value from an unpopulated object
-        }
-
-        // find the used and total physical RAM
-        double totalPhysicalRam = (double)info.totalram / (1073741824);
-        double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
-
-        // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
-        double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
-        double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
-
-        // build output string
-        char *buf = calloc(1, 50);
-        sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
-
-        // write output to pipe
-        write(write_pipe, buf, strlen(buf) + 1);
-
-        // free allocated memory
-        free(buf);
-
-        kill(getppid(), SIGCONT);
-        if (i < samples - 1)
-        {
-            pause();
-        }
+        // NOTE: This program will exit given sysinfo fails since we are calling value from an unpopulated object
     }
+
+    // find the used and total physical RAM
+    double totalPhysicalRam = (double)info.totalram / (1073741824);
+    double usedPhysicalRam = (double)(info.totalram - info.freeram) / (1073741824);
+
+    // find the used and total virtual RAM (total virtual RAM = physical memory + swap memory)
+    double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
+    double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
+
+    // build output string
+    char *buf = calloc(1, 50);
+    sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
+
+    // write output to pipe
+    write(write_pipe, buf, strlen(buf) + 1);
+
+    // free allocated memory
+    free(buf);
 }
 
 void allInfoUpdate(int samples, int tdelay)
@@ -338,13 +326,9 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for memory usage
         close(memory_pipe[0]);
-        getMemoryUsage(memory_pipe[1], samples);
+        getMemoryUsage(memory_pipe[1]);
         exit(EXIT_SUCCESS);
     }
-
-    // parent process
-    // close unused write ends of pipes
-    close(memory_pipe[1]);
 
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
@@ -359,25 +343,12 @@ void allInfoUpdate(int samples, int tdelay)
     int memoryLineNumber = 6;
     float usage;
 
-    sigset_t sigset;
-    int sig;
-
-    sigemptyset(&sigset);
-    sigaddset(&sigset, SIGCONT);
-    sigprocmask(SIG_BLOCK, &sigset, NULL);
-
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        sigwait(&sigset, &sig);
-
-        // read and print output
-
+        // print output
         printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-        char buf[100];
-        read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-        printf("%s", buf);
-
+        getMemoryUsage();
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
@@ -406,11 +377,6 @@ void allInfoUpdate(int samples, int tdelay)
 
         // clear buffer
         fflush(stdout);
-
-        if (i < samples - 1)
-        {
-            kill(memory_pid, SIGCONT);
-        }
     }
 
     // print usage
