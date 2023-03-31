@@ -309,12 +309,14 @@ void handle_ctrl_c(int signal_number)
     char input;
     int valid = 0;
 
+    printf("\n");
+
     while (valid == 0)
     {
         printf("\r");
 
         // get user input
-        printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
+        printf("Ctrl-C signal received. Do you want to continue? (y/n): ");
         input = getchar();
 
         // Clear the input buffer
@@ -339,10 +341,6 @@ void handle_ctrl_c(int signal_number)
             printf("\033[1;B");
             printf("\033[2K");
             printf("\033[1;B");
-        }
-        else
-        {
-            printf("Invalid input. Please press Ctrl-C and enter 'y' or 'n'.\n");
         }
     }
 }
