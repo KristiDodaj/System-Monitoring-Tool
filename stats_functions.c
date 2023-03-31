@@ -347,8 +347,8 @@ void allInfoUpdate(int samples, int tdelay)
         else if (mem_pid == 0)
         {
             // child process for memory usage
-            close(memory_pipe[0]);       // close unused read end
-            getMemoryUsage(mem_pipe[1]); // write to pipe
+            close(memory_pipe[0]);          // close unused read end
+            getMemoryUsage(memory_pipe[1]); // write to pipe
             exit(0);
         }
 
