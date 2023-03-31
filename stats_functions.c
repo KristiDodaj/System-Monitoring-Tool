@@ -8,7 +8,6 @@
 #include <utmpx.h>
 #include <unistd.h>
 #include <sys/resource.h>
-#include <sys/wait.h>
 #include <sys/sysinfo.h>
 
 void header(int samples, int tdelay)
@@ -321,6 +320,20 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    // create child processes
+    pid_t memory_pid = fork();
+    if (memory_pid == 0)
+    {
+        // child process for memory usage
+        close(memory_pipe[0]);
+        getMemoryUsage(memory_pipe[1]);
+        exit(EXIT_SUCCESS);
+    }
+
+    // parent process
+    // close unused write ends of pipes
+    close(memory_pipe[1]);
+
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
 
@@ -337,30 +350,20 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
+        // use select() to wait for data to be available on each pipe
+        fd_set read_fds;
+        FD_ZERO(&read_fds);
+        FD_SET(memory_pipe[0], &read_fds);
+        select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
-        // create child processes
-        pid_t mem_pid = fork();
-        if (mem_pid < 0)
+        // read and print output
+        if (FD_ISSET(memory_pipe[0], &read_fds))
         {
-            perror("fork");
-            exit(1);
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            char buf[100];
+            read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
         }
-        else if (mem_pid == 0)
-        {
-            // child process for memory usage
-            close(memory_pipe[0]);          // close unused read end
-            getMemoryUsage(memory_pipe[1]); // write to pipe
-            exit(0);
-        }
-
-        // wait for all child processes to finish
-        int status;
-        waitpid(mem_pid, &status, 0);
-
-        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-        char buf[100];
-        read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-        printf("%s", buf);
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
         printf("---------------------------------------\n");
