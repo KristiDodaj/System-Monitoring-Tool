@@ -152,7 +152,7 @@ void getCpuNumber()
     printf("Number of CPU's: %d     Total Number of Cores: %d\n", cpuNumber, coreNumber);
 }
 
-float getCpuUsage(int tdelay)
+float getCpuUsage(int tdelay, int write_pipe)
 {
     // This function takes the second interval (int tdelay), and compares two measurements that are tdelay seconds apart done by reading the /proc/stat file.
     // The function will return the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places.
@@ -231,6 +231,11 @@ float getCpuUsage(int tdelay)
 
     // measure and print percentage
     float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
+
+    char buffer[50];
+    snprintf(buffer, 50, "%.10f", usage);
+
+    write(write_pipe, buffer, strlen(buffer) + 1);
 
     return usage;
 }
@@ -313,15 +318,15 @@ void allInfoUpdate(int samples, int tdelay)
     // ---------------------------------------
 
     // create pipes for communication
-    int memory_pipe[2];
-    if (pipe(memory_pipe) < 0)
+    int memory_pipe[2], cpu_pipe[2];
+    if (pipe(memory_pipe) < 0 || pipe(cpu_pipe) < 0)
     {
         perror("Error creating pipes");
         exit(EXIT_FAILURE);
     }
 
     // create child processes
-    pid_t memory_pid;
+    pid_t memory_pid, cpu_pid;
     memory_pid = fork();
     if (memory_pid == 0)
     {
@@ -331,9 +336,19 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_SUCCESS);
     }
 
+    cpu_pid = fork();
+    if (cpu_pid == 0)
+    {
+        // child process for CPU info
+        close(cpu_pipe[0]);
+        getCpuUsage(cpu_pipe[1]);
+        exit(EXIT_SUCCESS);
+    }
+
     // parent process
     // close unused write ends of pipes
     close(memory_pipe[1]);
+    close(cpu_pipe[1]);
 
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
@@ -356,6 +371,7 @@ void allInfoUpdate(int samples, int tdelay)
         fd_set read_fds;
         FD_ZERO(&read_fds);
         FD_SET(memory_pipe[0], &read_fds);
+        FD_SET(cpu_pipe[0], &read_fds);
         select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
         // read and print output
@@ -381,9 +397,12 @@ void allInfoUpdate(int samples, int tdelay)
             // print usage
             printf(" total cpu use = %.10f %%\n", usage);
         }
-
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-
+        if (FD_ISSET(cpu_pipe[0], &read_fds))
+        {
+            char buf[100];
+            read(cpu_pipe[0], buf, sizeof(buf)); // read CPU usage from pipe
+            usage = atof(buf);                   // get current measurement for cpu usage
+        }
         if (i == samples - 1)
         {
             printf("\033[1A"); // move the cursor up one line
@@ -502,7 +521,7 @@ void systemUpdate(int samples, int tdelay)
     // keep track of lines
     int cpuLineNumber = samples + 6;
     int memoryLineNumber = 6;
-    float usage;
+    // float usage;
 
     // print all system info
     for (int i = 0; i < samples; i++)
@@ -516,10 +535,10 @@ void systemUpdate(int samples, int tdelay)
         if (i > 0)
         {
             // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            // printf(" total cpu use = %.10f %%\n", usage);
         }
 
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+        // usage = getCpuUsage(tdelay); // get current measurement for cpu usage
 
         if (i == samples - 1)
         {
@@ -535,7 +554,7 @@ void systemUpdate(int samples, int tdelay)
     }
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    // printf(" total cpu use = %.10f %%\n", usage);
 
     // print the ending system details
     printf("---------------------------------------\n");
@@ -595,13 +614,13 @@ void allInfoSequential(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
-    float usage;
+    // float usage;
 
     // print all info sequentially
     for (int i = 0; i < samples; i++)
     {
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-        printf("\r");                // clear current line in case CTRL Z has been called
+        // usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+        printf("\r"); // clear current line in case CTRL Z has been called
         printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
@@ -626,7 +645,7 @@ void allInfoSequential(int samples, int tdelay)
         getCpuNumber();
 
         // print usage
-        printf(" total cpu use = %.10f %%\n", usage);
+        // printf(" total cpu use = %.10f %%\n", usage);
 
         printf("\n");
 
@@ -749,14 +768,14 @@ void systemSequential(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
-    float usage;
+    // float usage;
 
     // print system info sequentially
     for (int i = 0; i < samples; i++)
     {
 
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-        printf("\r");                // clear current line in case CTRL Z has been called
+        // usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+        printf("\r"); // clear current line in case CTRL Z has been called
         printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
@@ -777,7 +796,7 @@ void systemSequential(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
         // print usage
-        printf(" total cpu use = %.10f %%\n", usage);
+        // printf(" total cpu use = %.10f %%\n", usage);
 
         printf("\n");
 
