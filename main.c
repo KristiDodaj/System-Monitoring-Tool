@@ -309,7 +309,7 @@ void handle_ctrl_c(int signal_number)
     char input;
     int valid = 0;
 
-    while (valid == 1)
+    while (valid == 0)
     {
         printf("\r");
 
