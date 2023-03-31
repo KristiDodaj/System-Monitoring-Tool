@@ -66,7 +66,7 @@ void getSystemInfo()
     printf("Architecture = %s \n", info.machine);
 }
 
-void getUsers(int write_pipe)
+void getUsers()
 {
     // This function will print out the list of users along with each of their connected sessions using the <utmpx.h> C library
     // and reading through the utmp user log file.
@@ -77,34 +77,26 @@ void getUsers(int write_pipe)
     // dodajkri      pts/2 (tmux(97972).%2)
     // dodajkri      pts/0 (138.51.8.149)
 
-    // read through utmp file
+    struct utmpx *users; // initialize utmpx struct
+
+    // rewinds pointer to beginning of utmp file
     setutxent();
-    char *buf = NULL;
-    size_t size = 0;
-    while (struct utmpx *user = getutxent())
+
+    // read through utmp file
+    while ((users = getutxent()) != NULL)
     {
-        if (user->ut_type == USER_PROCESS)
+        // validate that this is a user process
+        if (users->ut_type == USER_PROCESS)
         {
-            char line[strlen(user->ut_line) + 1];
-            sprintf(line, "%s (%s)", user->ut_line, user->ut_host);
-            char *line_padded = calloc(1, strlen(line) + 8);
-            sprintf(line_padded, "%-12s", line);
-            char *str = calloc(1, strlen(user->ut_user) + strlen(line_padded) + 3);
-            sprintf(str, "%s%s\n", user->ut_user, line_padded);
-            buf = realloc(buf, size + strlen(str) + 1);
-            strcat(buf, str);
-            size += strlen(str);
-            free(line_padded);
-            free(str);
+            printf("%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
         }
+
+        // NOTE: No need to error check since it returns NULL when there are no entries
+        //       thus not causing any issues to the program.
     }
+
+    // close the utmp file
     endutxent();
-
-    // write users to pipe
-    write(write_pipe, buf, strlen(buf) + 1);
-
-    // free allocated memory
-    free(buf);
 }
 
 void getCpuNumber()
@@ -313,29 +305,6 @@ void allInfoUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
-    // create pipes for communication
-    int users_pipe[2];
-    if (pipe(users_pipe) < 0)
-    {
-        perror("Error creating pipes");
-        exit(EXIT_FAILURE);
-    }
-
-    pid_t users_pid;
-
-    users_pid = fork();
-    if (users_pid == 0)
-    {
-        // child process for user info
-        close(users_pipe[0]);
-        print_users(users_pipe[1]);
-        exit(EXIT_SUCCESS);
-    }
-
-    // parent process
-    // close unused write ends of pipes
-    close(users_pipe[1]);
-
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
 
@@ -352,25 +321,14 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        // use select() to wait for data to be available on each pipe
-        fd_set read_fds;
-        FD_SET(users_pipe[0], &read_fds);
-        select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
-
         // print output
         printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
         getMemoryUsage();
-
-        if (FD_ISSET(users_pipe[0], &read_fds))
-        {
-            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-            printf("---------------------------------------\n");
-            printf("### Sessions/users ###\n");
-            char buf[4000];
-            read(users_pipe[0], buf, sizeof(buf)); // read users from pipe
-            printf("%s", buf);
-        }
-
+        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        printf("\033[J"); // clears everything below the current line
+        getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
 
