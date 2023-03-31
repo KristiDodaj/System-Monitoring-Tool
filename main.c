@@ -299,7 +299,7 @@ void handle_ctrl_c(int signal_number)
 {
     // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
     // quit or continue the program through a (y/n) option.
-    // NOTE: IF IMPROPER INPUT FROM THE USER IS GIVEN THAN WE ASK THE USER TO REPRESS CTRL C AND INPUT CORRECT INPUTS (y/n)
+    // NOTE: IF IMPROPER INPUT FROM THE USER IS GIVEN THAN WE ASK THE USER THE QUESTION AGAIN
     // Example Output: Given that CTRL C IS PRESSED it prints
     //
     // Ctrl-C signal received. Do you want to continue? (y/n):
@@ -344,6 +344,7 @@ void handle_ctrl_c(int signal_number)
         }
         else
         {
+            // go one line above to reask the question
             printf("\033[1;A");
         }
     }
