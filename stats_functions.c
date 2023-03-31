@@ -341,7 +341,7 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for CPU info
         close(cpu_pipe[0]);
-        getCpuUsage(cpu_pipe[1]);
+        getCpuUsage(tdelay, cpu_pipe[1]);
         exit(EXIT_SUCCESS);
     }
 
