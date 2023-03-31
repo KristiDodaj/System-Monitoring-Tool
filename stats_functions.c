@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 void header(int samples, int tdelay)
 {
@@ -333,7 +335,7 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for memory usage
         close(memory_pipe[0]);
-        getMemoryUsage(memory_pipe[1], tdelay, samples);
+        getMemoryUsage(memory_pipe[1]);
         exit(EXIT_SUCCESS);
     }
 
