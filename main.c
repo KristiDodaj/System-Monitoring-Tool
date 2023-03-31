@@ -307,33 +307,43 @@ void handle_ctrl_c(int signal_number)
     // if y: program continues
 
     char input;
+    int valid = 0;
 
-    // get user input
-    printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
-    input = getchar();
+    while (valid == 1)
+    {
+        printf("\r");
 
-    // Clear the input buffer
-    while (getchar() != '\n')
-        ;
+        // get user input
+        printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
+        input = getchar();
 
-    // exit or continue depending on input
-    if (input == 'n' || input == 'N')
-    {
-        printf("Exiting...\n");
-        exit(0);
-    }
-    else if (input == 'y' || input == 'Y')
-    {
-        // clear the message displayed if continuing
-        printf("\033[2;A");
-        printf("\033[2K");
-        printf("\033[1;B");
-        printf("\033[2K");
-        printf("\033[1;B");
-    }
-    else
-    {
-        printf("Invalid input. Please press Ctrl-C and enter 'y' or 'n'.\n");
+        // Clear the input buffer
+        while (getchar() != '\n')
+            ;
+
+        // exit or continue depending on input
+        if (input == 'n' || input == 'N')
+        {
+            printf("Exiting...\n");
+            valid = 1;
+            exit(0);
+        }
+        else if (input == 'y' || input == 'Y')
+        {
+
+            valid = 1;
+
+            // clear the message displayed if continuing
+            printf("\033[2;A");
+            printf("\033[2K");
+            printf("\033[1;B");
+            printf("\033[2K");
+            printf("\033[1;B");
+        }
+        else
+        {
+            printf("Invalid input. Please press Ctrl-C and enter 'y' or 'n'.\n");
+        }
     }
 }
 
