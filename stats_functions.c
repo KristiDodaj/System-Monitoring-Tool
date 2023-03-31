@@ -391,22 +391,24 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
 
-        if (i > 0)
-        {
-
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
-        }
         if (FD_ISSET(cpu_pipe[0], &read_fds))
         {
+            if (i > 0)
+            {
+
+                // print usage
+                printf(" total cpu use = %.10f %%\n", usage);
+            }
+
             char buf[100];
             read(cpu_pipe[0], buf, sizeof(buf)); // read CPU usage from pipe
             usage = atof(buf);                   // get current measurement for cpu usage
-        }
-        if (i == samples - 1)
-        {
-            printf("\033[1A"); // move the cursor up one line
-            printf("\033[2K"); // clear the entire line
+
+            if (i == samples - 1)
+            {
+                printf("\033[1A"); // move the cursor up one line
+                printf("\033[2K"); // clear the entire line
+            }
         }
 
         // update line numbers
