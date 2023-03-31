@@ -313,7 +313,7 @@ void handle_ctrl_c(int signal_number)
 
     while (valid == 0)
     {
-        printf("\r");
+        printf("\033[2K");
 
         // get user input
         printf("Ctrl-C signal received. Do you want to continue? (y/n): ");
