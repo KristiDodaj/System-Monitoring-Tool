@@ -332,7 +332,7 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for memory usage
         close(memory_pipe[0]);
-        getMemoryUsage(memory_pipe[1]);
+        getMemoryUsage(memory_pipe[1], tdelay, samples);
         exit(EXIT_SUCCESS);
     }
 
