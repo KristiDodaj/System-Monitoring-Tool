@@ -312,6 +312,10 @@ void handle_ctrl_c(int signal_number)
     printf("\nCtrl-C signal received. Do you want to continue? (y/n): ");
     input = getchar();
 
+    // Clear the input buffer
+    while (getchar() != '\n')
+        ;
+
     // exit or continue depending on input
     if (input == 'n' || input == 'N')
     {
@@ -320,7 +324,7 @@ void handle_ctrl_c(int signal_number)
     }
     else if (input == 'y' || input == 'Y')
     {
-        // clear the message displayed
+        // clear the message displayed if continuing
         printf("\033[2;A");
         printf("\033[2K");
         printf("\033[1;B");
