@@ -237,7 +237,7 @@ float getCpuUsage(int tdelay)
     return usage;
 }
 
-void getMemoryUsage(int write_pipe)
+void getMemoryUsage(int write_pipe, int samples)
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
@@ -247,7 +247,7 @@ void getMemoryUsage(int write_pipe)
     //
     // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
-    while (1)
+    for (int i = 0; i < samples; i++)
     {
 
         // find the used and total physical RAM
@@ -280,7 +280,10 @@ void getMemoryUsage(int write_pipe)
         free(buf);
 
         kill(getppid(), SIGCONT);
-        pause();
+        if (i < samples - 1)
+        {
+            pause();
+        }
     }
 }
 
@@ -335,7 +338,7 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for memory usage
         close(memory_pipe[0]);
-        getMemoryUsage(memory_pipe[1]);
+        getMemoryUsage(memory_pipe[1], samples);
         exit(EXIT_SUCCESS);
     }
 
