@@ -80,6 +80,20 @@ void getUsers(int write_pipe, int size_pipe)
 
     struct utmpx *users; // initialize utmpx struct
 
+    // rewinds pointer to beginning of utmp file
+    setutxent();
+
+    // count how many lines
+    int count = 0;
+    while ((users = getutxent()) != NULL)
+    {
+        // validate that this is a user process
+        if (users->ut_type == USER_PROCESS)
+        {
+            count++;
+        }
+    }
+
     // allocate memory for the buffer
     char *buf = (char *)malloc(count * 1024);
     if (!buf)
