@@ -405,15 +405,8 @@ void allInfoUpdate(int samples, int tdelay)
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            ssize_t bytesRead = read(mem_pipe[0], buf, sizeof(buf) - 1);
-            if (bytesRead > 0)
-            {
-                buf[bytesRead] = '\0';
-                if (strlen(buf) > 0) // Check for empty string
-                {
-                    printf("%s", buf);
-                }
-            }
+            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
         }
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
@@ -424,31 +417,25 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
 
-        if (i > 0)
-        {
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
-        }
-
         if (FD_ISSET(cpu_pipe[0], &read_fds))
         {
-            // Read and print the CPU usage data from the cpu_pipe
-            char cpu_buf[1024];
-            size_t bytesRead = read(cpu_pipe[0], cpu_buf, sizeof(cpu_buf) - 1);
-            if (bytesRead > 0)
-            {
-                cpu_buf[bytesRead] = '\0';
-                if (strlen(cpu_buf) > 0) // Check for empty string
-                {
-                    usage = atof(cpu_buf);
-                }
-            }
-        }
 
-        if (i == samples - 1)
-        {
-            printf("\033[1A"); // move the cursor up one line
-            printf("\033[2K"); // clear the entire line
+            if (i > 0)
+            {
+                // print usage
+                printf(" total cpu use = %.10f %%\n", usage);
+            }
+
+            // Read and print the CPU usage data from the cpu_pipe
+            char buf[1024];
+            read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            usage = atof(buf);
+
+            if (i == samples - 1)
+            {
+                printf("\033[1A"); // move the cursor up one line
+                printf("\033[2K"); // clear the entire line
+            }
         }
 
         // update line numbers
