@@ -346,26 +346,24 @@ void allInfoUpdate(int samples, int tdelay)
 
         exit(0); // exit child process
     }
-    else
-    {
-        // child process for cpu usage
-        pid_t cpu_pid = fork(); // fork for CPU usage child process
-        if (cpu_pid < 0)
-        {
-            perror("fork");
-            exit(1);
-        }
-        else if (cpu_pid == 0)
-        {
-            // child process for CPU usage
-            close(cpu_pipe[0]); // close unused read end
-            for (int i = 0; i < samples; i++)
-            {
-                getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
-            }
 
-            exit(0); // exit child process
+    // child process for cpu usage
+    pid_t cpu_pid = fork(); // fork for CPU usage child process
+    if (cpu_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (cpu_pid == 0)
+    {
+        // child process for CPU usage
+        close(cpu_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
         }
+
+        exit(0); // exit child process
     }
 
     // parent process
@@ -448,6 +446,7 @@ void allInfoUpdate(int samples, int tdelay)
     // wait for processes to finish so no orphan or zombie cases
     int status;
     waitpid(mem_pid, &status, 0);
+    waitpid(cpu_pid, &status, 0);
 
     // print usage
     printf(" total cpu use = %.10f %%\n", usage);
