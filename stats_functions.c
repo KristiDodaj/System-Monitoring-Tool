@@ -225,8 +225,8 @@ float getCpuUsage(int tdelay)
     // NOTE: The program will exit given a failure to read or open the file since adding unassigned integers will cause a failure
 
     // calculate second measure
-    long int T2 = (user + nice + system + idle + iowait + irq + softirq);
-    long int U2 = T2 - idle;
+    // long int T2 = (user + nice + system + idle + iowait + irq + softirq);
+    // long int U2 = T2 - idle;
 
     // measure and print percentage
     // float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
