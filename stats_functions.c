@@ -365,13 +365,13 @@ void allInfoUpdate(int samples, int tdelay)
         {
 
             // wait for all child processes to finish
-            fd_set read_fds;
-            FD_ZERO(&read_fds);
-            FD_SET(mem_pipe[0], &read_fds);
-            select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
+            struct pollfd fds[1];
+            fds[0].fd = mem_pipe[0];
+            fds[0].events = POLLIN;
+            int ret = poll(fds, 1, -1);
 
             // read and print output
-            if (FD_ISSET(mem_pipe[0], &read_fds))
+            if (ret > 0 && (fds[0].revents & POLLIN))
             {
                 printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
                 char buf[100];
