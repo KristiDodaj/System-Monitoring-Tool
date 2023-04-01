@@ -67,7 +67,7 @@ void getSystemInfo()
     printf("Architecture = %s \n", info.machine);
 }
 
-void getUsers()
+void getUsers(int write_pipe)
 {
     // This function will print out the list of users along with each of their connected sessions using the <utmpx.h> C library
     // and reading through the utmp user log file.
@@ -83,13 +83,23 @@ void getUsers()
     // rewinds pointer to beginning of utmp file
     setutxent();
 
+    // count how many lines
+    int count = 0;
+    while ((users = getutxent()) != NULL)
+    {
+        count++;
+    }
+
+    char buf[count * 1024];
+    int offset = 0;
+
     // read through utmp file
     while ((users = getutxent()) != NULL)
     {
         // validate that this is a user process
         if (users->ut_type == USER_PROCESS)
         {
-            printf("%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
+            offset += sprintf(buf + offset, "%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
         }
 
         // NOTE: No need to error check since it returns NULL when there are no entries
@@ -98,6 +108,9 @@ void getUsers()
 
     // close the utmp file
     endutxent();
+
+    // send the buffer to the pipe
+    write(write_pipe, buf, strlen(buf) + 1);
 }
 
 void getCpuNumber()
@@ -320,8 +333,8 @@ void allInfoUpdate(int samples, int tdelay)
     // ---------------------------------------
 
     // create pipes for communication
-    int mem_pipe[2], cpu_pipe[2];
-    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0)
+    int mem_pipe[2], cpu_pipe[2], user_pipe[2];
+    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0)
     {
         perror("Error creating pipes");
         exit(EXIT_FAILURE);
@@ -366,11 +379,31 @@ void allInfoUpdate(int samples, int tdelay)
         exit(0); // exit child process
     }
 
+    pid_t user_pid = fork(); // fork for CPU usage child process
+    if (user_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (user_pid == 0)
+    {
+        // child process for CPU usage
+        close(user_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getUsers(user_pipe[1]); // write to pipe
+            sleep(tdelay);          // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
     // parent process
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
     close(cpu_pipe[1]);
+    close(user_pipe[1]);
 
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
@@ -388,7 +421,16 @@ void allInfoUpdate(int samples, int tdelay)
 
     // wait for all child processes to finish
     fd_set read_fds;
-    int max_fd = (mem_pipe[0] > cpu_pipe[0]) ? mem_pipe[0] : cpu_pipe[0];
+
+    int max_fd = mem_pipe[0];
+    if (cpu_pipe[0] > max_fd)
+    {
+        max_fd = cpu_pipe[0];
+    }
+    if (user_pipe[0] > max_fd)
+    {
+        max_fd = user_pipe[0];
+    }
 
     // print all information
     for (int i = 0; i < samples; i++)
@@ -398,6 +440,7 @@ void allInfoUpdate(int samples, int tdelay)
         FD_ZERO(&read_fds);
         FD_SET(mem_pipe[0], &read_fds);
         FD_SET(cpu_pipe[0], &read_fds);
+        FD_SET(user_pipe[0], &read_fds);
         select(max_fd + 1, &read_fds, NULL, NULL, NULL);
 
         // read and print output
@@ -413,7 +456,12 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
         printf("\033[J"); // clears everything below the current line
-        getUsers();
+
+        // Read and print the CPU usage data from the cpu_pipe
+        char buf[2024];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
+
         printf("---------------------------------------\n");
         getCpuNumber();
 
@@ -424,9 +472,9 @@ void allInfoUpdate(int samples, int tdelay)
         }
 
         // Read and print the CPU usage data from the cpu_pipe
-        char buf[1024];
-        read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-        usage = atof(buf);
+        char buf2[1024];
+        read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
+        usage = atof(buf2);
 
         if (i == samples - 1)
         {
@@ -488,7 +536,7 @@ void usersUpdate(int samples, int tdelay)
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
-        getUsers();
+        // getUsers();
         printf("---------------------------------------\n");
 
         if (i != samples - 1)
@@ -670,7 +718,7 @@ void allInfoSequential(int samples, int tdelay)
         }
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
-        getUsers();
+        // getUsers();
         printf("---------------------------------------\n");
         getCpuNumber();
 
@@ -735,7 +783,7 @@ void usersSequential(int samples, int tdelay)
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Sessions/users ### \n");
-        getUsers();
+        // getUsers();
         printf("\n");
 
         if (i != samples - 1)

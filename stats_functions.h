@@ -8,7 +8,7 @@
 
 void header(int samples, int tdelay);
 void getSystemInfo();
-void getUsers();
+void getUsers(int write_pipe);
 void getCpuNumber();
 void getCpuUsage(int write_pipe, int tdelay);
 void getMemoryUsage(int write_pipe);
