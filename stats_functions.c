@@ -361,13 +361,20 @@ void allInfoUpdate(int samples, int tdelay)
         int status;
         waitpid(memory_pid, &status, WNOHANG);
 
-        // read and print output
         if (FD_ISSET(memory_pipe[0], &read_fds))
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            printf("%s", buf);
+            int bytes_read = read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            if (bytes_read > 0)
+            {
+                buf[bytes_read] = '\0';
+                printf("%s", buf);
+            }
+            else
+            {
+                printf("Error reading from pipe\n");
+            }
         }
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
