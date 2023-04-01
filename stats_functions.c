@@ -119,7 +119,7 @@ void getUsers(int write_pipe, int size_pipe)
     endutxent();
 
     // send the buffer to the pipe
-    write(write_pipe, buf, offset - 1);
+    write(write_pipe, buf, offset);
 
     // send size
     char str[100];
