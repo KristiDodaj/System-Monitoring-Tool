@@ -448,12 +448,7 @@ void allInfoUpdate(int samples, int tdelay)
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            ssize_t num_bytes_read = read(user_pipe[0], buf, sizeof(buf));
-            if (num_bytes_read == -1)
-            {
-                perror("read");
-                exit(EXIT_FAILURE);
-            }
+            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             printf("%s", buf);
         }
 
@@ -466,7 +461,12 @@ void allInfoUpdate(int samples, int tdelay)
         {
             // Read and print the user data from the user_pipe
             char buf[2024];
-            read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            ssize_t num_bytes_read = read(user_pipe[0], buf, sizeof(buf));
+            if (num_bytes_read == -1)
+            {
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
             printf("%s", buf);
         }
 
