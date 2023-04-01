@@ -853,15 +853,107 @@ void allInfoSequential(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
+    // create pipes for communication
+    int mem_pipe[2], cpu_pipe[2], user_pipe[2], size_pipe[2];
+    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
+    {
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
+
+    // child process for memory usage
+    pid_t mem_pid = fork();
+    if (mem_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (mem_pid == 0)
+    {
+        close(mem_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getMemoryUsage(mem_pipe[1]); // write to pipe
+            sleep(tdelay);               // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    // child process for cpu usage
+    pid_t cpu_pid = fork();
+    if (cpu_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (cpu_pid == 0)
+    {
+        close(cpu_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
+        }
+
+        exit(0); // exit child process
+    }
+
+    // child process for users
+    pid_t user_pid = fork();
+    if (user_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (user_pid == 0)
+    {
+        close(user_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+            sleep(tdelay);                        // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    // parent process
+
+    // close unused write ends of pipes
+    close(mem_pipe[1]);
+    close(cpu_pipe[1]);
+    close(user_pipe[1]);
+    close(size_pipe[1]);
+
     // clear terminal before starting
     printf("\033c");
 
-    // float usage;
+    float usage;
+
+    // wait for all child processes to finish
+    fd_set read_fds;
+
+    int max_fd = mem_pipe[0];
+    if (cpu_pipe[0] > max_fd)
+    {
+        max_fd = cpu_pipe[0];
+    }
+    if (user_pipe[0] > max_fd)
+    {
+        max_fd = user_pipe[0];
+    }
 
     // print all info sequentially
     for (int i = 0; i < samples; i++)
     {
-        // usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(mem_pipe[0], &read_fds);
+        FD_SET(cpu_pipe[0], &read_fds);
+        FD_SET(user_pipe[0], &read_fds);
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
         printf("\r"); // clear current line in case CTRL Z has been called
         printf(">>> Iteration: %d\n", i + 1);
         header(samples, tdelay);
@@ -873,7 +965,13 @@ void allInfoSequential(int samples, int tdelay)
         {
             if (j == i)
             {
-                // getMemoryUsage();
+                // read and print output
+                if (FD_ISSET(mem_pipe[0], &read_fds))
+                {
+                    char buf[100];
+                    read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+                    printf("%s", buf);
+                }
             }
             else
             {
@@ -882,12 +980,22 @@ void allInfoSequential(int samples, int tdelay)
         }
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
-        // getUsers();
+        // Read and print the user data from the user_pipe
+        char size[100];
+        read(size_pipe[0], size, sizeof(size));
+        int length = atoi(size);
+        char buf[length];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
         printf("---------------------------------------\n");
         getCpuNumber();
 
         // print usage
-        // printf(" total cpu use = %.10f %%\n", usage);
+        // Read and print the CPU usage data from the cpu_pipe
+        char buf2[1024];
+        read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
+        usage = atof(buf2);
+        printf(" total cpu use = %.10f %%\n", usage);
 
         printf("\n");
 
