@@ -69,10 +69,10 @@ void getSystemInfo()
 
 void getUsers(int write_pipe, int size_pipe)
 {
-    // This function will print out the list of users along with each of their connected sessions using the <utmpx.h> C library
-    // and reading through the utmp user log file.
+    // This function will write to the write_pipe the list of users along with each of their connected sessions using the <utmpx.h> C library
+    // and reading through the utmp user log file. It will also write the size of the total string through a second pipe (size_pipe).
     // Example Output:
-    // getUsers() prints
+    // getUsers() writes
     //
     // dodajkri      pts/1 (tmux(97972).%0)
     // dodajkri      pts/2 (tmux(97972).%2)
@@ -186,12 +186,12 @@ void getCpuNumber()
 void getCpuUsage(int write_pipe, int tdelay)
 {
     // This function takes the second interval (int tdelay), and compares two measurements that are tdelay seconds apart done by reading the /proc/stat file.
-    // The function will return the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places.
+    // The function will write the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places to the write_pipe.
     // FORMULA FOR CALCULATION: (U2-U1/T2-T1) * 100 WHERE T IS TOTAL TIME AND U IS TOTAL TIME WITHOUT IDLE TIME
     // Example Output:
     // getCpuUsage(1)
     //
-    // returns: 1.1656951904
+    // writes: 1.1656951904
 
     // declare and populate all the desired times spent by the CPU
     long int user;
@@ -274,11 +274,11 @@ void getCpuUsage(int write_pipe, int tdelay)
 
 void getMemoryUsage(int write_pipe)
 {
-    // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
+    // This function writes the value of total and used Physical RAM as well as the total and used Virtual Ram to the write_pipe.
     // This is being done by using the <sys/sysinfo.h> C library.
     // Note that this function defines 1Gb = 1024Kb (i.e the function uses binary prefixes)
     // Example Output:
-    // getMemoryUsage() prints
+    // getMemoryUsage() writes
     //
     // 7.18 GB / 7.77 GB  --  7.30 GB / 9.63
 
@@ -317,6 +317,7 @@ void allInfoUpdate(int samples, int tdelay)
     // This function will take in int samples and tdelay and prints out all the system information that will update
     // in the specified time interval and the specified number of samples. The information given includes memory usage,
     // user logs, cpu information, system information and are implemented through the above listed functions.
+    // NOTE: Cpu Usage, Memory Usage, and Users are individual processes that communicate through pipes
     // Example Output:
     // allInfoUpdate(10, 1) prints
     //
@@ -357,7 +358,7 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
-    // create child processes
+    // child process for memory usage
     pid_t mem_pid = fork();
     if (mem_pid < 0)
     {
@@ -366,7 +367,6 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
-        // child process for memory usage
         close(mem_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
@@ -378,7 +378,7 @@ void allInfoUpdate(int samples, int tdelay)
     }
 
     // child process for cpu usage
-    pid_t cpu_pid = fork(); // fork for CPU usage child process
+    pid_t cpu_pid = fork();
     if (cpu_pid < 0)
     {
         perror("fork");
@@ -386,7 +386,6 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (cpu_pid == 0)
     {
-        // child process for CPU usage
         close(cpu_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
@@ -396,7 +395,8 @@ void allInfoUpdate(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    pid_t user_pid = fork(); // fork for CPU usage child process
+    // child process for users
+    pid_t user_pid = fork();
     if (user_pid < 0)
     {
         perror("fork");
@@ -404,7 +404,6 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (user_pid == 0)
     {
-        // child process for CPU usage
         close(user_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
@@ -531,6 +530,7 @@ void usersUpdate(int samples, int tdelay)
     // This function will take in int samples and tdelay and prints out all the user information that will update
     // in the specified time interval and the specified number of samples. The information given includes users logged in,
     // their individual sessions, and system information.
+    // NOTE: Getting users is an individual processes that communicates through pipes
     // Example Output:
     // usersUpdate(10, 1) prints
     //
@@ -549,28 +549,76 @@ void usersUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
+    int user_pipe[2], size_pipe[2];
+    if (pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
+    {
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
+
+    // child process for memory usage
+    pid_t user_pid = fork();
+    if (user_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (user_pid == 0)
+    {
+        close(user_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+            sleep(tdelay);                        // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    // parent process
+
+    // close unused write ends of pipes
+    close(user_pipe[1]);
+    close(size_pipe[1]);
+
     // clear terminal before starting
     printf("\033c");
 
     // print all user information
     for (int i = 0; i < samples; i++)
     {
+
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(user_pipe[0], &read_fds);
+        select(user_pipe[0], &read_fds, NULL, NULL, NULL);
+
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
-        // getUsers();
+
+        // Read and print the user data from the user_pipe
+        char size[100];
+        read(size_pipe[0], size, sizeof(size));
+        int length = atoi(size);
+        char buf[length];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
+
         printf("---------------------------------------\n");
 
         if (i != samples - 1)
         {
-            // wait tdelay
-            sleep(tdelay);
             // clear buffer
             fflush(stdout);
             // clear screen
             printf("\033c");
         }
     }
+
+    // wait for processes to finish so no orphan or zombie cases
+    int status;
+    waitpid(user_pid, &status, 0);
 
     // print the ending system details
     printf("### System Information ### \n");
@@ -583,6 +631,7 @@ void systemUpdate(int samples, int tdelay)
     // This function will take in int samples and tdelay and prints out the system information that will update
     // in the specified time interval and the specified number of samples. The information given includes memory usage,
     // cpu information, system information and are implemented through the above listed functions.
+    // NOTE: Cpu Usage and Memory Usage are individual processes that communicate through pipes
     // Example Output:
     // systemUpdate(10, 1) prints
     //
@@ -668,6 +717,7 @@ void allInfoSequential(int samples, int tdelay)
     // This function will take in int samples and tdelay and prints out all the system information that will print sequentially
     // in the specified time interval and the specified number of samples. The information given includes memory usage,
     // user logs, cpu information, system information and are implemented through the above listed functions.
+    // NOTE: Cpu Usage, Memory Usage, and Users are individual processes that communicate through pipes
     // Example Output:
     // allInfoSequential(2, 2) prints
     //
@@ -765,6 +815,7 @@ void usersSequential(int samples, int tdelay)
     // This function will take in int samples and tdelay and prints out all the user information that will print sequentially
     // in the specified time interval and the specified number of samples. The information given includes users logged in,
     // their individual sessions, and system information.
+    // NOTE: Getting users is an individual process that communicates through pipes
     // Example Output:
     // usersSequential(2, 2) prints
     //
@@ -830,6 +881,7 @@ void systemSequential(int samples, int tdelay)
     // This function will take in int samples and tdelay and prints out the system information that will print sequentially
     // in the specified time interval and the specified number of samples. The information given includes memory usage,
     // cpu information, system information and are implemented through the above listed functions.
+    // NOTE: Cpu Usage and Memory Usage are individual processes that communicate through pipes
     // Example Output:
     // systemSequential(2, 2) prints
     //
