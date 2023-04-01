@@ -234,7 +234,7 @@ float getCpuUsage(int tdelay)
     return usage;
 }
 
-void getMemoryUsage(int memory_pipe[2])
+void getMemoryUsage(int write_pipe)
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
@@ -268,7 +268,7 @@ void getMemoryUsage(int memory_pipe[2])
     sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 
     // write output to pipe
-    write(write_pipe[1], buf, strlen(buf) + 1);
+    write(write_pipe, buf, strlen(buf) + 1);
 
     // free allocated memory
     free(buf);
@@ -329,7 +329,7 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for memory usage
         close(memory_pipe[0]);
-        getMemoryUsage(memory_pipe);
+        getMemoryUsage(memory_pipe[1]);
         exit(EXIT_SUCCESS);
     }
 
@@ -356,12 +356,13 @@ void allInfoUpdate(int samples, int tdelay)
         FD_SET(memory_pipe[0], &read_fds);
         select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
+        waitpid(memory_pid, &status, WNOHANG);
+
         // read and print output
         if (FD_ISSET(memory_pipe[0], &read_fds))
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            memset(buf, 0, sizeof(buf));            // clear buffer
             read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             printf("%s", buf);
         }
