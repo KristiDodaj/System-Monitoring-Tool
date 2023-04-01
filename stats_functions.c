@@ -1002,6 +1002,12 @@ void allInfoSequential(int samples, int tdelay)
         fflush(stdout);
     }
 
+    // wait for processes to finish so no orphan or zombie cases
+    int status;
+    waitpid(mem_pid, &status, 0);
+    waitpid(cpu_pid, &status, 0);
+    waitpid(user_pid, &status, 0);
+
     // print the ending system details
     printf("\033[1A");
     printf("---------------------------------------\n");
@@ -1045,18 +1051,68 @@ void usersSequential(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
+    int user_pipe[2], size_pipe[2];
+    if (pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
+    {
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
+
+    // child process for memory usage
+    pid_t user_pid = fork();
+    if (user_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (user_pid == 0)
+    {
+        close(user_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+            sleep(tdelay);                        // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    // parent process
+
+    // close unused write ends of pipes
+    close(user_pipe[1]);
+    close(size_pipe[1]);
+
     // clear terminal before starting
     printf("\033c");
+
+    fd_set read_fds;
 
     // print user info sequentially
     for (int i = 0; i < samples; i++)
     {
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(user_pipe[0], &read_fds);
+        select(user_pipe[0] + 1, &read_fds, NULL, NULL, NULL);
+
         printf("\r"); // clear current line in case CTRL Z has been called
         printf(">>>Iteration: %d\n", i + 1);
         header(samples, tdelay);
         printf("---------------------------------------\n");
         printf("### Sessions/users ### \n");
-        // getUsers();
+        // read and print output
+        if (FD_ISSET(user_pipe[0], &read_fds))
+        {
+
+            // Read and print the user data from the user_pipe
+            char size[100];
+            read(size_pipe[0], size, sizeof(size));
+            int length = atoi(size);
+            char buf[length];
+            read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
+        }
         printf("\n");
 
         if (i != samples - 1)
@@ -1067,6 +1123,10 @@ void usersSequential(int samples, int tdelay)
             fflush(stdout);
         }
     }
+
+    // wait for processes to finish so no orphan or zombie cases
+    int status;
+    waitpid(user_pid, &status, 0);
 
     // print the ending system details
     printf("\033[1A");
