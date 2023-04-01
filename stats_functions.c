@@ -353,7 +353,7 @@ void allInfoUpdate(int samples, int tdelay)
     }
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    printf(" total cpu use = %.10f \n", usage);
 
     // print the ending system details
     printf("---------------------------------------\n");
