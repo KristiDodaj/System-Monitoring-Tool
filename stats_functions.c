@@ -470,7 +470,7 @@ void allInfoUpdate(int samples, int tdelay)
         printf("\033[J"); // clears everything below the current line
 
         // Read and print the user data from the user_pipe
-        char buf[2024];
+        char buf[5024];
         read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
         printf("%s", buf);
 
