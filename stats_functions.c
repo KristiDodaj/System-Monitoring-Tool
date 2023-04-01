@@ -434,7 +434,7 @@ void allInfoUpdate(int samples, int tdelay)
         {
             // Read and print the CPU usage data from the cpu_pipe
             char cpu_buf[1024];
-            bytesRead = read(cpu_pipe[0], cpu_buf, sizeof(cpu_buf) - 1);
+            size_t bytesRead = read(cpu_pipe[0], cpu_buf, sizeof(cpu_buf) - 1);
             if (bytesRead > 0)
             {
                 cpu_buf[bytesRead] = '\0';
