@@ -67,7 +67,7 @@ void getSystemInfo()
     printf("Architecture = %s \n", info.machine);
 }
 
-void getUsers(int write_pipe)
+void getUsers(int write_pipe, int size_pipe)
 {
     // This function will print out the list of users along with each of their connected sessions using the <utmpx.h> C library
     // and reading through the utmp user log file.
@@ -120,6 +120,11 @@ void getUsers(int write_pipe)
 
     // send the buffer to the pipe
     write(write_pipe, buf, offset);
+
+    // send size
+    char str[100];
+    sprintf(str, "%d", offset);
+    write(size_pipe, str, strlen(str) + 1);
 
     // free the allocated memory
     free(buf);
@@ -345,8 +350,8 @@ void allInfoUpdate(int samples, int tdelay)
     // ---------------------------------------
 
     // create pipes for communication
-    int mem_pipe[2], cpu_pipe[2], user_pipe[2];
-    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0)
+    int mem_pipe[2], cpu_pipe[2], user_pipe[2], size_pipe[2];
+    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
     {
         perror("Error creating pipes");
         exit(EXIT_FAILURE);
@@ -403,8 +408,8 @@ void allInfoUpdate(int samples, int tdelay)
         close(user_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
-            getUsers(user_pipe[1]); // write to pipe
-            sleep(tdelay);          // sleep for tdelay seconds
+            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+            sleep(tdelay);                        // sleep for tdelay seconds
         }
 
         exit(0); // exit child process
@@ -416,6 +421,7 @@ void allInfoUpdate(int samples, int tdelay)
     close(mem_pipe[1]);
     close(cpu_pipe[1]);
     close(user_pipe[1]);
+    close(size_pipe[1]);
 
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
@@ -470,16 +476,11 @@ void allInfoUpdate(int samples, int tdelay)
         printf("\033[J"); // clears everything below the current line
 
         // Read and print the user data from the user_pipe
-        char *buf = NULL;
-        int buf_size = 0;
-        int bytes_read = 0;
-        do
-        {
-            buf_size += 1024;
-            buf = realloc(buf, buf_size);
-            bytes_read += read(user_pipe[0], buf + bytes_read, buf_size - bytes_read);
-        } while (bytes_read == buf_size);
-
+        char size[100];
+        read(size_pipe[0], size, sizeof(size));
+        int length = atoi(size);
+        char buf[length];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
         printf("%s", buf);
 
         printf("---------------------------------------\n");
