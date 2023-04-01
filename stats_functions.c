@@ -413,7 +413,7 @@ void allInfoUpdate(int samples, int tdelay)
             fflush(stdout);
 
             // wait for the child process to finish
-            waitpid(mem_pid, NULL, 0);
+            wait(NULL); // wait for the child process to exit
         }
 
         // print usage
