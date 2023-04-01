@@ -311,17 +311,6 @@ void allInfoUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
-    // create pipes for communication
-    int memory_pipe[2];
-    if (pipe(memory_pipe) < 0)
-    {
-        perror("Error creating pipes");
-        exit(EXIT_FAILURE);
-    }
-
-    // close unused write ends of pipes
-    close(memory_pipe[1]);
-
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
 
@@ -339,6 +328,16 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
+        // create pipes for communication
+        int memory_pipe[2];
+        if (pipe(memory_pipe) < 0)
+        {
+            perror("Error creating pipes");
+            exit(EXIT_FAILURE);
+        }
+
+        // close unused write ends of pipes
+        close(memory_pipe[1]);
 
         // create child processes
         pid_t memory_pid;
