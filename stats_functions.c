@@ -376,8 +376,12 @@ void allInfoUpdate(int samples, int tdelay)
             {
                 printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
                 char buf[100];
-                read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-                printf("%s", buf);
+                ssize_t bytesRead = read(mem_pipe[0], buf, sizeof(buf) - 1); // read memory usage from pipe, leave space for the null terminator
+                if (bytesRead > 0)
+                {
+                    buf[bytesRead] = '\0'; // add null terminator
+                    printf("%s", buf);
+                }
             }
 
             printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
