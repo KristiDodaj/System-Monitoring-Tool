@@ -10,6 +10,7 @@
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
+#include <math.h>
 
 void header(int samples, int tdelay)
 {
