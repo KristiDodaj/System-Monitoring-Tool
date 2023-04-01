@@ -311,6 +311,28 @@ void allInfoUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
+    // create pipes for communication
+    int memory_pipe[2];
+    if (pipe(memory_pipe) < 0)
+    {
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
+
+    // close unused write ends of pipes
+    close(memory_pipe[1]);
+
+    // create child processes
+    pid_t memory_pid;
+    memory_pid = fork();
+    if (memory_pid == 0)
+    {
+        // child process for memory usage
+        close(memory_pipe[0]);
+        getMemoryUsage(memory_pipe[1]);
+        exit(EXIT_SUCCESS);
+    }
+
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
 
@@ -328,27 +350,6 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        // create pipes for communication
-        int memory_pipe[2];
-        if (pipe(memory_pipe) < 0)
-        {
-            perror("Error creating pipes");
-            exit(EXIT_FAILURE);
-        }
-
-        // close unused write ends of pipes
-        close(memory_pipe[1]);
-
-        // create child processes
-        pid_t memory_pid;
-        memory_pid = fork();
-        if (memory_pid == 0)
-        {
-            // child process for memory usage
-            close(memory_pipe[0]);
-            getMemoryUsage(memory_pipe[1]);
-            exit(EXIT_SUCCESS);
-        }
 
         fd_set read_fds;
         FD_ZERO(&read_fds);
