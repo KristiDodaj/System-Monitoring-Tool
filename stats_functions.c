@@ -315,10 +315,11 @@ void allInfoUpdate(int samples, int tdelay)
 
     // create pipes for communication
     int mem_pipe[2];
-    if (pipe(mem_pipe) < 0)
+    int sync_pipe[2]; // add sync_pipe
+    if (pipe(mem_pipe) == -1 || pipe(sync_pipe) == -1)
     {
-        perror("Error creating pipes");
-        exit(EXIT_FAILURE);
+        perror("pipe");
+        exit(1);
     }
 
     // create child processes
@@ -331,14 +332,18 @@ void allInfoUpdate(int samples, int tdelay)
     else if (mem_pid == 0)
     {
         // child process for memory usage
-        close(mem_pipe[0]); // close unused read end
+        close(mem_pipe[0]);  // close unused read end
+        close(sync_pipe[1]); // close unused write end
+
         for (int i = 0; i < samples; i++)
         {
-            getMemoryUsage(mem_pipe[1]); // write to pipe
-            sleep(tdelay);               // sleep for tdelay seconds
-        }
+            char sync;
+            read(sync_pipe[0], &sync, 1); // wait for signal from parent process
 
-        exit(0); // exit child process
+            getMemoryUsage(mem_pipe[1]); // write to pipe
+            sleep(tdelay);               // wait for tdelay seconds
+        }
+        exit(0); // exit the child process after calculating memory usage for all samples
     }
     else
     {
@@ -346,6 +351,7 @@ void allInfoUpdate(int samples, int tdelay)
         // parent process
         // close unused write ends of pipes
         close(mem_pipe[1]);
+        close(sync_pipe[0]); // close unused read end
 
         // clear terminal before starting and take an intial measurement for the cpu usage calculation
         printf("\033c");
@@ -375,6 +381,9 @@ void allInfoUpdate(int samples, int tdelay)
             if (ret > 0 && (fds[0].revents & POLLIN))
             {
                 printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+                char sync = '1';
+                write(sync_pipe[1], &sync, 1); // send signal to child process
+
                 char buf[100];
                 ssize_t bytesRead = read(mem_pipe[0], buf, sizeof(buf) - 1); // read memory usage from pipe, leave space for the null terminator
                 if (bytesRead > 0)
