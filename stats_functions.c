@@ -355,7 +355,7 @@ void allInfoUpdate(int samples, int tdelay)
 
         // parent process
         // close unused write ends of pipes
-        close(memory_pipe[1]);
+        close(mem_pipe[1]);
 
         // wait for all child processes to finish
         int status;
