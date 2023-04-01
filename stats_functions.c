@@ -123,7 +123,7 @@ void getUsers(int write_pipe, int size_pipe)
 
     // send size
     char str[100];
-    sprintf(str, "%d", offset);
+    sprintf(str, "%d", offset - 1);
     write(size_pipe, str, strlen(str) + 1);
 
     // free the allocated memory
