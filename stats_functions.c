@@ -335,6 +335,10 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_SUCCESS);
     }
 
+    // parent process
+    // close unused write ends of pipes
+    close(memory_pipe[1]);
+
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
 
@@ -361,20 +365,13 @@ void allInfoUpdate(int samples, int tdelay)
         int status;
         waitpid(memory_pid, &status, WNOHANG);
 
+        // read and print output
         if (FD_ISSET(memory_pipe[0], &read_fds))
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            int bytes_read = read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            if (bytes_read > 0)
-            {
-                buf[bytes_read] = '\0';
-                printf("%s", buf);
-            }
-            else
-            {
-                printf("Error reading from pipe\n");
-            }
+            read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
         }
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
