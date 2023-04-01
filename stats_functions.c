@@ -331,18 +331,20 @@ void allInfoUpdate(int samples, int tdelay)
     {
         // child process for memory usage
         close(mem_pipe[0]); // close unused read end
-        for (int i = 0; i < samples; i++)
+        while (1)
         {
             getMemoryUsage(mem_pipe[1]); // write to pipe
-            sleep(tdelay);
         }
-        exit(0);
     }
     else
     {
 
-        // clear terminal before starting and take an intial measurement for the cpu usage calculation
-        printf("\033c");
+        // parent process
+        // close unused write ends of pipes
+        close(memory_pipe[1])
+
+            // clear terminal before starting and take an intial measurement for the cpu usage calculation
+            printf("\033c");
 
         // print headers
         header(samples, tdelay);
@@ -359,19 +361,20 @@ void allInfoUpdate(int samples, int tdelay)
         for (int i = 0; i < samples; i++)
         {
 
-            // parent process
-            // close unused write ends of pipes
-            close(mem_pipe[1]);
-
             // wait for all child processes to finish
-            int status;
-            waitpid(mem_pid, &status, 0);
+            fd_set read_fds;
+            FD_ZERO(&read_fds);
+            FD_SET(mem_pipe[0], &read_fds);
+            select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
             // read and print output
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            char buf[100];
-            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            printf("%s", buf);
+            if (FD_ISSET(memory_pipe[0], &read_fds))
+            {
+                printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+                char buf[100];
+                read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+                printf("%s", buf);
+            }
 
             printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
             printf("---------------------------------------\n");
@@ -401,6 +404,8 @@ void allInfoUpdate(int samples, int tdelay)
             // clear buffer
             fflush(stdout);
         }
+
+        kill(mem_pid, SIGKILL);
 
         // print usage
         printf(" total cpu use = %.10f %%\n", usage);
