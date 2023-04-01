@@ -599,13 +599,18 @@ void usersUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
 
-        // Read and print the user data from the user_pipe
-        char size[100];
-        read(size_pipe[0], size, sizeof(size));
-        int length = atoi(size);
-        char buf[length];
-        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-        printf("%s", buf);
+        // read and print output
+        if (FD_ISSET(user_pipe[0], &read_fds))
+        {
+
+            // Read and print the user data from the user_pipe
+            char size[100];
+            read(size_pipe[0], size, sizeof(size));
+            int length = atoi(size);
+            char buf[length];
+            read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
+        }
 
         printf("---------------------------------------\n");
 
