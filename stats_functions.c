@@ -312,52 +312,57 @@ void allInfoUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
-    // clear terminal before starting and take an intial measurement for the cpu usage calculation
-    printf("\033c");
-
-    // print headers
-    header(samples, tdelay);
-    printf("---------------------------------------\n");
-    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
-
-    // keep track of lines
-    int usersLineNumber = samples + 6;
-    int memoryLineNumber = 6;
-
-    float usage;
-
-    // print all information
-    for (int i = 0; i < samples; i++)
+    // create pipes for communication
+    int mem_pipe[2];
+    if (pipe(mem_pipe) < 0)
     {
-        // create pipes for communication
-        int mem_pipe[2];
-        if (pipe(mem_pipe) < 0)
-        {
-            perror("Error creating pipes");
-            exit(EXIT_FAILURE);
-        }
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
 
-        // create child processes
-        pid_t mem_pid = fork();
-        if (mem_pid < 0)
+    // create child processes
+    pid_t mem_pid = fork();
+    if (mem_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (mem_pid == 0)
+    {
+        // child process for memory usage
+        close(mem_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
         {
-            perror("fork");
-            exit(1);
-        }
-        else if (mem_pid == 0)
-        {
-            // child process for memory usage
-            close(mem_pipe[0]);          // close unused read end
             getMemoryUsage(mem_pipe[1]); // write to pipe
             sleep(tdelay);               // sleep for tdelay seconds
-            exit(0);                     // exit child process
         }
-        else
-        {
 
-            // parent process
-            // close unused write ends of pipes
-            close(mem_pipe[1]);
+        exit(0); // exit child process
+    }
+    else
+    {
+
+        // parent process
+        // close unused write ends of pipes
+        close(mem_pipe[1]);
+
+        // clear terminal before starting and take an intial measurement for the cpu usage calculation
+        printf("\033c");
+
+        // print headers
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+        // keep track of lines
+        int usersLineNumber = samples + 6;
+        int memoryLineNumber = 6;
+
+        float usage;
+
+        // print all information
+        for (int i = 0; i < samples; i++)
+        {
 
             // wait for all child processes to finish
             fd_set read_fds;
@@ -405,16 +410,16 @@ void allInfoUpdate(int samples, int tdelay)
             // wait for the child process to finish
             waitpid(mem_pid, NULL, 0);
         }
+
+        // print usage
+        printf(" total cpu use = %.10f %%\n", usage);
+
+        // print the ending system details
+        printf("---------------------------------------\n");
+        printf("### System Information ### \n");
+        getSystemInfo();
+        printf("---------------------------------------\n");
     }
-
-    // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
-
-    // print the ending system details
-    printf("---------------------------------------\n");
-    printf("### System Information ### \n");
-    getSystemInfo();
-    printf("---------------------------------------\n");
 }
 
 void usersUpdate(int samples, int tdelay)
