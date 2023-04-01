@@ -470,8 +470,16 @@ void allInfoUpdate(int samples, int tdelay)
         printf("\033[J"); // clears everything below the current line
 
         // Read and print the user data from the user_pipe
-        char buf[5024];
-        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        char *buf = NULL;
+        int buf_size = 0;
+        int bytes_read = 0;
+        do
+        {
+            buf_size += 1024;
+            buf = realloc(buf, buf_size);
+            bytes_read += read(user_pipe[0], buf + bytes_read, buf_size - bytes_read);
+        } while (bytes_read == buf_size);
+
         printf("%s", buf);
 
         printf("---------------------------------------\n");
