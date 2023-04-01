@@ -469,13 +469,10 @@ void allInfoUpdate(int samples, int tdelay)
         printf("### Sessions/users ###\n");
         printf("\033[J"); // clears everything below the current line
 
-        if (FD_ISSET(user_pipe[0], &read_fds))
-        {
-            // Read and print the user data from the user_pipe
-            char buf[2024];
-            read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            printf("%s", buf);
-        }
+        // Read and print the user data from the user_pipe
+        char buf[2024];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
 
         printf("---------------------------------------\n");
         getCpuNumber();
