@@ -349,7 +349,7 @@ void allInfoUpdate(int samples, int tdelay)
     else
     {
         // child process for cpu usage
-        cpu_pid = fork(); // fork for CPU usage child process
+        pid_t cpu_pid = fork(); // fork for CPU usage child process
         if (cpu_pid < 0)
         {
             perror("fork");
@@ -568,7 +568,7 @@ void systemUpdate(int samples, int tdelay)
         if (i > 0)
         {
             // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            // printf(" total cpu use = %.10f %%\n", usage);
         }
 
         // usage = getCpuUsage(tdelay); // get current measurement for cpu usage
@@ -647,7 +647,7 @@ void allInfoSequential(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
-    float usage;
+    // float usage;
 
     // print all info sequentially
     for (int i = 0; i < samples; i++)
@@ -801,7 +801,7 @@ void systemSequential(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
-    float usage;
+    // float usage;
 
     // print system info sequentially
     for (int i = 0; i < samples; i++)
