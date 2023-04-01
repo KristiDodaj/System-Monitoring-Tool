@@ -87,13 +87,25 @@ void getUsers(int write_pipe)
     int count = 0;
     while ((users = getutxent()) != NULL)
     {
-        count++;
+        // validate that this is a user process
+        if (users->ut_type == USER_PROCESS)
+        {
+            count++;
+        }
     }
 
-    char buf[count * 1024];
+    // allocate memory for the buffer
+    char *buf = (char *)malloc(count * 1024);
+    if (!buf)
+    {
+        perror("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
+
     int offset = 0;
 
     // read through utmp file
+    setutxent();
     while ((users = getutxent()) != NULL)
     {
         // validate that this is a user process
@@ -101,16 +113,16 @@ void getUsers(int write_pipe)
         {
             offset += sprintf(buf + offset, "%s      %s (%s) \n", users->ut_user, users->ut_line, users->ut_host);
         }
-
-        // NOTE: No need to error check since it returns NULL when there are no entries
-        //       thus not causing any issues to the program.
     }
 
     // close the utmp file
     endutxent();
 
     // send the buffer to the pipe
-    write(write_pipe, buf, strlen(buf));
+    write(write_pipe, buf, offset);
+
+    // free the allocated memory
+    free(buf);
 }
 
 void getCpuNumber()
@@ -461,12 +473,7 @@ void allInfoUpdate(int samples, int tdelay)
         {
             // Read and print the user data from the user_pipe
             char buf[2024];
-            ssize_t num_bytes_read = read(user_pipe[0], buf, sizeof(buf));
-            if (num_bytes_read == -1)
-            {
-                perror("read");
-                exit(EXIT_FAILURE);
-            }
+            read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             printf("%s", buf);
         }
 
