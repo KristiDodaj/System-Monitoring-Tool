@@ -352,49 +352,52 @@ void allInfoUpdate(int samples, int tdelay)
             getMemoryUsage(mem_pipe[1]); // write to pipe
             exit(0);
         }
-
-        // parent process
-        // close unused write ends of pipes
-        close(mem_pipe[1]);
-
-        // wait for all child processes to finish
-        int status;
-        waitpid(mem_pid, &status, 0);
-
-        // read and print output
-
-        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-        char buf[100];
-        read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-        printf("%s", buf);
-
-        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-        printf("---------------------------------------\n");
-        printf("### Sessions/users ###\n");
-        printf("\033[J"); // clears everything below the current line
-        getUsers();
-        printf("---------------------------------------\n");
-        getCpuNumber();
-
-        if (i > 0)
+        else
         {
-            // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+
+            // parent process
+            // close unused write ends of pipes
+            close(mem_pipe[1]);
+
+            // wait for all child processes to finish
+            int status;
+            waitpid(mem_pid, &status, 0);
+
+            // read and print output
+
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            char buf[100];
+            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
+
+            printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+            printf("---------------------------------------\n");
+            printf("### Sessions/users ###\n");
+            printf("\033[J"); // clears everything below the current line
+            getUsers();
+            printf("---------------------------------------\n");
+            getCpuNumber();
+
+            if (i > 0)
+            {
+                // print usage
+                printf(" total cpu use = %.10f %%\n", usage);
+            }
+
+            usage = getCpuUsage(tdelay); // get current measurement for cpu usage
+
+            if (i == samples - 1)
+            {
+                printf("\033[1A"); // move the cursor up one line
+                printf("\033[2K"); // clear the entire line
+            }
+
+            // update line numbers
+            memoryLineNumber = memoryLineNumber + 1;
+
+            // clear buffer
+            fflush(stdout);
         }
-
-        usage = getCpuUsage(tdelay); // get current measurement for cpu usage
-
-        if (i == samples - 1)
-        {
-            printf("\033[1A"); // move the cursor up one line
-            printf("\033[2K"); // clear the entire line
-        }
-
-        // update line numbers
-        memoryLineNumber = memoryLineNumber + 1;
-
-        // clear buffer
-        fflush(stdout);
     }
 
     // print usage
