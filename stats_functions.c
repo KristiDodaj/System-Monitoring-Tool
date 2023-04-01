@@ -584,6 +584,8 @@ void usersUpdate(int samples, int tdelay)
     // clear terminal before starting
     printf("\033c");
 
+    fd_set read_fds;
+
     // print all user information
     for (int i = 0; i < samples; i++)
     {
