@@ -10,6 +10,7 @@
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
+#include <poll.h>
 
 void header(int samples, int tdelay)
 {
