@@ -356,6 +356,7 @@ void allInfoUpdate(int samples, int tdelay)
         FD_SET(memory_pipe[0], &read_fds);
         select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
+        int status;
         waitpid(memory_pid, &status, WNOHANG);
 
         // read and print output
