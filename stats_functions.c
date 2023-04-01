@@ -175,6 +175,18 @@ float getCpuUsage(int tdelay)
     long int idle;
     long int iowait;
 
+    long int user2;
+    long int nice2;
+    long int system2;
+    long int irq2;
+    long int softirq2;
+    long int steal2;
+    long int guest2;
+    long int guest_nice2;
+
+    long int idle2;
+    long int iowait2;
+
     // open file and retrieve each value to do the first measurement
     FILE *info = fopen("/proc/stat", "r");
 
@@ -211,7 +223,7 @@ float getCpuUsage(int tdelay)
         perror("fopen: Error opening /proc/stat for second cpu usage calculation");
     }
 
-    if (fscanf(info2, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice) != 10)
+    if (fscanf(info2, "cpu %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld", &user2, &nice2, &system2, &idle2, &iowait2, &irq2, &softirq2, &steal2, &guest2, &guest_nice2) != 10)
     {
         perror("fscanf: Error reading from /proc/stat for second cpu usage calculation");
         fclose(info2);
@@ -225,8 +237,8 @@ float getCpuUsage(int tdelay)
     // NOTE: The program will exit given a failure to read or open the file since adding unassigned integers will cause a failure
 
     // calculate second measure
-    long int T2 = (user + nice + system + idle + iowait + irq + softirq);
-    long int U2 = T2 - idle;
+    long int T2 = (user2 + nice2 + system2 + idle2 + iowait2 + irq2 + softirq2);
+    long int U2 = T2 - idle2;
 
     // measure and print percentage
     float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
