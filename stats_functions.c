@@ -423,13 +423,10 @@ void allInfoUpdate(int samples, int tdelay)
             printf(" total cpu use = %.10f %%\n", usage);
         }
 
-        if (FD_ISSET(cpu_pipe[0], &read_fds))
-        {
-            // Read and print the CPU usage data from the cpu_pipe
-            char buf[1024];
-            read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            usage = atof(buf);
-        }
+        // Read and print the CPU usage data from the cpu_pipe
+        char buf[1024];
+        read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        usage = atof(buf);
 
         if (i == samples - 1)
         {
