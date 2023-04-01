@@ -408,7 +408,8 @@ void allInfoUpdate(int samples, int tdelay)
             fflush(stdout);
         }
 
-        kill(mem_pid, SIGKILL);
+        int status;
+        waitpid(mem_pid, &status, 0);
 
         // print usage
         printf(" total cpu use = %.10f %%\n", usage);
