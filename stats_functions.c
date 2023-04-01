@@ -405,8 +405,15 @@ void allInfoUpdate(int samples, int tdelay)
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            printf("%s", buf);
+            ssize_t bytesRead = read(mem_pipe[0], buf, sizeof(buf) - 1);
+            if (bytesRead > 0)
+            {
+                buf[bytesRead] = '\0';
+                if (strlen(buf) > 0) // Check for empty string
+                {
+                    printf("%s", buf);
+                }
+            }
         }
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
@@ -422,12 +429,20 @@ void allInfoUpdate(int samples, int tdelay)
             // print usage
             printf(" total cpu use = %.10f %%\n", usage);
         }
+
         if (FD_ISSET(cpu_pipe[0], &read_fds))
         {
             // Read and print the CPU usage data from the cpu_pipe
-            char buf[1024];
-            read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            usage = atof(buf);
+            char cpu_buf[1024];
+            bytesRead = read(cpu_pipe[0], cpu_buf, sizeof(cpu_buf) - 1);
+            if (bytesRead > 0)
+            {
+                cpu_buf[bytesRead] = '\0';
+                if (strlen(cpu_buf) > 0) // Check for empty string
+                {
+                    usage = atof(cpu_buf);
+                }
+            }
         }
 
         if (i == samples - 1)
