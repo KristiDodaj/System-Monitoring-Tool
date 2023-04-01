@@ -77,6 +77,9 @@ void getUsers(int write_pipe, int size_pipe)
     // dodajkri      pts/1 (tmux(97972).%0)
     // dodajkri      pts/2 (tmux(97972).%2)
     // dodajkri      pts/0 (138.51.8.149)
+
+    struct utmpx *users; // initialize utmpx struct
+
     // allocate memory for the buffer
     char *buf = (char *)malloc(count * 1024);
     if (!buf)
