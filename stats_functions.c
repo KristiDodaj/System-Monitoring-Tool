@@ -345,7 +345,7 @@ void allInfoUpdate(int samples, int tdelay)
 
         char string_representation[1046];
         sprintf(string_representation, "%d", tdelay);
-        write(write_pipe, string_representation, strlen(string_representation) + 1);
+        write(mem_pipe[1], string_representation, strlen(string_representation) + 1);
 
         // parent process
         // close unused write ends of pipes
