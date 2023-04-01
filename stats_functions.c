@@ -10,7 +10,6 @@
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
-#include <math.h>
 
 void header(int samples, int tdelay)
 {
@@ -391,7 +390,7 @@ void allInfoUpdate(int samples, int tdelay)
 
     // wait for all child processes to finish
     fd_set read_fds;
-    int max_fd = max(mem_pipe[0], cpu_pipe[0]);
+    int max_fd = (mem_pipe[0] > cpu_pipe[0]) ? mem_pipe[0] : cpu_pipe[0];
 
     // print all information
     for (int i = 0; i < samples; i++)
