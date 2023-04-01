@@ -346,123 +346,117 @@ void allInfoUpdate(int samples, int tdelay)
 
         exit(0); // exit child process
     }
-    else
+
+    // child process for cpu usage
+    pid_t cpu_pid = fork(); // fork for CPU usage child process
+    if (cpu_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (cpu_pid == 0)
+    {
+        // child process for CPU usage
+        close(cpu_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
+        }
+
+        exit(0); // exit child process
+    }
+
+    // parent process
+
+    // close unused write ends of pipes
+    close(mem_pipe[1]);
+    close(cpu_pipe[1]);
+
+    // clear terminal before starting and take an intial measurement for the cpu usage calculation
+    printf("\033c");
+
+    // print headers
+    header(samples, tdelay);
+    printf("---------------------------------------\n");
+    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+    // keep track of lines
+    int usersLineNumber = samples + 6;
+    int memoryLineNumber = 6;
+
+    float usage;
+
+    // wait for all child processes to finish
+    fd_set read_fds;
+    int max_fd = (mem_pipe[0] > cpu_pipe[0]) ? mem_pipe[0] : cpu_pipe[0];
+
+    // print all information
+    for (int i = 0; i < samples; i++)
     {
 
-        // child process for cpu usage
-        pid_t cpu_pid = fork(); // fork for CPU usage child process
-        if (cpu_pid < 0)
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(mem_pipe[0], &read_fds);
+        FD_SET(cpu_pipe[0], &read_fds);
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
+        // read and print output
+        if (FD_ISSET(mem_pipe[0], &read_fds))
         {
-            perror("fork");
-            exit(1);
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            char buf[100];
+            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            printf("%s", buf);
         }
-        else if (cpu_pid == 0)
+
+        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        printf("\033[J"); // clears everything below the current line
+        getUsers();
+        printf("---------------------------------------\n");
+        getCpuNumber();
+
+        if (i > 0)
         {
-            // child process for CPU usage
-            close(cpu_pipe[0]); // close unused read end
-            for (int i = 0; i < samples; i++)
-            {
-                getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
-            }
-
-            exit(0); // exit child process
-        }
-        else
-        {
-
-            // parent process
-
-            // close unused write ends of pipes
-            close(mem_pipe[1]);
-            close(cpu_pipe[1]);
-
-            // clear terminal before starting and take an intial measurement for the cpu usage calculation
-            printf("\033c");
-
-            // print headers
-            header(samples, tdelay);
-            printf("---------------------------------------\n");
-            printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
-
-            // keep track of lines
-            int usersLineNumber = samples + 6;
-            int memoryLineNumber = 6;
-
-            float usage;
-
-            // wait for all child processes to finish
-            fd_set read_fds;
-            int max_fd = (mem_pipe[0] > cpu_pipe[0]) ? mem_pipe[0] : cpu_pipe[0];
-
-            // print all information
-            for (int i = 0; i < samples; i++)
-            {
-
-                // wait for all child processes to finish
-                FD_ZERO(&read_fds);
-                FD_SET(mem_pipe[0], &read_fds);
-                FD_SET(cpu_pipe[0], &read_fds);
-                select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-
-                // read and print output
-                if (FD_ISSET(mem_pipe[0], &read_fds))
-                {
-                    printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-                    char buf[100];
-                    read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-                    printf("%s", buf);
-                }
-
-                printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
-                printf("---------------------------------------\n");
-                printf("### Sessions/users ###\n");
-                printf("\033[J"); // clears everything below the current line
-                getUsers();
-                printf("---------------------------------------\n");
-                getCpuNumber();
-
-                if (i > 0)
-                {
-                    // print usage
-                    printf(" total cpu use = %.10f %%\n", usage);
-                }
-
-                if (FD_ISSET(cpu_pipe[0], &read_fds))
-                {
-                    // Read and print the CPU usage data from the cpu_pipe
-                    char buf[1024];
-                    read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-                    usage = atof(buf);
-                }
-
-                if (i == samples - 1)
-                {
-                    printf("\033[1A"); // move the cursor up one line
-                    printf("\033[2K"); // clear the entire line
-                }
-
-                // update line numbers
-                memoryLineNumber = memoryLineNumber + 1;
-
-                // clear buffer
-                fflush(stdout);
-            }
-
-            // wait for processes to finish so no orphan or zombie cases
-            int status;
-            waitpid(mem_pid, &status, 0);
-            waitpid(cpu_pid, &status, 0);
-
             // print usage
             printf(" total cpu use = %.10f %%\n", usage);
-
-            // print the ending system details
-            printf("---------------------------------------\n");
-            printf("### System Information ### \n");
-            getSystemInfo();
-            printf("---------------------------------------\n");
         }
+
+        if (FD_ISSET(cpu_pipe[0], &read_fds))
+        {
+            // Read and print the CPU usage data from the cpu_pipe
+            char buf[1024];
+            read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            usage = atof(buf);
+        }
+
+        if (i == samples - 1)
+        {
+            printf("\033[1A"); // move the cursor up one line
+            printf("\033[2K"); // clear the entire line
+        }
+
+        // update line numbers
+        memoryLineNumber = memoryLineNumber + 1;
+
+        // clear buffer
+        fflush(stdout);
     }
+
+    // wait for processes to finish so no orphan or zombie cases
+    int status;
+    waitpid(mem_pid, &status, 0);
+    waitpid(cpu_pid, &status, 0);
+
+    // print usage
+    printf(" total cpu use = %.10f %%\n", usage);
+
+    // print the ending system details
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+    printf("---------------------------------------\n");
 }
 
 void usersUpdate(int samples, int tdelay)
