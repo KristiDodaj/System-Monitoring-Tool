@@ -235,7 +235,7 @@ float getCpuUsage(int tdelay)
     return usage;
 }
 
-void getMemoryUsage(int write_pipe)
+void getMemoryUsage()
 {
     // This function prints the value of total and used Physical RAM as well as the total and used Virtual Ram.
     // This is being done by using the <sys/sysinfo.h> C library.
@@ -264,15 +264,7 @@ void getMemoryUsage(int write_pipe)
     double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
     double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
 
-    // build output string
-    char *buf = calloc(1, 50);
-    sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
-
-    // write output to pipe
-    write(write_pipe, buf, strlen(buf) + 1);
-
-    // free allocated memory
-    free(buf);
+    printf("%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 }
 
 void allInfoUpdate(int samples, int tdelay)
@@ -312,28 +304,6 @@ void allInfoUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
-    // create pipes for communication
-    int memory_pipe[2];
-    if (pipe(memory_pipe) < 0)
-    {
-        perror("Error creating pipes");
-        exit(EXIT_FAILURE);
-    }
-
-    // create child processes
-    pid_t memory_pid = fork();
-    if (memory_pid == 0)
-    {
-        // child process for memory usage
-        close(memory_pipe[0]);
-        getMemoryUsage(memory_pipe[1]);
-        exit(EXIT_SUCCESS);
-    }
-
-    // parent process
-    // close unused write ends of pipes
-    close(memory_pipe[1]);
-
     // clear terminal before starting and take an intial measurement for the cpu usage calculation
     printf("\033c");
 
@@ -350,21 +320,9 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        // use select() to wait for data to be available on each pipe
-        fd_set read_fds;
-        FD_ZERO(&read_fds);
-        FD_SET(memory_pipe[0], &read_fds);
-        select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
-        // read and print output
-        if (FD_ISSET(memory_pipe[0], &read_fds))
-        {
-            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
-            char buf[100];
-            read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-            printf("%s", buf);
-        }
-
+        printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+        getMemoryUsage();
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
@@ -375,7 +333,6 @@ void allInfoUpdate(int samples, int tdelay)
 
         if (i > 0)
         {
-
             // print usage
             printf(" total cpu use = %.10f %%\n", usage);
         }
