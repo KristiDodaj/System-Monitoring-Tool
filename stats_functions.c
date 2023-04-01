@@ -493,6 +493,7 @@ void allInfoUpdate(int samples, int tdelay)
     int status;
     waitpid(mem_pid, &status, 0);
     waitpid(cpu_pid, &status, 0);
+    waitpid(user_pid, &status, 0);
 
     // print usage
     printf(" total cpu use = %.10f %%\n", usage);
