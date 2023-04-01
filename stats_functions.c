@@ -110,7 +110,7 @@ void getUsers(int write_pipe)
     endutxent();
 
     // send the buffer to the pipe
-    write(write_pipe, buf, strlen(buf) + 1);
+    write(write_pipe, buf, strlen(buf));
 }
 
 void getCpuNumber()
