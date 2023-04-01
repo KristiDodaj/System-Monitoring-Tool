@@ -329,15 +329,23 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
+        char buf[1046];
+        read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        int tdelay = atoi(buf);
         // child process for memory usage
         close(mem_pipe[0]); // close unused read end
         while (1)
         {
             getMemoryUsage(mem_pipe[1]); // write to pipe
+            sleep(tdelay);
         }
     }
     else
     {
+
+        char string_representation[1046];
+        sprintf(string_representation, "%d", tdelay);
+        write(write_pipe, string_representation, strlen(string_representation) + 1);
 
         // parent process
         // close unused write ends of pipes
