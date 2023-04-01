@@ -368,11 +368,11 @@ void allInfoUpdate(int samples, int tdelay)
             select(FD_SETSIZE, &read_fds, NULL, NULL, NULL);
 
             // read and print output
-            if (FD_ISSET(memory_pipe[0], &read_fds))
+            if (FD_ISSET(mem_pipe[0], &read_fds))
             {
                 printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
                 char buf[100];
-                read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+                read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
                 printf("%s", buf);
             }
 
