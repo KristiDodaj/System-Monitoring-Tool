@@ -448,7 +448,12 @@ void allInfoUpdate(int samples, int tdelay)
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            ssize_t num_bytes_read = read(user_pipe[0], buf, sizeof(buf));
+            if (num_bytes_read == -1)
+            {
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
             printf("%s", buf);
         }
 
