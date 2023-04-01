@@ -77,23 +77,6 @@ void getUsers(int write_pipe, int size_pipe)
     // dodajkri      pts/1 (tmux(97972).%0)
     // dodajkri      pts/2 (tmux(97972).%2)
     // dodajkri      pts/0 (138.51.8.149)
-
-    struct utmpx *users; // initialize utmpx struct
-
-    // rewinds pointer to beginning of utmp file
-    setutxent();
-
-    // count how many lines
-    int count = 0;
-    while ((users = getutxent()) != NULL)
-    {
-        // validate that this is a user process
-        if (users->ut_type == USER_PROCESS)
-        {
-            count++;
-        }
-    }
-
     // allocate memory for the buffer
     char *buf = (char *)malloc(count * 1024);
     if (!buf)
@@ -118,12 +101,23 @@ void getUsers(int write_pipe, int size_pipe)
     // close the utmp file
     endutxent();
 
+    // resize the buffer to the actual size
+    buf = (char *)realloc(buf, offset + 1);
+    if (!buf)
+    {
+        perror("Error reallocating memory");
+        exit(EXIT_FAILURE);
+    }
+
+    // add the null terminator
+    buf[offset] = '\0';
+
     // send the buffer to the pipe
-    write(write_pipe, buf, offset);
+    write(write_pipe, buf, offset + 1);
 
     // send size
     char str[100];
-    sprintf(str, "%d", offset);
+    sprintf(str, "%d", offset + 1);
     write(size_pipe, str, strlen(str) + 1);
 
     // free the allocated memory
