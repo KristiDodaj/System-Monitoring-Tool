@@ -196,8 +196,8 @@ float getCpuUsage(int tdelay)
     }
 
     // calculate first measure
-    long int T1 = (user + nice + system + idle + iowait + irq + softirq);
-    long int U1 = T1 - idle;
+    // long int T1 = (user + nice + system + idle + iowait + irq + softirq);
+    // long int U1 = T1 - idle;
 
     // calculate time to be waited and sleep
     sleep(tdelay);
