@@ -457,7 +457,7 @@ void allInfoUpdate(int samples, int tdelay)
         printf("### Sessions/users ###\n");
         printf("\033[J"); // clears everything below the current line
 
-        if (FD_ISSET(mem_pipe[0], &read_fds))
+        if (FD_ISSET(user_pipe[0], &read_fds))
         {
             // Read and print the user data from the user_pipe
             char buf[2024];
