@@ -229,7 +229,7 @@ float getCpuUsage(int tdelay)
     long int U2 = T2 - idle;
 
     // measure and print percentage
-    float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
+    // float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
 
     return 3.2;
 }
