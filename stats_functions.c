@@ -343,11 +343,11 @@ void allInfoUpdate(int samples, int tdelay)
         // create child processes
         pid_t memory_pid;
         memory_pid = fork();
-        if (pids[0] == 0)
+        if (memory_pid == 0)
         {
             // child process for memory usage
             close(memory_pipe[0]);
-            print_memory_usage(memory_pipe[1]);
+            getMemoryUsage(memory_pipe[1]);
             exit(EXIT_SUCCESS);
         }
 
