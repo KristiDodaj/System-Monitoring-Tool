@@ -270,7 +270,6 @@ void getMemoryUsage(int write_pipe)
 
     // write output to pipe
     write(write_pipe, buf, strlen(buf) + 1);
-    close(write_pipe);
 
     // free allocated memory
     free(buf);
