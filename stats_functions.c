@@ -315,6 +315,7 @@ void allInfoUpdate(int samples, int tdelay)
     // keep track of lines
     int usersLineNumber = samples + 6;
     int memoryLineNumber = 6;
+
     float usage;
 
     // print all information
@@ -353,7 +354,7 @@ void allInfoUpdate(int samples, int tdelay)
     }
 
     // print usage
-    printf(" total cpu use = %.10f \n", usage);
+    printf(" total cpu use = %.10f %%\n", usage);
 
     // print the ending system details
     printf("---------------------------------------\n");
