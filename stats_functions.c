@@ -341,10 +341,10 @@ void allInfoUpdate(int samples, int tdelay)
 
         // parent process
         // close unused write ends of pipes
-        close(memory_pipe[1])
+        close(mem_pipe[1]);
 
-            // clear terminal before starting and take an intial measurement for the cpu usage calculation
-            printf("\033c");
+        // clear terminal before starting and take an intial measurement for the cpu usage calculation
+        printf("\033c");
 
         // print headers
         header(samples, tdelay);
