@@ -119,11 +119,11 @@ void getUsers(int write_pipe, int size_pipe)
     endutxent();
 
     // send the buffer to the pipe
-    write(write_pipe, buf, offset);
+    write(write_pipe, buf, offset - 1);
 
     // send size
     char str[100];
-    sprintf(str, "%d", offset - 1);
+    sprintf(str, "%d", offset);
     write(size_pipe, str, strlen(str) + 1);
 
     // free the allocated memory
