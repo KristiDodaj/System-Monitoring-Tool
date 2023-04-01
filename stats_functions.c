@@ -320,39 +320,39 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
-    // clear terminal before starting and take an intial measurement for the cpu usage calculation
-    printf("\033c");
-
-    // print headers
-    header(samples, tdelay);
-    printf("---------------------------------------\n");
-    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
-
-    // keep track of lines
-    int usersLineNumber = samples + 6;
-    int memoryLineNumber = 6;
-
-    float usage;
-
-    // print all information
-    for (int i = 0; i < samples; i++)
+    // create child processes
+    pid_t mem_pid = fork();
+    if (mem_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (mem_pid == 0)
+    {
+        // child process for memory usage
+        close(mem_pipe[0]);          // close unused read end
+        getMemoryUsage(mem_pipe[1]); // write to pipe
+        exit(0);
+    }
+    else
     {
 
-        // create child processes
-        pid_t mem_pid = fork();
-        if (mem_pid < 0)
-        {
-            perror("fork");
-            exit(1);
-        }
-        else if (mem_pid == 0)
-        {
-            // child process for memory usage
-            close(mem_pipe[0]);          // close unused read end
-            getMemoryUsage(mem_pipe[1]); // write to pipe
-            exit(0);
-        }
-        else
+        // clear terminal before starting and take an intial measurement for the cpu usage calculation
+        printf("\033c");
+
+        // print headers
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+        // keep track of lines
+        int usersLineNumber = samples + 6;
+        int memoryLineNumber = 6;
+
+        float usage;
+
+        // print all information
+        for (int i = 0; i < samples; i++)
         {
 
             // parent process
@@ -367,7 +367,7 @@ void allInfoUpdate(int samples, int tdelay)
 
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
-            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+            read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             printf("%s", buf);
 
             printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
@@ -398,16 +398,16 @@ void allInfoUpdate(int samples, int tdelay)
             // clear buffer
             fflush(stdout);
         }
+
+        // print usage
+        printf(" total cpu use = %.10f %%\n", usage);
+
+        // print the ending system details
+        printf("---------------------------------------\n");
+        printf("### System Information ### \n");
+        getSystemInfo();
+        printf("---------------------------------------\n");
     }
-
-    // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
-
-    // print the ending system details
-    printf("---------------------------------------\n");
-    printf("### System Information ### \n");
-    getSystemInfo();
-    printf("---------------------------------------\n");
 }
 
 void usersUpdate(int samples, int tdelay)
