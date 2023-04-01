@@ -199,8 +199,6 @@ float getCpuUsage(int tdelay)
     long int T1 = (user + nice + system + idle + iowait + irq + softirq);
     long int U1 = T1 - idle;
 
-    printf("%ld", T1);
-
     // calculate time to be waited and sleep
     sleep(tdelay);
 
