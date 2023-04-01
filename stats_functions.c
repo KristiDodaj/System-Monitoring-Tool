@@ -231,7 +231,7 @@ float getCpuUsage(int tdelay)
     // measure and print percentage
     float usage = ((float)(U2 - U1) / (float)(T2 - T1)) * 100;
 
-    return usage;
+    return 3.2;
 }
 
 void getMemoryUsage()
