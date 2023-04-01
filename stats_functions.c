@@ -593,7 +593,7 @@ void usersUpdate(int samples, int tdelay)
         // wait for all child processes to finish
         FD_ZERO(&read_fds);
         FD_SET(user_pipe[0], &read_fds);
-        select(user_pipe[0], &read_fds, NULL, NULL, NULL);
+        select(user_pipe[0] + 1, &read_fds, NULL, NULL, NULL);
 
         header(samples, tdelay);
         printf("---------------------------------------\n");
