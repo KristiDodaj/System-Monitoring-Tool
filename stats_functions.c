@@ -330,8 +330,12 @@ void allInfoUpdate(int samples, int tdelay)
     else if (mem_pid == 0)
     {
         // child process for memory usage
-        close(mem_pipe[0]);          // close unused read end
-        getMemoryUsage(mem_pipe[1]); // write to pipe
+        close(mem_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getMemoryUsage(mem_pipe[1]); // write to pipe
+            sleep(tdelay);
+        }
         exit(0);
     }
     else
@@ -364,7 +368,6 @@ void allInfoUpdate(int samples, int tdelay)
             waitpid(mem_pid, &status, 0);
 
             // read and print output
-
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
             read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
