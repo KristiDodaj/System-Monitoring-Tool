@@ -273,7 +273,7 @@ void getMemoryUsage(int write_pipe)
 
     // build output string
     char *buf = calloc(1, 50);
-    sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
+    sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 
     // write output to pipe
     write(write_pipe, buf, strlen(buf) + 1);
@@ -417,25 +417,24 @@ void allInfoUpdate(int samples, int tdelay)
         printf("---------------------------------------\n");
         getCpuNumber();
 
+        if (i > 0)
+        {
+            // print usage
+            printf(" total cpu use = %.10f %%\n", usage);
+        }
+
         if (FD_ISSET(cpu_pipe[0], &read_fds))
         {
-
-            if (i > 0)
-            {
-                // print usage
-                printf(" total cpu use = %.10f %%\n", usage);
-            }
-
             // Read and print the CPU usage data from the cpu_pipe
             char buf[1024];
             read(cpu_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             usage = atof(buf);
+        }
 
-            if (i == samples - 1)
-            {
-                printf("\033[1A"); // move the cursor up one line
-                printf("\033[2K"); // clear the entire line
-            }
+        if (i == samples - 1)
+        {
+            printf("\033[1A"); // move the cursor up one line
+            printf("\033[2K"); // clear the entire line
         }
 
         // update line numbers
