@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
+#include <sys/wait.h>
 
 void header(int samples, int tdelay)
 {
