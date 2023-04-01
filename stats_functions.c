@@ -263,7 +263,8 @@ void getMemoryUsage(int write_pipe)
     double totalVirtualRam = (double)(info.totalram + info.totalswap) / (1073741824);
     double usedVirtualRam = (double)(info.totalram + info.totalswap - info.freeram - info.freeswap) / (1073741824);
 
-    / build output string char *buf = calloc(1, 50);
+    // build output string
+    char *buf = calloc(1, 50);
     sprintf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", usedPhysicalRam, totalPhysicalRam, usedVirtualRam, totalVirtualRam);
 
     // write output to pipe
