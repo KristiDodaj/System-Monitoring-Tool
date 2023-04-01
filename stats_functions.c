@@ -361,6 +361,7 @@ void allInfoUpdate(int samples, int tdelay)
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
             char buf[100];
+            memset(buf, 0, sizeof(buf));            // clear buffer
             read(memory_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             printf("%s", buf);
         }
