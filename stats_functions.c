@@ -379,7 +379,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     float difference = current_usage - previous_usage;
 
     // update count
-    count = (int)(difference / 0.01);
+    count = (int)round(difference / 0.01);
 
     // create string to pass
     // allocate memory for the buffer
