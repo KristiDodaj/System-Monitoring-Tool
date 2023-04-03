@@ -15,6 +15,7 @@ void getCpuUsageGraphic(float current_usage, float previous_usage, int previous_
 void getMemoryUsage(int write_pipe);
 void getMemoryUsageGraphic(float current_usage, float previous_usage);
 void allInfoUpdate(int samples, int tdelay);
+void allInfoUpdateGraphic(int samples, int tdelay);
 void usersUpdate(int samples, int tdelay);
 void systemUpdate(int samples, int tdelay);
 void allInfoSequential(int samples, int tdelay);

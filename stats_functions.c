@@ -366,12 +366,11 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     // formats a graphic for the current memory usage. The function will return the properly formatted string that includes
     // the current memory usage and the graphic.
     // NOTE: The graphic convetion # represents +0.01 and : represents -0.01 in difference between usage. Additionally o means no change.
+    // Also the first output will always be o since there is nothing to compare to
     // Example Output:
     // getMemoryUsageGraphic(9.85, 9.76)
     //
-    // prints:  "|#########* 0.09 (9.85)"
-
-    printf("Debug: current_usage=%.2f, previous_usage=%.2f\n", current_usage, previous_usage);
+    // prints:  "|######### 0.09 (9.85)"
 
     // calculate number of bars needed
     int count = 0;
@@ -386,7 +385,7 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
 
     // create string to pass
     char buf[512];
-    strcpy(buf, "|");
+    strcpy(buf, "#");
 
     if (count < 0)
     {
@@ -576,6 +575,264 @@ void allInfoUpdate(int samples, int tdelay)
             char buf[100];
             read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
             printf("%s", buf);
+        }
+
+        printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        printf("\033[J"); // clears everything below the current line
+
+        // Read and print the user data from the user_pipe
+        char size[100];
+        read(size_pipe[0], size, sizeof(size));
+        int length = atoi(size);
+        char buf[length];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
+
+        printf("---------------------------------------\n");
+        getCpuNumber();
+
+        if (i > 0)
+        {
+            // print usage
+            printf(" total cpu use = %.10f %%\n", usage);
+        }
+
+        // Read and print the CPU usage data from the cpu_pipe
+        char buf2[1024];
+        read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
+        usage = atof(buf2);
+
+        if (i == samples - 1)
+        {
+            printf("\033[1A"); // move the cursor up one line
+            printf("\033[2K"); // clear the entire line
+        }
+
+        // update line numbers
+        memoryLineNumber = memoryLineNumber + 1;
+
+        // clear buffer
+        fflush(stdout);
+    }
+
+    // wait for processes to finish so no orphan or zombie cases
+    int status;
+    waitpid(mem_pid, &status, 0);
+    waitpid(cpu_pid, &status, 0);
+    waitpid(user_pid, &status, 0);
+
+    // print usage
+    printf(" total cpu use = %.10f %%\n", usage);
+
+    // print the ending system details
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+    printf("---------------------------------------\n");
+}
+
+void allInfoUpdateGraphic(int samples, int tdelay)
+{
+    // This function will take in int samples and tdelay and prints out all the system information including graphics that will update
+    // in the specified time interval and the specified number of samples. The information given includes memory usage,
+    // user logs, cpu information, system information and are implemented through the above listed functions.
+    // NOTE: Cpu Usage, Memory Usage, and Users are individual processes that communicate through pipes
+    // Example Output:
+    // allInfoUpdateGraphic(10, 1) prints
+    //
+    // Nbr of samples: 10 -- every 1 secs
+    // Memory usage: 4052 kilobytes
+    //---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |o 0.00 (9.75)
+    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |* 0.00 (9.75)
+    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |* 0.00 (9.75)
+    // 9.76 GB / 15.37 GB  -- 9.76 GB / 16.33 GB   |* 0.00 (9.76)
+    // 9.85 GB / 15.37 GB  -- 9.85 GB / 16.33 GB   |#########* 0.09 (9.85)
+    // 10.06 GB / 15.37 GB  -- 10.06 GB / 16.33 GB   |####################* 0.20 (10.06)
+    // 10.13 GB / 15.37 GB  -- 10.13 GB / 16.33 GB   |#######* 0.07 (10.13)
+    // 10.16 GB / 15.37 GB  -- 10.16 GB / 16.33 GB   |##* 0.03 (10.16)
+    // 10.28 GB / 15.37 GB  -- 10.28 GB / 16.33 GB   |###########* 0.12 (10.28)
+    // 10.38 GB / 15.37 GB  -- 10.38 GB / 16.33 GB   |##########* 0.11 (10.38)
+    //---------------------------------------
+    // ### Sessions/users ###
+    // marcelo       pts/0 (138.51.12.217)
+    // marcelo       pts/1 (tmux(277015).%0)
+    // alberto        tty7 (:0)
+    // marcelo       pts/2 (tmux(277015).%1)
+    // marcelo       pts/5 (138.51.12.217)
+    //---------------------------------------
+    // Number of cores: 4
+    // total cpu use = 15.57%
+    //         ||| 0.25
+    //         ||||||||| 6.93
+    //         ||||||||||||||| 12.08
+    //         |||||||||||||||| 13.83
+    //         ||||||||| 6.41
+    //         |||||||||||||||| 13.97
+    //         |||||||||||||||||| 15.37
+    //         ||||||||||||||||| 14.91
+    //         ||||||||||||||||||| 16.34
+    //         |||||||||||||||||| 15.57
+    //---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-01
+    // Version = #99-Ubuntu SMP Thu Sep 23 17:29:00 UTC 2021
+    // Release = 5.4.0-88-generic
+    // Architecture = x86_64
+    //---------------------------------------
+
+    // create pipes for communication
+    int mem_pipe[2], cpu_pipe[2], user_pipe[2], size_pipe[2];
+    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
+    {
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
+
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
+    // child process for memory usage
+    pid_t mem_pid = fork();
+    if (mem_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (mem_pid == 0)
+    {
+        close(mem_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getMemoryUsage(mem_pipe[1]); // write to pipe
+            sleep(tdelay);               // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    // child process for cpu usage
+    pid_t cpu_pid = fork();
+    if (cpu_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (cpu_pid == 0)
+    {
+        close(cpu_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
+        }
+
+        exit(0); // exit child process
+    }
+
+    // child process for users
+    pid_t user_pid = fork();
+    if (user_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (user_pid == 0)
+    {
+        close(user_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+            sleep(tdelay);                        // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
+
+    // close unused write ends of pipes
+    close(mem_pipe[1]);
+    close(cpu_pipe[1]);
+    close(user_pipe[1]);
+    close(size_pipe[1]);
+
+    // clear terminal before starting and take an intial measurement for the cpu usage calculation
+    printf("\033c");
+
+    // print headers
+    header(samples, tdelay);
+    printf("---------------------------------------\n");
+    printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+    // keep track of lines
+    int usersLineNumber = samples + 6;
+    int memoryLineNumber = 6;
+
+    float usage;
+
+    // wait for all child processes to finish
+    fd_set read_fds;
+
+    int max_fd = mem_pipe[0];
+    if (cpu_pipe[0] > max_fd)
+    {
+        max_fd = cpu_pipe[0];
+    }
+    if (user_pipe[0] > max_fd)
+    {
+        max_fd = user_pipe[0];
+    }
+
+    // store previous cpu and memory results
+    float cpu_usage[samples][2];
+    float memory_usage[samples][2];
+
+    // print all information
+    for (int i = 0; i < samples; i++)
+    {
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(mem_pipe[0], &read_fds);
+        FD_SET(cpu_pipe[0], &read_fds);
+        FD_SET(user_pipe[0], &read_fds);
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
+        // read and print output
+        if (FD_ISSET(mem_pipe[0], &read_fds))
+        {
+            printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+            char buf[100];
+            read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+
+            // get total usage
+            float dummy;
+            float dummy2;
+            float usage;
+            float dummy3;
+            sscanf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", &dummy, &dummy2, &usage, &dummy3);
+
+            // add to array
+            memory_usage[i] = usage;
+
+            char print[500];
+
+            if (i == 0)
+            {
+                print = getMemoryUsageGraphic(usage, 0);
+            }
+            else
+            {
+                print = getMemoryUsageGraphic(usage, memory_usage[i - 1]);
+            }
+
+            printf("%s", print);
         }
 
         printf("\033[%d;0H", (usersLineNumber)); // move cursor to users
