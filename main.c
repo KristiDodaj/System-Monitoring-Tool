@@ -371,7 +371,6 @@ int main(int argc, char *argv[])
     // navigate(argc, argv);
 
     getCpuUsageGraphic(5, 3, 11);
-    getMemoryUsageGraphic(9.85000, 9.76000);
-
+    getMemoryUsageGraphic(9.85, 9.76);
     return 0;
 }
