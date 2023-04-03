@@ -384,8 +384,10 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     count = (int)(difference / 0.01);
 
     // create string to pass
-    char buf[512];
+    // allocate memory for the buffer
+    char *buf = (char *)malloc(512 * sizeof(char));
     strcpy(buf, "#");
+    strcpy(buf, "|");
 
     if (count < 0)
     {
@@ -411,7 +413,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     // add the current usage
     sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
 
-    return &buf;
+    return buf;
 }
 
 void allInfoUpdate(int samples, int tdelay)
