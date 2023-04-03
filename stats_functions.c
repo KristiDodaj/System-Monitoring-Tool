@@ -384,26 +384,32 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     // create string to pass
     // allocate memory for the buffer
     char *buf = (char *)malloc(512 * sizeof(char));
-    strcpy(buf, "#");
     strcpy(buf, "|");
 
-    if (count < 0)
+    if (previous_usage > 0)
     {
-        // add the bars
-        for (int i = 0; i < count; i++)
+        if (count < 0)
         {
-            strcat(buf, ":");
+            // add the bars
+            for (int i = 0; i < count; i++)
+            {
+                strcat(buf, ":");
+            }
+        }
+        else if (count > 0)
+        {
+            // add the bars
+            for (int i = 0; i < count; i++)
+            {
+                strcat(buf, "#");
+            }
+        }
+        else
+        {
+            strcat(buf, "o");
         }
     }
-    else if (count > 0)
-    {
-        // add the bars
-        for (int i = 0; i < count; i++)
-        {
-            strcat(buf, "#");
-        }
-    }
-    else
+    else if (previous_usage == 0)
     {
         strcat(buf, "o");
     }
