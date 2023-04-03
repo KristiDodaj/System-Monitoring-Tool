@@ -306,7 +306,7 @@ void getCpuUsageGraphic(float current_usage, float previous_usage, int previous_
 
     // create string to pass
     char buf[4 + count + 4];
-    sprintf(buf, "%d", count);
+    sprintf(buf, "%d ", count);
 
     // add the bars
     for (int i = 0; i < count; i++)
@@ -380,14 +380,14 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     // update count
     count = (int)(difference / 0.01);
 
-    // create string to pass
-    char buf[2 + count + 11];
+    // create a sufficiently large buffer to avoid overflow
+    char buf[512];
     strcpy(buf, "|");
 
     if (count < 0)
     {
         // add the bars
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < -count; i++)
         {
             strcat(buf, ":");
         }
