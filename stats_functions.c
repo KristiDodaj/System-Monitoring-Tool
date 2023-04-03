@@ -913,7 +913,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
         usage = atof(buf2);
         char str[150];
 
-        if (i == 1)
+        if (i == 0)
         {
             stpcpy(str, getCpuUsageGraphic(usage, 0, 0));
         }
