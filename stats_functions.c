@@ -791,7 +791,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     }
 
     // store previous cpu and memory results
-    float cpu_usage[samples][2];
+    // float cpu_usage[samples][2];
     float memory_usage[samples];
 
     // print all information
@@ -816,7 +816,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
             float dummy2;
             float usage;
             float dummy3;
-            sscanf(buf, "%.2f GB / %.2f GB  --  %.2f GB / %.2f GB\n", &dummy, &dummy2, &usage, &dummy3);
+            sscanf(buf, "%f GB / %f GB  --  %f GB / %f GB\n", &dummy, &dummy2, &usage, &dummy3);
 
             // add to array
             memory_usage[i] = usage;
