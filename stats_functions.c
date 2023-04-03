@@ -10,7 +10,6 @@
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
-#include <math.h>
 
 void header(int samples, int tdelay)
 {
@@ -376,19 +375,21 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     int count = 0;
 
     // find difference in usage
-    float difference = roundf((current_usage - previous_usage) * 100) / 100;
+    float difference = current_usage - previous_usage;
+
+    printf("%f\n", difference);
 
     // update count
     count = (int)(difference / 0.01);
 
-    // create a sufficiently large buffer to avoid overflow
-    char buf[512];
+    // create string to pass
+    char buf[2 + count + 11];
     strcpy(buf, "|");
 
     if (count < 0)
     {
         // add the bars
-        for (int i = 0; i < -count; i++)
+        for (int i = 0; i < count; i++)
         {
             strcat(buf, ":");
         }

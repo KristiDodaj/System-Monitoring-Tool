@@ -5,7 +5,7 @@ OBJ = stats_functions.o main.o stats_functions.h
 all: monitor
 
 monitor: $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+	$(CC) $(CFLAGS) -o $@ $^ 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< 
