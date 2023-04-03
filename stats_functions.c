@@ -889,7 +889,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
                 if (j == 1)
                 {
-                    strcpy(print, getMemoryUsageGraphic(usage, 0, 0));
+                    strcpy(print, getCpuUsageGraphic(usage, 0, 0));
                 }
                 else
                 {
@@ -903,7 +903,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
                 // Move the remaining part of the string to the left, starting after the first number
                 memmove(print, print + chars_read, strlen(print + chars_read) + 1);
 
-                print("%s\n", print);
+                printf("%s\n", print);
             }
         }
 
