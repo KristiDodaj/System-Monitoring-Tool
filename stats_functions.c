@@ -792,7 +792,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
     // store previous cpu and memory results
     float cpu_usage[samples][2];
-    float memory_usage[samples][2];
+    float memory_usage[samples];
 
     // print all information
     for (int i = 0; i < samples; i++)
