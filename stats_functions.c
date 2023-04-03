@@ -825,11 +825,11 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
             if (i == 0)
             {
-                print = getMemoryUsageGraphic(usage, 0);
+                strcpy(print, getMemoryUsageGraphic(usage, 0));
             }
             else
             {
-                print = getMemoryUsageGraphic(usage, memory_usage[i - 1]);
+                strcpy(print, getMemoryUsageGraphic(usage, memory_usage[i - 1]));
             }
 
             printf("%s", print);
