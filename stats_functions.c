@@ -951,7 +951,22 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     waitpid(user_pid, &status, 0);
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    for (int j = 9; j <= 10; j++)
+    {
+        char print[1024];
+
+        strcpy(print, getCpuUsageGraphic(cpu_usage[j][1], cpu_usage[j - 1][1], cpu_usage[j - 1][0]));
+
+        // Scan the first number and the number of characters read
+        int chars_read;
+        int num1;
+        sscanf(print, "%d%n", &num1, &chars_read);
+
+        // Move the remaining part of the string to the left, starting after the first number
+        memmove(print, print + chars_read, strlen(print + chars_read) + 1);
+
+        printf("%s\n", print);
+    }
 
     // print the ending system details
     printf("---------------------------------------\n");
