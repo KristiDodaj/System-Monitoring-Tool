@@ -375,7 +375,7 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     int count = 0;
 
     // find difference in usage
-    float difference = current_usage - previous_usage;
+    float difference = roundf((current_usage - previous_usage) * 100) / 100;
 
     // update count
     count = (int)(difference / 0.01);
