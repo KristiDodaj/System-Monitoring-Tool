@@ -371,6 +371,8 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     //
     // prints:  "|#########* 0.09 (9.85)"
 
+    printf("Debug: current_usage=%.2f, previous_usage=%.2f\n", current_usage, previous_usage);
+
     // calculate number of bars needed
     int count = 0;
 
