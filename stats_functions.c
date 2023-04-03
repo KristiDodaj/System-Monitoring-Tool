@@ -887,14 +887,8 @@ void allInfoUpdateGraphic(int samples, int tdelay)
             {
                 char print[150];
 
-                if (j == 0)
-                {
-                    strcpy(print, getCpuUsageGraphic(usage, 0, 0));
-                }
-                else
-                {
-                    strcpy(print, getCpuUsageGraphic(usage, cpu_usage[j - 1][1], cpu_usage[j - 1][0]));
-                }
+                strcpy(print, getCpuUsageGraphic(usage, cpu_usage[j - 1][1], cpu_usage[j - 1][0]));
+
                 // Scan the first number and the number of characters read
                 int chars_read;
                 int num1;
