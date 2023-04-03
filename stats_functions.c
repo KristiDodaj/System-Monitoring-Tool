@@ -1,5 +1,5 @@
-// BY: KRISTI DODAJ
-// COURSE: CSCB09
+// Author: Kristi Dodaj
+// stats_functions.c: Responsible for the functions that retrive the system information and structure the output
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -283,6 +283,43 @@ void getCpuUsage(int write_pipe, int tdelay)
     write(write_pipe, buf, strlen(buf) + 1);
 }
 
+void getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars)
+{
+    // This function takes the current cpu usage (float current_usage) and previous usage (float previous_usage) as well as
+    // the number of bars on the previous usage (int previous_bars) and formats a graphic for the current cpu usage.
+    // The function will the return the properly formatted string that includes the current cpu usage and the graphic as well as the number of bars.
+    // NOTE: The graphic convetions include 8 bars (|) and with every 1% change there will be one | less or more.
+    // Example Output:
+    // getCpuUsageGraphic(5, 3, 11)
+    //
+    // returns:  "13 ||||||||||||| 5"
+    // note that the 13 means the number of bars and will also be sent through the pipe
+
+    // calculate number of bars needed
+    int count = previous_bars;
+
+    // find difference in usage
+    int difference = (int)(current_usage - previous_usage);
+
+    // update count
+    count += difference;
+
+    // create string to pass
+    char buf[4 + count + 4];
+    sprintf(buf, "%d", count);
+
+    // add the bars
+    for (int i = 0; i < count; i++)
+    {
+        strcat(buf, "|");
+    }
+
+    // add the current usage
+    sprintf(buf + strlen(buf), " %f", current_usage);
+
+    printf("%s \n", buf);
+}
+
 void getMemoryUsage(int write_pipe)
 {
     // This function writes the value of total and used Physical RAM as well as the total and used Virtual Ram to the write_pipe.
@@ -321,6 +358,57 @@ void getMemoryUsage(int write_pipe)
 
     // free allocated memory
     free(buf);
+}
+
+void getMemoryUsageGraphic(int current_usage, int previous_usage)
+{
+    // This function takes the current memory usage (float current_usage) and previous usage (float previous_usage) and
+    // formats a graphic for the current memory usage. The function will return the properly formatted string that includes
+    // the current memory usage and the graphic.
+    // NOTE: The graphic convetion # represents +0.01 and : represents -0.01 in difference between usage. Additionally o means no change.
+    // Example Output:
+    // getMemoryUsageGraphic(9.85, 9.76)
+    //
+    // prints:  "|#########* 0.09 (9.85)"
+
+    // calculate number of bars needed
+    int count = 0;
+
+    // find difference in usage
+    float difference = current_usage - previous_usage;
+
+    // update count
+    count = (int)(difference / 0.01);
+
+    // create string to pass
+    char buf[2 + count + 11];
+    strcpy(buf, "|");
+
+    if (count < 0)
+    {
+        // add the bars
+        for (int i = 0; i < count; i++)
+        {
+            strcat(buf, ":");
+        }
+    }
+    else if (count > 0)
+    {
+        // add the bars
+        for (int i = 0; i < count; i++)
+        {
+            strcat(buf, "#");
+        }
+    }
+    else
+    {
+        strcat(buf, "o");
+    }
+
+    // add the current usage
+    sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
+
+    printf("%s \n", buf);
 }
 
 void allInfoUpdate(int samples, int tdelay)
@@ -368,6 +456,10 @@ void allInfoUpdate(int samples, int tdelay)
         perror("Error creating pipes");
         exit(EXIT_FAILURE);
     }
+
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
 
     // child process for memory usage
     pid_t mem_pid = fork();
@@ -425,7 +517,9 @@ void allInfoUpdate(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    // parent process
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -567,6 +661,10 @@ void usersUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
     // child process for memory usage
     pid_t user_pid = fork();
     if (user_pid < 0)
@@ -586,7 +684,9 @@ void usersUpdate(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    // parent process
+    /////////////////////////////////
+    //         PARENT
+    /////////////////////////////////
 
     // close unused write ends of pipes
     close(user_pipe[1]);
@@ -684,6 +784,10 @@ void systemUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
     // child process for memory usage
     pid_t mem_pid = fork();
     if (mem_pid < 0)
@@ -721,7 +825,9 @@ void systemUpdate(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    // parent process
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -861,6 +967,10 @@ void allInfoSequential(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
     // child process for memory usage
     pid_t mem_pid = fork();
     if (mem_pid < 0)
@@ -917,7 +1027,9 @@ void allInfoSequential(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    // parent process
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -1057,6 +1169,10 @@ void usersSequential(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
     // child process for memory usage
     pid_t user_pid = fork();
     if (user_pid < 0)
@@ -1076,7 +1192,9 @@ void usersSequential(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    // parent process
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
 
     // close unused write ends of pipes
     close(user_pipe[1]);
@@ -1183,6 +1301,10 @@ void systemSequential(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
     // child process for memory usage
     pid_t mem_pid = fork();
     if (mem_pid < 0)
@@ -1220,7 +1342,9 @@ void systemSequential(int samples, int tdelay)
         exit(0); // exit child process
     }
 
-    // parent process
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
 
     // close unused write ends of pipes
     close(mem_pipe[1]);

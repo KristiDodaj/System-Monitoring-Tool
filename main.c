@@ -368,7 +368,10 @@ int main(int argc, char *argv[])
     }
 
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    navigate(argc, argv);
+    // navigate(argc, argv);
+
+    getCpuUsageGraphic(5, 3, 11);
+    getMemoryUsageGraphic(9.85, 9.76);
 
     return 0;
 }
