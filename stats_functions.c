@@ -386,7 +386,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     char *buf = (char *)malloc(512 * sizeof(char));
     strcpy(buf, "|");
 
-    printf(" This is the count %d", count);
+    printf(" This is the count: %d and difference: %f    ", count, difference);
 
     if (previous_usage > 0)
     {
