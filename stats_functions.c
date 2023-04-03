@@ -391,7 +391,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
         if (count < 0)
         {
             // add the bars
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < abs(count); i++)
             {
                 strcat(buf, ":");
             }
