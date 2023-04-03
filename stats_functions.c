@@ -378,8 +378,6 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     // find difference in usage
     float difference = current_usage - previous_usage;
 
-    printf("%f\n", difference);
-
     // update count
     count = (int)(difference / 0.01);
 
