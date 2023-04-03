@@ -408,14 +408,15 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
         {
             strcat(buf, "o");
         }
+        // add the current usage
+        sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
     }
     else if (previous_usage == 0)
     {
         strcat(buf, "o");
+        // add the current usage
+        sprintf(buf + strlen(buf), " 0.00 (%.2f)", current_usage);
     }
-
-    // add the current usage
-    sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
 
     return buf;
 }
