@@ -375,7 +375,7 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     int count = 0;
 
     // find difference in usage
-    float difference = current_usage - previous_usage;
+    long float difference = current_usage - previous_usage;
 
     printf("%f\n", difference);
 
@@ -383,7 +383,7 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     count = (int)(difference / 0.01);
 
     // create string to pass
-    char buf[2 + count + 11];
+    char buf[500];
     strcpy(buf, "|");
 
     if (count < 0)
