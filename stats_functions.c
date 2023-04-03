@@ -965,7 +965,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
         // Move the remaining part of the string to the left, starting after the first number
         memmove(print, print + chars_read, strlen(print + chars_read) + 1);
 
-        printf("%s\n", print);
+        // printf("%s\n", print);
     }
 
     // print the ending system details
