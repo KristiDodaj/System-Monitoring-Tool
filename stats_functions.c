@@ -406,7 +406,7 @@ void getMemoryUsageGraphic(int current_usage, int previous_usage)
     }
 
     // add the current usage
-    sprintf(buf + strlen(buf), " %.2d (%.2d)", difference, current_usage);
+    sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
 
     printf("%s \n", buf);
 }
