@@ -950,6 +950,12 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     waitpid(cpu_pid, &status, 0);
     waitpid(user_pid, &status, 0);
 
+    printf("\033[%dA", samples); // move cursor up 9 lines
+
+    // print usage
+    printf(" total cpu use = %.10f %%\n", usage);
+    printf("\033[J"); // clears everything below the current line
+
     for (int j = 0; j < samples; j++)
     {
         char print[1024];
