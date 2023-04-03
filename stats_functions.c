@@ -951,7 +951,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     waitpid(user_pid, &status, 0);
 
     // print usage
-    for (int j = 9; j <= 10; j++)
+    for (int j = 9; j < 11; j++)
     {
         char print[1024];
 
