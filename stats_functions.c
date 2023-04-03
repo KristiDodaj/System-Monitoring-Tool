@@ -950,7 +950,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     waitpid(cpu_pid, &status, 0);
     waitpid(user_pid, &status, 0);
 
-    for (int j = 0; j < i; j++)
+    for (int j = 0; j < samples; j++)
     {
         char print[1024];
 
