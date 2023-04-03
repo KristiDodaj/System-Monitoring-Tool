@@ -304,7 +304,7 @@ char *getCpuUsageGraphic(float current_usage, float previous_usage, int previous
     int difference = (int)(current_usage - previous_usage);
 
     // create string to pass
-    char *buf = (char *)malloc((4 + count + 4) * sizeof(char));
+    char *buf = (char *)malloc((1024) * sizeof(char));
 
     if (previous_usage != 0)
     {
