@@ -284,12 +284,13 @@ void getCpuUsage(int write_pipe, int tdelay)
     write(write_pipe, buf, strlen(buf) + 1);
 }
 
-void getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars)
+char *getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars)
 {
     // This function takes the current cpu usage (float current_usage) and previous usage (float previous_usage) as well as
     // the number of bars on the previous usage (int previous_bars) and formats a graphic for the current cpu usage.
     // The function will the return the properly formatted string that includes the current cpu usage and the graphic as well as the number of bars.
     // NOTE: The graphic convetions include 8 bars (|) and with every 1% change there will be one | less or more.
+    // Also for the first graphic there will always be 8 bars as the there is nothing to compare the usage difference
     // Example Output:
     // getCpuUsageGraphic(5, 3, 11)
     //
@@ -302,23 +303,41 @@ void getCpuUsageGraphic(float current_usage, float previous_usage, int previous_
     // find difference in usage
     int difference = (int)(current_usage - previous_usage);
 
-    // update count
-    count += difference;
-
     // create string to pass
-    char buf[4 + count + 4];
-    sprintf(buf, "%d ", count);
+    char *buf = (char *)malloc((4 + count + 4) * sizeof(char));
 
-    // add the bars
-    for (int i = 0; i < count; i++)
+    if (previous_usage != 0)
     {
-        strcat(buf, "|");
+        // update count
+        count += difference;
+
+        sprintf(buf, "%d ", count);
+
+        // add the bars
+        for (int i = 0; i < count; i++)
+        {
+            strcat(buf, "|");
+        }
+
+        // add the current usage
+        sprintf(buf + strlen(buf), " %f", current_usage);
+    }
+    else
+    {
+        count = 8;
+        sprintf(buf, "%d ", count);
+
+        // add the bars
+        for (int i = 0; i < count; i++)
+        {
+            strcat(buf, "|");
+        }
+
+        // add the current usage
+        sprintf(buf + strlen(buf), " %f", current_usage);
     }
 
-    // add the current usage
-    sprintf(buf + strlen(buf), " %f", current_usage);
-
-    printf("%s \n", buf);
+    return buf;
 }
 
 void getMemoryUsage(int write_pipe)
@@ -386,8 +405,6 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     // allocate memory for the buffer
     char *buf = (char *)malloc(512 * sizeof(char));
     strcpy(buf, "|");
-
-    printf(" This is the count: %d and difference: %f    ", count, difference);
 
     if (previous_usage > 0)
     {
@@ -801,7 +818,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     }
 
     // store previous cpu and memory results
-    // float cpu_usage[samples][2];
+    float cpu_usage[samples][2];
     float memory_usage[samples];
 
     // print all information
@@ -865,12 +882,54 @@ void allInfoUpdateGraphic(int samples, int tdelay)
         {
             // print usage
             printf(" total cpu use = %.10f %%\n", usage);
+
+            for (int j = 0; j < i; j++)
+            {
+                char print[150];
+
+                if (j == 1)
+                {
+                    strcpy(print, getMemoryUsageGraphic(usage, 0, 0));
+                }
+                else
+                {
+                    strcpy(print, getCpuUsageGraphic(usage, cpu_usage[i - 1][1], cpu_usage[i - 1][0]));
+                }
+                // Scan the first number and the number of characters read
+                int chars_read;
+                int num1;
+                sscanf(print, "%d%n", &num1, &chars_read);
+
+                // Move the remaining part of the string to the left, starting after the first number
+                memmove(print, print + chars_read, strlen(print + chars_read) + 1);
+
+                print("%s\n", print);
+            }
         }
 
         // Read and print the CPU usage data from the cpu_pipe
         char buf2[1024];
         read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
         usage = atof(buf2);
+        char str[150];
+
+        if (i == 1)
+        {
+            stpcpy(str, getCpuUsageGraphic(usage, 0, 0));
+        }
+        else
+        {
+            stpcpy(str, getCpuUsageGraphic(usage, cpu_usage[i - 1][1], cpu_usage[i - 1][0]));
+        }
+
+        int bars;
+        float dummy;
+
+        sscanf(str, "%d |%*[^|]|%*[^|]|%*[^|] %f", &bars, &dummy);
+
+        // update cpu_usage array
+        cpu_usage[i][0] = bars;
+        cpu_usage[i][1] = usage;
 
         if (i == samples - 1)
         {
