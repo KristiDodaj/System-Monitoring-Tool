@@ -885,7 +885,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
             for (int j = 0; j < i; j++)
             {
-                char print[150];
+                char print[1024];
 
                 if (j != 0)
                 {
