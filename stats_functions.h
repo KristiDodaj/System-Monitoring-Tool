@@ -13,7 +13,7 @@ void getCpuNumber();
 void getCpuUsage(int write_pipe, int tdelay);
 void getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars);
 void getMemoryUsage(int write_pipe);
-void getMemoryUsageGraphic(float current_usage, float previous_usage);
+char *getMemoryUsageGraphic(float current_usage, float previous_usage);
 void allInfoUpdate(int samples, int tdelay);
 void allInfoUpdateGraphic(int samples, int tdelay);
 void usersUpdate(int samples, int tdelay);

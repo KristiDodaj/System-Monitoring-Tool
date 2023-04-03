@@ -360,7 +360,7 @@ void getMemoryUsage(int write_pipe)
     free(buf);
 }
 
-void getMemoryUsageGraphic(float current_usage, float previous_usage)
+char *getMemoryUsageGraphic(float current_usage, float previous_usage)
 {
     // This function takes the current memory usage (float current_usage) and previous usage (float previous_usage) and
     // formats a graphic for the current memory usage. The function will return the properly formatted string that includes
@@ -411,7 +411,7 @@ void getMemoryUsageGraphic(float current_usage, float previous_usage)
     // add the current usage
     sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
 
-    printf("%s \n", buf);
+    return &buf
 }
 
 void allInfoUpdate(int samples, int tdelay)
