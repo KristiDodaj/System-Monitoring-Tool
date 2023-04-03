@@ -411,7 +411,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     // add the current usage
     sprintf(buf + strlen(buf), " %.2f (%.2f)", difference, current_usage);
 
-    return &buf
+    return &buf;
 }
 
 void allInfoUpdate(int samples, int tdelay)
