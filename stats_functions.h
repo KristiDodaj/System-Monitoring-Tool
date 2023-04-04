@@ -23,5 +23,6 @@ void allInfoSequential(int samples, int tdelay);
 void allInfoSequentialGraphic(int samples, int tdelay);
 void usersSequential(int samples, int tdelay);
 void systemSequential(int samples, int tdelay);
+void systemSequentialGraphic(int samples, int tdelay);
 
 #endif /* STATS */
