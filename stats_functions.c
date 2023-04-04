@@ -11,7 +11,7 @@
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
 #include <math.h>
-#include <termios.h>
+#include <errno.h>
 
 void header(int samples, int tdelay)
 {
@@ -466,9 +466,6 @@ void handle_ctrl_c(int signal_number)
     {
         printf("\033[2K");
 
-        // Discard any pending input in the input buffer
-        tcflush(STDIN_FILENO, TCIFLUSH);
-
         // get user input
         printf("Ctrl-C signal received. Do you want to continue? (y/n): ");
         input = getchar();
@@ -657,13 +654,16 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-
-        // wait for all child processes to finish
-        FD_ZERO(&read_fds);
-        FD_SET(mem_pipe[0], &read_fds);
-        FD_SET(cpu_pipe[0], &read_fds);
-        FD_SET(user_pipe[0], &read_fds);
-        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+        // Wait for all child processes to finish
+        int select_result;
+        do
+        {
+            FD_ZERO(&read_fds);
+            FD_SET(mem_pipe[0], &read_fds);
+            FD_SET(cpu_pipe[0], &read_fds);
+            FD_SET(user_pipe[0], &read_fds);
+            select_result = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+        } while (select_result == -1 && errno == EINTR);
 
         // read and print output
         if (FD_ISSET(mem_pipe[0], &read_fds))
