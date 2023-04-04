@@ -2531,7 +2531,7 @@ void systemSequentialGraphic(int samples, int tdelay)
                 printf("\n");
             }
         }
-
+        printf("\n");
         getCpuNumber();
 
         // Read and print the CPU usage data from the cpu_pipe
