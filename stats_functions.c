@@ -1425,6 +1425,12 @@ void systemUpdateGraphic(int samples, int tdelay)
                 strcpy(print, getMemoryUsageGraphic(usage, memory_usage[i - 1]));
             }
 
+            int len = strlen(buf);
+            if (len > 0)
+            {
+                buf[len - 1] = '\0'; // set the null terminator one character earlier
+            }
+
             printf("%s   %s", buf, print);
         }
 
