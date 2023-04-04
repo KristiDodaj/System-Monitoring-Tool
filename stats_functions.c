@@ -2531,17 +2531,7 @@ void systemSequentialGraphic(int samples, int tdelay)
                 printf("\n");
             }
         }
-        printf("---------------------------------------\n");
-        getCpuNumber();
 
-        // Read and print the user data from the user_pipe
-        char size[100];
-        read(size_pipe[0], size, sizeof(size));
-        int length = atoi(size);
-        char buf[length];
-        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
-        printf("%s", buf);
-        printf("---------------------------------------\n");
         getCpuNumber();
 
         // Read and print the CPU usage data from the cpu_pipe
