@@ -1978,6 +1978,7 @@ void allInfoSequentialGraphic(int samples, int tdelay)
                 printf("\n");
             }
         }
+        printf("\n");
         printf("---------------------------------------\n");
         printf("### Sessions/users ###\n");
         // Read and print the user data from the user_pipe
