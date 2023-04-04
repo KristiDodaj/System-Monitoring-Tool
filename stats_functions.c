@@ -320,7 +320,7 @@ char *getCpuUsageGraphic(float current_usage, float previous_usage, int previous
         }
 
         // add the current usage
-        sprintf(buf + strlen(buf), " %f", current_usage);
+        sprintf(buf + strlen(buf), " %0.2f", current_usage);
     }
     else
     {
@@ -935,7 +935,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
         // update cpu_usage array
         cpu_usage[i][0] = bars;
-        cpu_usage[i][1] = round(usage * 100) / 100;
+        cpu_usage[i][1] = usage;
 
         if (i == samples - 1)
         {
