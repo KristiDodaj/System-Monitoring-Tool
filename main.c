@@ -360,13 +360,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
-
     // call the navigate function which will redirect to the right output depeneding on the arguments
     navigate(argc, argv);
 
