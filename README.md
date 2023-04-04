@@ -69,7 +69,7 @@ Notice the first 10 functions are split into two versions (update and sequential
 
 ## CONCURRENCY
 
-Each of the beginning 10 high level functions stated above utulize forking to create seperate processes that handle the retrieving of users, cpu usage and memory usage. When any or all of these three processes are activated, the above stated functions also set up pipelines to communicate between the main and forked processes. The forked processes use lower level functions (getUsers, getCpuUsage, getMemoryUsage) to retrive the needed info and write back to the main process with the wanted information through pipes.
+Each of the beginning 10 high-level functions stated above utilize forking to create separate processes that handle the retrieving of users, CPU usage, and memory usage. When any or all of these three processes are activated, the above-stated functions also set up pipelines to communicate between the main and forked processes. The forked processes use lower-level functions (getUsers, getCpuUsage, getMemoryUsage) to retrieve the needed info and write back to the main process with the wanted information through pipes.
 
 FORE MORE INFO ON HOW THIS IS IMPLEMENTED REFER TO THE stats_functions.c FILE
 
@@ -77,14 +77,14 @@ FORE MORE INFO ON HOW THIS IS IMPLEMENTED REFER TO THE stats_functions.c FILE
 
 1. The program will ignore the users CTRL-Z input and ......
 
-2. The code has been fully error checked using perror statements that report to STDERR. This means that the program will report if there was any failure in retrieving or acessing wanted information from the system. (see the codebase for further details)
+2. The code has been fully error-checked using perror statements that report to STDERR. This means that the program will report if there was any failure in retrieving or accessing wanted information from the system. (see the codebase for further details)
 
 ## NOTES
 
 1. When displaying the CPU usage in the first iteration, the program will take tdelay seconds for the first cpu result as it takes tdelay seconds to make the measurement.
 
 2. The convetion for graphics is as follows:
-   <br />• For cpu usage, the first iteration will start with 8 bars (|) and will to lose or gain a bar for each 1% decrease or increase relative to the next iteration
+   <br />• For CPU usage, the first iteration will start with 8 bars (|) and will lose or gain a bar for each 1% decrease or increase relative to the next iteration
    <br />• For memory usage, '#' represents +0.01 and ':' represents -0.01 in difference between usage. Additionally 'o' means no change. Note that the first iteration will be 'o' as there is nothing to compare to.
 
 FOR FURTHER INFORMATION ON EACH FUNCTION'S ROLE/DESCRIPTION AS WELL AS ASSUMPTIONS PLEASE REFER TO THE SOURCE CODE FILES.
@@ -96,6 +96,8 @@ The program also provides a makefile titles 'makefile' which provides the necess
 RUN THE FOLLOWING COMMANDS IN SEQUENCE:
 <br /> `make`
 <br /> `./monitor [insert flags or positional args here]`
+
+Note: You can run "make clean" to erase all the .o files produced from the compilation process
 
 THE ARGUMENT OPTIONS INCLUDE:
 
