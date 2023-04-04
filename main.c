@@ -362,7 +362,7 @@ void handle_ctrl_c(int signal_number)
     // if y: program continues
 
     char input;
-    int valid = 0;
+    // int valid = 0;
 
     printf("\n");
 
@@ -380,13 +380,13 @@ void handle_ctrl_c(int signal_number)
     if (input == 'n' || input == 'N')
     {
         printf("Exiting...\n");
-        valid = 1;
+        // valid = 1;
         exit(0);
     }
     else if (input == 'y' || input == 'Y')
     {
 
-        valid = 1;
+        /// valid = 1;
 
         // clear the message displayed if continuing
         printf("\033[2;A");
