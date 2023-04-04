@@ -1411,8 +1411,6 @@ void systemUpdateGraphic(int samples, int tdelay)
             float dummy3;
             sscanf(buf, "%f GB / %f GB  --  %f GB / %f GB\n", &dummy, &dummy2, &usage, &dummy3);
 
-            printf("%s   ", buf);
-
             // add to array
             memory_usage[i] = usage;
 
@@ -1427,7 +1425,7 @@ void systemUpdateGraphic(int samples, int tdelay)
                 strcpy(print, getMemoryUsageGraphic(usage, memory_usage[i - 1]));
             }
 
-            printf("%s", print);
+            printf("%s   %s", buf, print);
         }
 
         printf("\033[%d;0H", (cpuLineNumber)); // move cursor to cpu usage
