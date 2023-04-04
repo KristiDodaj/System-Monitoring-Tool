@@ -1411,7 +1411,7 @@ void systemUpdateGraphic(int samples, int tdelay)
             float dummy3;
             sscanf(buf, "%f GB / %f GB  --  %f GB / %f GB\n", &dummy, &dummy2, &usage, &dummy3);
 
-            printf("%s   ", buff);
+            printf("%s   ", buf);
 
             // add to array
             memory_usage[i] = usage;
