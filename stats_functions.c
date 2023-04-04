@@ -935,7 +935,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
         // update cpu_usage array
         cpu_usage[i][0] = bars;
-        cpu_usage[i][1] = usage;
+        cpu_usage[i][1] = round(usage * 100) / 100;
 
         if (i == samples - 1)
         {
