@@ -278,7 +278,7 @@ void getCpuUsage(int write_pipe, int tdelay)
     char buf[1024];
 
     // Convert the float to a string with a specific format
-    snprintf(buf, sizeof(buf), "%.10f", usage);
+    snprintf(buf, sizeof(buf), "%.2f", usage);
 
     // write output to pipe
     write(write_pipe, buf, strlen(buf) + 1);
@@ -623,7 +623,7 @@ void allInfoUpdate(int samples, int tdelay)
         if (i > 0)
         {
             // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            printf(" total cpu use = %.2f %%\n", usage);
         }
 
         // Read and print the CPU usage data from the cpu_pipe
@@ -651,7 +651,7 @@ void allInfoUpdate(int samples, int tdelay)
     waitpid(user_pid, &status, 0);
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    printf(" total cpu use = %.2f %%\n", usage);
 
     // print the ending system details
     printf("---------------------------------------\n");
@@ -887,7 +887,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
         if (i > 0)
         {
             // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            printf(" total cpu use = %.2f %%\n", usage);
 
             for (int j = 0; j < i; j++)
             {
@@ -959,7 +959,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     printf("\033[%dA", (samples - 1)); // move cursor up 9 lines
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    printf(" total cpu use = %.2f %%\n", usage);
     printf("\033[J"); // clears everything below the current line
 
     for (int j = 0; j < samples; j++)
@@ -1236,7 +1236,7 @@ void systemUpdate(int samples, int tdelay)
         if (i > 0)
         {
             // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            printf(" total cpu use = %.2f %%\n", usage);
         }
 
         // Read and print the CPU usage data from the cpu_pipe
@@ -1263,7 +1263,7 @@ void systemUpdate(int samples, int tdelay)
     waitpid(cpu_pid, &status, 0);
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    printf(" total cpu use = %.2f %%\n", usage);
 
     // print the ending system details
     printf("---------------------------------------\n");
@@ -1445,7 +1445,7 @@ void systemUpdateGraphic(int samples, int tdelay)
         if (i > 0)
         {
             // print usage
-            printf(" total cpu use = %.10f %%\n", usage);
+            printf(" total cpu use = %.2f %%\n", usage);
 
             for (int j = 0; j < i; j++)
             {
@@ -1516,7 +1516,7 @@ void systemUpdateGraphic(int samples, int tdelay)
     printf("\033[%dA", (samples - 1)); // move cursor up 9 lines
 
     // print usage
-    printf(" total cpu use = %.10f %%\n", usage);
+    printf(" total cpu use = %.2f %%\n", usage);
     printf("\033[J"); // clears everything below the current line
 
     for (int j = 0; j < samples; j++)
@@ -1745,7 +1745,7 @@ void allInfoSequential(int samples, int tdelay)
         char buf2[1024];
         read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
         usage = atof(buf2);
-        printf(" total cpu use = %.10f %%\n", usage);
+        printf(" total cpu use = %.2f %%\n", usage);
 
         printf("\n");
 
@@ -2021,7 +2021,7 @@ void allInfoSequentialGraphic(int samples, int tdelay)
         cpu_usage[i][0] = bars;
         cpu_usage[i][1] = usage;
 
-        printf(" total cpu use = %.10f %%\n", usage);
+        printf(" total cpu use = %.2f %%\n", usage);
 
         for (int j = 0; j <= i; j++)
         {
@@ -2337,7 +2337,7 @@ void systemSequential(int samples, int tdelay)
         char buf2[1024];
         read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
         usage = atof(buf2);
-        printf(" total cpu use = %.10f %%\n", usage);
+        printf(" total cpu use = %.2f %%\n", usage);
 
         printf("\n");
 
@@ -2558,7 +2558,7 @@ void systemSequentialGraphic(int samples, int tdelay)
         cpu_usage[i][0] = bars;
         cpu_usage[i][1] = usage;
 
-        printf(" total cpu use = %.10f %%\n", usage);
+        printf(" total cpu use = %.2f %%\n", usage);
 
         for (int j = 0; j <= i; j++)
         {
