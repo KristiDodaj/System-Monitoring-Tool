@@ -350,58 +350,6 @@ void navigate(int argc, char *argv[])
     }
 }
 
-void handle_ctrl_c(int signal_number)
-{
-    // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
-    // quit or continue the program through a (y/n) option.
-    // NOTE: IF IMPROPER INPUT FROM THE USER IS GIVEN THAN WE ASK THE USER THE QUESTION AGAIN
-    // Example Output: Given that CTRL C IS PRESSED it prints
-    //
-    // Ctrl-C signal received. Do you want to continue? (y/n):
-    // if n: program exits
-    // if y: program continues
-
-    char input;
-    // int valid = 0;
-
-    printf("\n");
-
-    printf("\033[2K");
-
-    // get user input
-    printf("Ctrl-C signal received. Do you want to continue? (y/n): ");
-    input = getchar();
-
-    // Clear the input buffer
-    while (getchar() != '\n')
-        ;
-
-    // exit or continue depending on input
-    if (input == 'n' || input == 'N')
-    {
-        printf("Exiting...\n");
-        // valid = 1;
-        exit(0);
-    }
-    else if (input == 'y' || input == 'Y')
-    {
-
-        /// valid = 1;
-
-        // clear the message displayed if continuing
-        printf("\033[2;A");
-        printf("\033[2K");
-        printf("\033[1;B");
-        printf("\033[2K");
-        printf("\033[1;B");
-    }
-    else
-    {
-        // go one line above to reask the question
-        printf("\033[1;A");
-    }
-}
-
 int main(int argc, char *argv[])
 {
     // redirect incoming signals for CTRL Z
