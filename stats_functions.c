@@ -278,7 +278,7 @@ void getCpuUsage(int write_pipe, int tdelay)
     char buf[1024];
 
     // Convert the float to a string with a specific format
-    snprintf(buf, sizeof(buf), "%.2f", usage);
+    snprintf(buf, sizeof(buf), "%.10f", usage);
 
     // write output to pipe
     write(write_pipe, buf, strlen(buf) + 1);
@@ -334,7 +334,7 @@ char *getCpuUsageGraphic(float current_usage, float previous_usage, int previous
         }
 
         // add the current usage
-        sprintf(buf + strlen(buf), " %f", current_usage);
+        sprintf(buf + strlen(buf), " %0.2f", current_usage);
     }
 
     return buf;
