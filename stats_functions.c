@@ -1940,7 +1940,6 @@ void allInfoSequentialGraphic(int samples, int tdelay)
                 // read and print output
                 if (FD_ISSET(mem_pipe[0], &read_fds))
                 {
-                    printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
                     char buf[100];
                     read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
 
