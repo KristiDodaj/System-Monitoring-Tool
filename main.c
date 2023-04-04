@@ -9,14 +9,14 @@
 #include <string.h>
 #include "stats_functions.h"
 
-void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
+void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, bool *graphic, int *samples, int *tdelay)
 {
     // This function will take in int argc and char *argv[] and will update the boolean pointers (user, sequential, system, graphics) and int
     // pointers (samples, tdelay) according to the command line arguments inputted.
     // Note: We assume that positional arguments for samples and tdelay are in this order (samples, tdelay), and will ALWAYS be the first two arguments inputted.
     // Example Output 1:
     // Suppose we execute as follows: ./a.out 5 2 --user
-    // parseArguments(argc, argv, system, user, sequential, samples, tdelay) will set
+    // parseArguments(argc, argv, system, user, sequential, graphic, samples, tdelay) will set
     //
     // samples = 5
     // tdelay = 2
@@ -24,7 +24,7 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
     //
     //// Example Output 2:
     // Suppose we execute as follows: ./a.out --sequential --tdelay=3 --samples=2
-    // parseArguments(argc, argv, system, user, sequential, samples, tdelay) will set
+    // parseArguments(argc, argv, system, user, sequential, graphic, samples, tdelay) will set
     //
     // samples = 2
     // tdelay = 3
@@ -46,6 +46,11 @@ void parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequ
         if (strcmp(argv[i], "--user") == 0)
         {
             *user = true;
+        }
+        // check if --user was called
+        if (strcmp(argv[i], "--graphics") == 0)
+        {
+            *graphic = true;
         }
         // check for flag --samples
         int sampleNumber;
@@ -97,11 +102,12 @@ bool validateArguments(int argc, char *argv[])
     int systemArgCount = 0;
     int userArgCount = 0;
     int samplesArgCount = 0;
+    int graphicArgCount = 0;
     int tdelayArgCount = 0;
     int positionalArgCount = 0;
 
     // check number of arguments
-    if (argc > 6)
+    if (argc > 7)
     {
         printf("TOO MANY ARGUMENTS. TRY AGAIN!\n");
         return false;
@@ -116,7 +122,7 @@ bool validateArguments(int argc, char *argv[])
         // check if all the flags are correctly formated
         if (argc >= 3)
         {
-            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (strcmp(argv[i], "--graphics") != 0 && strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[2], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
                 printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
@@ -125,7 +131,7 @@ bool validateArguments(int argc, char *argv[])
 
         if (argc < 3)
         {
-            if (strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
+            if (strcmp(argv[i], "--graphics") != 0 && strcmp(argv[i], "--sequential") != 0 && strcmp(argv[i], "--system") != 0 && strcmp(argv[i], "--user") != 0 && sscanf(argv[1], "%d", &dummyValue) != 1 && sscanf(argv[i], "--samples=%d", &dummyValue) != 1 && sscanf(argv[i], "--tdelay=%d", &dummyValue) != 1)
             {
                 printf("ONE OR MORE ARGUMENTS ARE MISTYPED OR IN THE WRONG ORDER. TRY AGAIN!\n");
                 return false;
@@ -146,6 +152,15 @@ bool validateArguments(int argc, char *argv[])
         {
             systemArgCount++;
             if (systemArgCount > 1)
+            {
+                printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
+                return false;
+            }
+        }
+        else if (strcmp(argv[i], "--graphics") == 0)
+        {
+            graphicArgCount++;
+            if (graphicArgCount > 1)
             {
                 printf("REPEATED ARGUMENTS. TRY AGAIN!\n");
                 return false;
@@ -255,41 +270,80 @@ void navigate(int argc, char *argv[])
         bool system = false;
         bool user = false;
         bool sequential = false;
+        bool graphic = false;
         int samples = 10;
         int tdelay = 1;
-        parseArguments(argc, argv, &system, &user, &sequential, &samples, &tdelay);
+        parseArguments(argc, argv, &system, &user, &sequential, &graphic, &samples, &tdelay);
 
         // check if sequential
         if (sequential)
         {
-            // redirect to the right output depending on booleans
-            if ((!system && !user) || (system && user))
+            if (!graphic)
             {
-                allInfoSequential(samples, tdelay);
+                // redirect to the right output depending on booleans
+                if ((!system && !user) || (system && user))
+                {
+                    allInfoSequential(samples, tdelay);
+                }
+                else if (user)
+                {
+                    usersSequential(samples, tdelay);
+                }
+                else if (system)
+                {
+                    systemSequential(samples, tdelay);
+                }
             }
-            else if (user)
+            else
             {
-                usersSequential(samples, tdelay);
-            }
-            else if (system)
-            {
-                systemSequential(samples, tdelay);
+                // redirect to the right output depending on booleans
+                if ((!system && !user) || (system && user))
+                {
+                    allInfoSequentialGraphic(samples, tdelay);
+                }
+                else if (user)
+                {
+                    usersSequential(samples, tdelay);
+                }
+                else if (system)
+                {
+                    systemSequentialGraphic(samples, tdelay);
+                }
             }
         }
         else
         {
-            // redirect to the right output depending on booleans
-            if ((!system && !user) || (system && user))
+            if (!graphic)
             {
-                allInfoUpdate(samples, tdelay);
+                // redirect to the right output depending on booleans
+                if ((!system && !user) || (system && user))
+                {
+                    allInfoUpdate(samples, tdelay);
+                }
+                else if (user)
+                {
+                    usersUpdate(samples, tdelay);
+                }
+                else if (system)
+                {
+                    systemUpdate(samples, tdelay);
+                }
             }
-            else if (user)
+            else
             {
-                usersUpdate(samples, tdelay);
-            }
-            else if (system)
-            {
-                systemUpdate(samples, tdelay);
+                // redirect to the right output depending on booleans
+                if ((!system && !user) || (system && user))
+                {
+                    allInfoUpdateGraphic(samples, tdelay);
+                }
+                else if (user)
+                {
+                    usersUpdate(samples, tdelay);
+                }
+                else if (system)
+                {
+                    systemUpdateGraphic(samples, tdelay);
+                }
             }
         }
     }
@@ -368,9 +422,7 @@ int main(int argc, char *argv[])
     }
 
     // call the navigate function which will redirect to the right output depeneding on the arguments
-    // navigate(argc, argv);
-
-    systemSequentialGraphic(2, 2);
+    navigate(argc, argv);
 
     return 0;
 }
