@@ -11,6 +11,7 @@
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
 #include <math.h>
+#include <termios.h>
 
 void header(int samples, int tdelay)
 {
@@ -464,6 +465,9 @@ void handle_ctrl_c(int signal_number)
     while (valid == 0)
     {
         printf("\033[2K");
+
+        // Discard any pending input in the input buffer
+        tcflush(STDIN_FILENO, TCIFLUSH);
 
         // get user input
         printf("Ctrl-C signal received. Do you want to continue? (y/n): ");
