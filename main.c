@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
     // call the navigate function which will redirect to the right output depeneding on the arguments
     // navigate(argc, argv);
 
-    systemSequentialGraphic(5, 1);
+    systemSequentialGraphic(2, 2);
 
     return 0;
 }
