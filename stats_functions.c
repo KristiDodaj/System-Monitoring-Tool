@@ -198,12 +198,12 @@ void getCpuNumber()
 void getCpuUsage(int write_pipe, int tdelay)
 {
     // This function takes the second interval (int tdelay), and compares two measurements that are tdelay seconds apart done by reading the /proc/stat file.
-    // The function will write the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 10 decimal places to the write_pipe.
+    // The function will write the overall percent increase(ex. 0.18%) or decrease(ex. -0.18%) as a float rounded to 2 decimal places to the write_pipe.
     // FORMULA FOR CALCULATION: (U2-U1/T2-T1) * 100 WHERE T IS TOTAL TIME AND U IS TOTAL TIME WITHOUT IDLE TIME
     // Example Output:
     // getCpuUsage(1)
     //
-    // writes: 1.1656951904
+    // writes: 1.17
 
     // declare and populate all the desired times spent by the CPU
     long int user;
@@ -469,7 +469,7 @@ void allInfoUpdate(int samples, int tdelay)
     // dodajkri      pts/0 (138.51.8.149)
     // ---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.0001081957 %
+    //  total cpu use = 0.01 %
     // ---------------------------------------
     // ### System Information ###
     // System Name = Linux
@@ -1129,7 +1129,7 @@ void systemUpdate(int samples, int tdelay)
     // 2.98 GB / 15.32 GB  --  2.98 GB / 16.28 GB
     // 2.97 GB / 15.32 GB  --  2.97 GB / 16.28 GB
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.0002161870 %
+    //  total cpu use = 0.00 %
     // ---------------------------------------
     // ### System Information ###
     // System Name = Linux
@@ -1572,7 +1572,7 @@ void allInfoSequential(int samples, int tdelay)
     // dodajkri      pts/0 (138.51.8.149)
     // ---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    // total cpu use = 0.0000000000 %
+    // total cpu use = 0.02 %
     //
     // >>> Iteration: 2
     //
@@ -1588,7 +1588,7 @@ void allInfoSequential(int samples, int tdelay)
     // dodajkri      pts/0 (138.51.8.149)
     // ---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.0004304505 %
+    //  total cpu use = 0.03 %
     // ---------------------------------------
     // ### System Information ###
     // System Name = Linux
@@ -1790,8 +1790,8 @@ void allInfoSequentialGraphic(int samples, int tdelay)
     // dodajkri      pts/57 (138.51.13.118)
     //---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.1672240794 %
-    //  |||||||| 0.167224
+    //  total cpu use = 0.16 %
+    //  |||||||| 0.16
     //
     //
     //>>> Iteration: 2
@@ -1809,9 +1809,9 @@ void allInfoSequentialGraphic(int samples, int tdelay)
     // dodajkri      pts/57 (138.51.13.118)
     //---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    // total cpu use = 0.3338898122 %
-    // |||||||| 0.167224
-    // |||||||| 0.333890
+    // total cpu use = 0.33 %
+    // |||||||| 0.16
+    // |||||||| 0.33
     //---------------------------------------
     // ### System Information ###
     // System Name = Linux
@@ -2210,7 +2210,7 @@ void systemSequential(int samples, int tdelay)
     //
     // ---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    // total cpu use = 0.0000000000 %
+    // total cpu use = 0.00 %
     //
     // >>> Iteration: 2
     //
@@ -2222,7 +2222,7 @@ void systemSequential(int samples, int tdelay)
     // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
     // ---------------------------------------
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.0004301672 %
+    //  total cpu use = 0.02 %
     // ---------------------------------------
     // ### System Information ###
     // System Name = Linux
@@ -2376,8 +2376,8 @@ void systemSequentialGraphic(int samples, int tdelay)
     // 7.65 GB / 15.32 GB  --  7.65 GB / 16.28 GB   |o 0.00 (7.65)
     //
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 1.3411567211 %
-    //  |||||||| 1.341157
+    //  total cpu use = 1.34 %
+    //  |||||||| 1.34
     //
     //>>> Iteration: 2
     //
@@ -2388,9 +2388,9 @@ void systemSequentialGraphic(int samples, int tdelay)
     //
     // 7.66 GB / 15.32 GB  --  7.66 GB / 16.28 GB   |# 0.01 (7.66)
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.5860192776 %
-    //  |||||||| 1.341157
-    //  |||||||| 0.586019
+    //  total cpu use = 0.58 %
+    //  |||||||| 1.34
+    //  |||||||| 0.58
     //---------------------------------------
     // ### System Information ###
     // System Name = Linux
