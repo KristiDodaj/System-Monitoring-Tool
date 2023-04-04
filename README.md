@@ -10,29 +10,29 @@ I was able to break things down into two classes of functions, low-level and hig
 ## FILES BREAKDOWN:
 
 1. stats_functions.c: contains all the functions responsible for retrieving as well as displaying the info
-   • header(int samples, int tdelay);
-   • getSystemInfo();
-   • getUsers(int write_pipe, int size_pipe);
-   • getCpuNumber();
-   • getCpuUsage(int write_pipe, int tdelay);
-   • getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars);
-   • getMemoryUsage(int write_pipe);
-   • getMemoryUsageGraphic(float current_usage, float previous_usage);
-   • allInfoUpdate(int samples, int tdelay);
-   • allInfoUpdateGraphic(int samples, int tdelay);
-   • usersUpdate(int samples, int tdelay);
-   • systemUpdate(int samples, int tdelay);
-   • systemUpdateGraphic(int samples, int tdelay);
-   • allInfoSequential(int samples, int tdelay);
-   • allInfoSequentialGraphic(int samples, int tdelay);
-   • usersSequential(int samples, int tdelay);
-   • systemSequential(int samples, int tdelay);
-   • systemSequentialGraphic(int samples, int tdelay);
+   <br /> • header(int samples, int tdelay);
+   <br />• getSystemInfo();
+   <br />• getUsers(int write_pipe, int size_pipe);
+   <br />• getCpuNumber();
+   <br />• getCpuUsage(int write_pipe, int tdelay);
+   <br />• getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars);
+   <br />• getMemoryUsage(int write_pipe);
+   <br />• getMemoryUsageGraphic(float current_usage, float previous_usage);
+   <br />• allInfoUpdate(int samples, int tdelay);
+   <br />• allInfoUpdateGraphic(int samples, int tdelay);
+   <br />• usersUpdate(int samples, int tdelay);
+   <br />• systemUpdate(int samples, int tdelay);
+   <br />• systemUpdateGraphic(int samples, int tdelay);
+   <br />• allInfoSequential(int samples, int tdelay);
+   <br />• allInfoSequentialGraphic(int samples, int tdelay);
+   <br />• usersSequential(int samples, int tdelay);
+   <br />• systemSequential(int samples, int tdelay);
+   <br />• systemSequentialGraphic(int samples, int tdelay);
 
 2. main.c: contains all the functions responsible for parsing/validating the CLAs as well as navigate to the right output.
-   • parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
-   • validateArguments(int argc, char \*argv[])
-   • navigate(int argc, char \*argv[])
+   <br />• parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
+   <br />• validateArguments(int argc, char \*argv[])
+   <br />• navigate(int argc, char \*argv[])
 
 3. stats_functions.h: header file containing all the function signatures of stats_functions.c so it can be linked to main.c
 
@@ -84,8 +84,8 @@ FORE MORE INFO ON HOW THIS IS IMPLEMENTED REFER TO THE stats_functions.c FILE
 1. When displaying the CPU usage in the first iteration, the program will take tdelay seconds for the first cpu result as it takes tdelay seconds to make the measurement.
 
 2. The convetion for graphics is as follows:
-   • For cpu usage, the first iteration will start with 8 bars (|) and will to lose or gain a bar for each 1% decrease or increase relative to the next iteration
-   • For memory usage, '#' represents +0.01 and ':' represents -0.01 in difference between usage. Additionally 'o' means no change. Note that the first iteration will be 'o' as there is nothing to compare to.
+   <br />• For cpu usage, the first iteration will start with 8 bars (|) and will to lose or gain a bar for each 1% decrease or increase relative to the next iteration
+   <br />• For memory usage, '#' represents +0.01 and ':' represents -0.01 in difference between usage. Additionally 'o' means no change. Note that the first iteration will be 'o' as there is nothing to compare to.
 
 FOR FURTHER INFORMATION ON EACH FUNCTION'S ROLE/DESCRIPTION AS WELL AS ASSUMPTIONS PLEASE REFER TO THE SOURCE CODE FILES.
 
@@ -105,6 +105,6 @@ THE ARGUMENT OPTIONS INCLUDE:
 4. --samples=N (sets number of sample outputs)
 5. --sequential (prints samples sequentially)
 6. --graphics (prints the graphical version)
-7. You can also set tdelay and samples by simply inputing two seperate integers as your first two arguments (ex /mySystemStats 10 1)
+7. You can also set tdelay and samples by simply inputing two seperate integers as your first two arguments (ex ./monitor 10 1)
 
 NOTE: Calling the program with no arguments will deafult to samples=10, tdelay=1, and prints both system and user info by updating itself.
