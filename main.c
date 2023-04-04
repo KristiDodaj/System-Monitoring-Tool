@@ -1,6 +1,7 @@
 
 // BY: KRISTI DODAJ
 // COURSE: CSCB09
+// main.c: Responsible for parsing/validating the given CLAs as well as navigating to the right output given such CLAs
 
 #include <stdlib.h>
 #include <stdio.h>

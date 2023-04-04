@@ -289,8 +289,10 @@ char *getCpuUsageGraphic(float current_usage, float previous_usage, int previous
     // This function takes the current cpu usage (float current_usage) and previous usage (float previous_usage) as well as
     // the number of bars on the previous usage (int previous_bars) and formats a graphic for the current cpu usage.
     // The function will the return the properly formatted string that includes the current cpu usage and the graphic as well as the number of bars.
+    //
     // NOTE: The graphic convetions include 8 bars (|) and with every 1% change there will be one | less or more.
     // Also for the first graphic there will always be 8 bars as the there is nothing to compare the usage difference
+    //
     // Example Output:
     // getCpuUsageGraphic(5, 3, 11)
     //
@@ -385,8 +387,10 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     // This function takes the current memory usage (float current_usage) and previous usage (float previous_usage) and
     // formats a graphic for the current memory usage. The function will return the properly formatted string that includes
     // the current memory usage and the graphic.
+    //
     // NOTE: The graphic convetion # represents +0.01 and : represents -0.01 in difference between usage. Additionally o means no change.
     // Also the first output will always be o since there is nothing to compare to
+    //
     // Example Output:
     // getMemoryUsageGraphic(9.85, 9.76)
     //
@@ -674,15 +678,15 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     //---------------------------------------
     // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
     // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |o 0.00 (9.75)
-    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |* 0.00 (9.75)
-    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |* 0.00 (9.75)
-    // 9.76 GB / 15.37 GB  -- 9.76 GB / 16.33 GB   |* 0.00 (9.76)
-    // 9.85 GB / 15.37 GB  -- 9.85 GB / 16.33 GB   |#########* 0.09 (9.85)
-    // 10.06 GB / 15.37 GB  -- 10.06 GB / 16.33 GB   |####################* 0.20 (10.06)
+    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |o 0.00 (9.75)
+    // 9.75 GB / 15.37 GB  -- 9.75 GB / 16.33 GB   |o 0.00 (9.75)
+    // 9.76 GB / 15.37 GB  -- 9.76 GB / 16.33 GB   |o 0.00 (9.76)
+    // 9.85 GB / 15.37 GB  -- 9.85 GB / 16.33 GB   |######### 0.09 (9.85)
+    // 10.06 GB / 15.37 GB  -- 10.06 GB / 16.33 GB   |#################### 0.20 (10.06)
     // 10.13 GB / 15.37 GB  -- 10.13 GB / 16.33 GB   |#######* 0.07 (10.13)
     // 10.16 GB / 15.37 GB  -- 10.16 GB / 16.33 GB   |##* 0.03 (10.16)
-    // 10.28 GB / 15.37 GB  -- 10.28 GB / 16.33 GB   |###########* 0.12 (10.28)
-    // 10.38 GB / 15.37 GB  -- 10.38 GB / 16.33 GB   |##########* 0.11 (10.38)
+    // 10.28 GB / 15.37 GB  -- 10.28 GB / 16.33 GB   |########### 0.12 (10.28)
+    // 10.38 GB / 15.37 GB  -- 10.38 GB / 16.33 GB   |########## 0.11 (10.38)
     //---------------------------------------
     // ### Sessions/users ###
     // marcelo       pts/0 (138.51.12.217)
