@@ -2017,7 +2017,7 @@ void allInfoSequentialGraphic(int samples, int tdelay)
 
         printf(" total cpu use = %.10f %%\n", usage);
 
-        for (int j = 0; j < i; j++)
+        for (int j = 0; j <= i; j++)
         {
             char print[1024];
 
