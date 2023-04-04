@@ -538,13 +538,6 @@ void allInfoUpdate(int samples, int tdelay)
     // Architecture = x86_64
     // ---------------------------------------
 
-    // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
-
     // create pipes for communication
     int mem_pipe[2], cpu_pipe[2], user_pipe[2], size_pipe[2];
     if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
@@ -616,6 +609,13 @@ void allInfoUpdate(int samples, int tdelay)
     /////////////////////////////////
     //          PARENT
     /////////////////////////////////
+
+    // redirect incoming signals for CTRL C
+    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    {
+        perror("Error registering SIGINT handler");
+        exit(1);
+    }
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
