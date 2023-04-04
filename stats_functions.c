@@ -278,7 +278,7 @@ void getCpuUsage(int write_pipe, int tdelay)
     char buf[1024];
 
     // Convert the float to a string with a specific format
-    snprintf(buf, sizeof(buf), "%.10f", usage);
+    snprintf(buf, sizeof(buf), "%.2f", usage);
 
     // write output to pipe
     write(write_pipe, buf, strlen(buf) + 1);
@@ -2367,31 +2367,30 @@ void systemSequentialGraphic(int samples, int tdelay)
     // Example Output:
     // systemSequential(2, 2) prints
     //
-    // >>> Iteration: 1
-    //
+    //>>> Iteration: 1
+
     // Nbr of samples: 2 -- every 2 secs
-    // Memory Usage: 3924 kilobytes
+    // Memory Usage: 3984 kilobytes
     //---------------------------------------
     // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
-    // 7.47 GB / 15.32 GB  --  7.47 GB / 16.28 GB   |o 0.00 (7.47)
+    // 7.65 GB / 15.32 GB  --  7.65 GB / 16.28 GB   |o 0.00 (7.65)
     //
     // Number of CPU's: 12     Total Number of Cores: 72
-    //  total cpu use = 0.1672240794 %
-    //  |||||||| 0.167224
-    //
+    //  total cpu use = 1.3411567211 %
+    //  |||||||| 1.341157
     //
     //>>> Iteration: 2
     //
     // Nbr of samples: 2 -- every 2 secs
-    // Memory Usage: 3924 kilobytes
+    // Memory Usage: 3984 kilobytes
     //---------------------------------------
-    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) /
     //
-    // 7.47 GB / 15.32 GB  --  7.47 GB / 16.28 GB   |o 0.00 (7.47)
+    // 7.66 GB / 15.32 GB  --  7.66 GB / 16.28 GB   |# 0.01 (7.66)
     // Number of CPU's: 12     Total Number of Cores: 72
-    // total cpu use = 0.3338898122 %
-    // |||||||| 0.167224
-    // |||||||| 0.333890
+    //  total cpu use = 0.5860192776 %
+    //  |||||||| 1.341157
+    //  |||||||| 0.586019
     //---------------------------------------
     // ### System Information ###
     // System Name = Linux
@@ -2531,6 +2530,7 @@ void systemSequentialGraphic(int samples, int tdelay)
                 printf("\n");
             }
         }
+
         printf("\n");
         getCpuNumber();
 
