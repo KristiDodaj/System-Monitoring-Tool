@@ -2017,15 +2017,28 @@ void allInfoSequentialGraphic(int samples, int tdelay)
 
         printf(" total cpu use = %.10f %%\n", usage);
 
-        // Scan the first number and the number of characters read
-        int chars_read;
-        int num1;
-        sscanf(str, "%d%n", &num1, &chars_read);
+        for (int j = 0; j < i; j++)
+        {
+            char print[1024];
 
-        // Move the remaining part of the string to the left, starting after the first number
-        memmove(str, str + chars_read, strlen(str + chars_read) + 1);
+            if (j != 0)
+            {
+                strcpy(print, getCpuUsageGraphic(cpu_usage[j][1], cpu_usage[j - 1][1], cpu_usage[j - 1][0]));
+            }
+            else
+            {
+                strcpy(print, getCpuUsageGraphic(cpu_usage[j][1], 0, 0));
+            }
+            // Scan the first number and the number of characters read
+            int chars_read;
+            int num1;
+            sscanf(print, "%d%n", &num1, &chars_read);
 
-        printf("%s\n", str);
+            // Move the remaining part of the string to the left, starting after the first number
+            memmove(print, print + chars_read, strlen(print + chars_read) + 1);
+
+            printf("%s\n", print);
+        }
 
         printf("\n");
 
