@@ -20,6 +20,7 @@ void usersUpdate(int samples, int tdelay);
 void systemUpdate(int samples, int tdelay);
 void systemUpdateGraphic(int samples, int tdelay);
 void allInfoSequential(int samples, int tdelay);
+void allInfoSequentialGraphic(int samples, int tdelay);
 void usersSequential(int samples, int tdelay);
 void systemSequential(int samples, int tdelay);
 

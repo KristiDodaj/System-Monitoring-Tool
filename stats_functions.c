@@ -1403,7 +1403,6 @@ void systemUpdateGraphic(int samples, int tdelay)
         select(max_fd + 1, &read_fds, NULL, NULL, NULL);
 
         // read and print output
-        // read and print output
         if (FD_ISSET(mem_pipe[0], &read_fds))
         {
             printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
@@ -1747,6 +1746,286 @@ void allInfoSequential(int samples, int tdelay)
         read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
         usage = atof(buf2);
         printf(" total cpu use = %.10f %%\n", usage);
+
+        printf("\n");
+
+        fflush(stdout);
+    }
+
+    // wait for processes to finish so no orphan or zombie cases
+    int status;
+    waitpid(mem_pid, &status, 0);
+    waitpid(cpu_pid, &status, 0);
+    waitpid(user_pid, &status, 0);
+
+    // print the ending system details
+    printf("\033[1A");
+    printf("---------------------------------------\n");
+    printf("### System Information ### \n");
+    getSystemInfo();
+    printf("---------------------------------------\n");
+}
+
+void allInfoSequentialGraphic(int samples, int tdelay)
+{
+    // This function will take in int samples and tdelay and prints out all the system information that will print sequentially
+    // in the specified time interval and the specified number of samples. The information given includes memory usage,
+    // user logs, cpu information, system information and are implemented through the above listed functions.
+    // NOTE: Cpu Usage, Memory Usage, and Users are individual processes that communicate through pipes
+    // Example Output:
+    // allInfoSequential(2, 2) prints
+    //
+    // >>> Iteration: 1
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
+    //
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    // total cpu use = 0.0000000000 %
+    //
+    // >>> Iteration: 2
+    //
+    // Nbr of samples: 2 -- every 2 secs
+    // Memory Usage: 3924 kilobytes
+    // ---------------------------------------
+    // ### Memory ### (Phys.Used/Tot -- Virtual Used/Tot)
+    //
+    // 3.00 GB / 15.32 GB  --  3.00 GB / 16.28 GB
+    // ---------------------------------------
+    // ### Sessions/users ###
+    // dodajkri      pts/1 (tmux(97972).%0)
+    // dodajkri      pts/0 (138.51.8.149)
+    // ---------------------------------------
+    // Number of CPU's: 12     Total Number of Cores: 72
+    //  total cpu use = 0.0004304505 %
+    // ---------------------------------------
+    // ### System Information ###
+    // System Name = Linux
+    // Machine Name = iits-b473-27
+    // Version = #62-Ubuntu SMP Tue Nov 22 19:54:14 UTC 2022
+    // Release = 5.15.0-56-generic
+    // Architecture = x86_64
+    // ---------------------------------------
+
+    // create pipes for communication
+    int mem_pipe[2], cpu_pipe[2], user_pipe[2], size_pipe[2];
+    if (pipe(mem_pipe) < 0 || pipe(cpu_pipe) < 0 || pipe(user_pipe) < 0 || pipe(size_pipe) < 0)
+    {
+        perror("Error creating pipes");
+        exit(EXIT_FAILURE);
+    }
+
+    /////////////////////////////////
+    //          CHILD
+    /////////////////////////////////
+
+    // child process for memory usage
+    pid_t mem_pid = fork();
+    if (mem_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (mem_pid == 0)
+    {
+        close(mem_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getMemoryUsage(mem_pipe[1]); // write to pipe
+            sleep(tdelay);               // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    // child process for cpu usage
+    pid_t cpu_pid = fork();
+    if (cpu_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (cpu_pid == 0)
+    {
+        close(cpu_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
+        }
+
+        exit(0); // exit child process
+    }
+
+    // child process for users
+    pid_t user_pid = fork();
+    if (user_pid < 0)
+    {
+        perror("fork");
+        exit(1);
+    }
+    else if (user_pid == 0)
+    {
+        close(user_pipe[0]); // close unused read end
+        for (int i = 0; i < samples; i++)
+        {
+            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+            sleep(tdelay);                        // sleep for tdelay seconds
+        }
+
+        exit(0); // exit child process
+    }
+
+    /////////////////////////////////
+    //          PARENT
+    /////////////////////////////////
+
+    // close unused write ends of pipes
+    close(mem_pipe[1]);
+    close(cpu_pipe[1]);
+    close(user_pipe[1]);
+    close(size_pipe[1]);
+
+    // clear terminal before starting
+    printf("\033c");
+
+    float usage;
+
+    // wait for all child processes to finish
+    fd_set read_fds;
+
+    int max_fd = mem_pipe[0];
+    if (cpu_pipe[0] > max_fd)
+    {
+        max_fd = cpu_pipe[0];
+    }
+    if (user_pipe[0] > max_fd)
+    {
+        max_fd = user_pipe[0];
+    }
+
+    // store previous cpu and memory results
+    float cpu_usage[samples][2];
+    float memory_usage[samples];
+
+    // print all info sequentially
+    for (int i = 0; i < samples; i++)
+    {
+
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(mem_pipe[0], &read_fds);
+        FD_SET(cpu_pipe[0], &read_fds);
+        FD_SET(user_pipe[0], &read_fds);
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
+        printf("\r"); // clear current line in case CTRL Z has been called
+        printf(">>> Iteration: %d\n", i + 1);
+        header(samples, tdelay);
+        printf("---------------------------------------\n");
+        printf("### Memory ### (Phys.Used/Tot -- Virtual Used/Tot) \n");
+
+        // create the needed spaces
+        for (int j = 0; j < samples; j++)
+        {
+            if (j == i)
+            {
+                // read and print output
+                if (FD_ISSET(mem_pipe[0], &read_fds))
+                {
+                    printf("\033[%d;0H", (memoryLineNumber)); // move cursor to memory
+                    char buf[100];
+                    read(mem_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+
+                    // get total usage
+                    float dummy;
+                    float dummy2;
+                    float usage;
+                    float dummy3;
+                    sscanf(buf, "%f GB / %f GB  --  %f GB / %f GB\n", &dummy, &dummy2, &usage, &dummy3);
+
+                    // add to array
+                    memory_usage[i] = usage;
+
+                    char print[500];
+
+                    if (i == 0)
+                    {
+                        strcpy(print, getMemoryUsageGraphic(usage, 0));
+                    }
+                    else
+                    {
+                        strcpy(print, getMemoryUsageGraphic(usage, memory_usage[i - 1]));
+                    }
+
+                    int len = strlen(buf);
+                    if (len > 0)
+                    {
+                        buf[len - 1] = '\0'; // set the null terminator one character earlier
+                    }
+
+                    printf("%s   %s", buf, print);
+                }
+            }
+            else
+            {
+                printf("\n");
+            }
+        }
+        printf("---------------------------------------\n");
+        printf("### Sessions/users ###\n");
+        // Read and print the user data from the user_pipe
+        char size[100];
+        read(size_pipe[0], size, sizeof(size));
+        int length = atoi(size);
+        char buf[length];
+        read(user_pipe[0], buf, sizeof(buf)); // read memory usage from pipe
+        printf("%s", buf);
+        printf("---------------------------------------\n");
+        getCpuNumber();
+
+        // Read and print the CPU usage data from the cpu_pipe
+        char buf2[1024];
+        read(cpu_pipe[0], buf2, sizeof(buf2)); // read memory usage from pipe
+        usage = atof(buf2);
+        char str[150];
+
+        if (i == 0)
+        {
+            stpcpy(str, getCpuUsageGraphic(usage, 0, 0));
+        }
+        else
+        {
+            stpcpy(str, getCpuUsageGraphic(usage, cpu_usage[i - 1][1], cpu_usage[i - 1][0]));
+        }
+
+        int bars;
+        float dummy;
+
+        sscanf(str, "%d |%*[^|]|%*[^|]|%*[^|] %f", &bars, &dummy);
+
+        // update cpu_usage array
+        cpu_usage[i][0] = bars;
+        cpu_usage[i][1] = usage;
+
+        printf(" total cpu use = %.10f %%\n", usage);
+
+        // Scan the first number and the number of characters read
+        int chars_read;
+        int num1;
+        sscanf(str, "%d%n", &num1, &chars_read);
+
+        // Move the remaining part of the string to the left, starting after the first number
+        memmove(str, str + chars_read, strlen(str + chars_read) + 1);
+
+        printf("%s\n", str);
 
         printf("\n");
 
