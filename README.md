@@ -77,7 +77,7 @@ FORE MORE INFO ON HOW THIS IS IMPLEMENTED REFER TO THE stats_functions.c FILE
 
 ## SIGNALS & ERROR CHECKING
 
-1. The program will ignore the users CTRL-Z input and ......
+1. The program will ignore the users CTRL-Z input and is handled in main.c. On the other hand CTRL C is handled in stats_functions.c where the handler funtion is included and where each of the 10 output functions redirect the incoming signal to the handler.
 
 2. The code has been fully error-checked using perror statements that report to STDERR. This means that the program will report if there was any failure in retrieving or accessing wanted information from the system. (see the codebase for further details)
 
@@ -111,4 +111,4 @@ THE ARGUMENT OPTIONS INCLUDE:
 6. --graphics (prints the graphical version)
 7. You can also set tdelay and samples by simply inputing two seperate integers as your first two arguments (ex ./monitor 10 1)
 
-NOTE: Calling the program with no arguments will deafult to samples=10, tdelay=1, and prints both system and user info by updating itself.
+NOTE: Calling the program with no arguments will deafult to samples=10, tdelay=1, and prints both system and user info by updating itself. Also calling both --user and --system will give you the default of all infomration.
