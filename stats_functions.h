@@ -14,6 +14,7 @@ void getCpuUsage(int write_pipe, int tdelay);
 void *getCpuUsageGraphic(float current_usage, float previous_usage, int previous_bars);
 void getMemoryUsage(int write_pipe);
 char *getMemoryUsageGraphic(float current_usage, float previous_usage);
+void handle_ctrl_c(int signal_number);
 void allInfoUpdate(int samples, int tdelay);
 void allInfoUpdateGraphic(int samples, int tdelay);
 void usersUpdate(int samples, int tdelay);

@@ -27,12 +27,13 @@ I was able to break things down into two classes of functions, low-level and hig
    <br />• allInfoSequentialGraphic(int samples, int tdelay);
    <br />• usersSequential(int samples, int tdelay);
    <br />• systemSequential(int samples, int tdelay);
+   <br />• handle_ctrl_c(int signal_number);
    <br />• systemSequentialGraphic(int samples, int tdelay);
 
 2. main.c: contains all the functions responsible for parsing/validating the CLAs as well as navigate to the right output.
-   <br />• parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay)
-   <br />• validateArguments(int argc, char \*argv[])
-   <br />• navigate(int argc, char \*argv[])
+   <br />• parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay);
+   <br />• validateArguments(int argc, char \*argv[]);
+   <br />• navigate(int argc, char \*argv[]);
 
 3. stats_functions.h: header file containing all the function signatures of stats_functions.c so it can be linked to main.c
 
@@ -48,6 +49,7 @@ I was able to break things down into two classes of functions, low-level and hig
 8. getMemoryUsageGraphic(float current_usage, float previous_usage) //returns the graphical string version of the given memory usage
 9. parseArguments(int argc, char *argv[], bool *system, bool *user, bool *sequential, int *samples, int *tdelay) //parses command line arguments passed
 10. validateArguments(int argc, char \*argv[]) //validates the command line arguments passed
+11. handle_ctrl_c(int signal_number) //handles the case when CTRL C is pressed
 
 Notice that all these functions are responsible for getting the information and each has a singular responsibility.
 
