@@ -559,6 +559,8 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
+        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
+
         close(mem_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
@@ -578,6 +580,8 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (cpu_pid == 0)
     {
+        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
+
         close(cpu_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
@@ -596,7 +600,9 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (user_pid == 0)
     {
-        close(user_pipe[0]); // close unused read end
+
+        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
+        close(user_pipe[0]);     // close unused read end
         for (int i = 0; i < samples; i++)
         {
             getUsers(user_pipe[1], size_pipe[1]); // write to pipe
