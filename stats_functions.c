@@ -11,7 +11,6 @@
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
 #include <math.h>
-#include <errno.h>
 
 void header(int samples, int tdelay)
 {
@@ -654,16 +653,13 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        // Wait for all child processes to finish
-        int select_result;
-        do
-        {
-            FD_ZERO(&read_fds);
-            FD_SET(mem_pipe[0], &read_fds);
-            FD_SET(cpu_pipe[0], &read_fds);
-            FD_SET(user_pipe[0], &read_fds);
-            select_result = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-        } while (select_result == -1 && errno == EINTR);
+
+        // wait for all child processes to finish
+        FD_ZERO(&read_fds);
+        FD_SET(mem_pipe[0], &read_fds);
+        FD_SET(cpu_pipe[0], &read_fds);
+        FD_SET(user_pipe[0], &read_fds);
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
 
         // read and print output
         if (FD_ISSET(mem_pipe[0], &read_fds))
