@@ -12,6 +12,7 @@
 #include <sys/wait.h>
 #include <math.h>
 #include <fcntl.h>
+#include <signal.h>
 
 void header(int samples, int tdelay)
 {
