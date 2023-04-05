@@ -613,7 +613,7 @@ void allInfoUpdate(int samples, int tdelay)
                 }
                 else if (pause_flag == '3')
                 {
-                    exit(0)
+                    exit(0);
                 }
             }
         }
@@ -649,7 +649,7 @@ void allInfoUpdate(int samples, int tdelay)
                 }
                 else if (pause_flag == '3')
                 {
-                    exit(0)
+                    exit(0);
                 }
             }
         }
@@ -686,7 +686,7 @@ void allInfoUpdate(int samples, int tdelay)
                 }
                 else if (pause_flag == '3')
                 {
-                    exit(0)
+                    exit(0);
                 }
             }
         }
@@ -935,11 +935,11 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
+    /*  if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+     {
+         perror("Error registering SIGINT handler");
+         exit(1);
+     } */
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -1210,12 +1210,12 @@ void usersUpdate(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
-
+    /*  if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+     {
+         perror("Error registering SIGINT handler");
+         exit(1);
+     }
+  */
     // close unused write ends of pipes
     close(user_pipe[1]);
     close(size_pipe[1]);
@@ -1360,11 +1360,11 @@ void systemUpdate(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    /* if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
     {
         perror("Error registering SIGINT handler");
         exit(1);
-    }
+    } */
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -1546,11 +1546,11 @@ void systemUpdateGraphic(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
+    /*  if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+     {
+         perror("Error registering SIGINT handler");
+         exit(1);
+     } */
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -1858,12 +1858,12 @@ void allInfoSequential(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    /* if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
     {
         perror("Error registering SIGINT handler");
         exit(1);
     }
-
+ */
     // close unused write ends of pipes
     close(mem_pipe[1]);
     close(cpu_pipe[1]);
@@ -2091,11 +2091,11 @@ void allInfoSequentialGraphic(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    /* if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
     {
         perror("Error registering SIGINT handler");
         exit(1);
-    }
+    } */
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -2340,11 +2340,11 @@ void usersSequential(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    /* if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
     {
         perror("Error registering SIGINT handler");
         exit(1);
-    }
+    } */
 
     // close unused write ends of pipes
     close(user_pipe[1]);
@@ -2499,11 +2499,11 @@ void systemSequential(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
+    /*  if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+     {
+         perror("Error registering SIGINT handler");
+         exit(1);
+     } */
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -2676,11 +2676,11 @@ void systemSequentialGraphic(int samples, int tdelay)
     /////////////////////////////////
 
     // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+    /* if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
     {
         perror("Error registering SIGINT handler");
         exit(1);
-    }
+    } */
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
