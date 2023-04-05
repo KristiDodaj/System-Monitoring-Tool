@@ -13,6 +13,7 @@
 #include <math.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/types.h>
 
 void header(int samples, int tdelay)
 {
