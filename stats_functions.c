@@ -449,7 +449,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
 
 int sigint_pipe_fd;
 
-void handle_ctrl_c(int signal_number, siginfo_t *info, void *context)
+void handle_ctrl_c(int signal_number)
 {
     // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
     // quit or continue the program through a (y/n) option.
