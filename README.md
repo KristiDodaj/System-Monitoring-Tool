@@ -71,7 +71,7 @@ Notice the first 10 functions are split into two versions (update and sequential
 
 ## CONCURRENCY
 
-Each of the beginning 10 high-level functions stated above utilize forking to create separate processes that handle the retrieving of users, CPU usage, and memory usage. When any or all of these three processes are activated, the above-stated functions also set up pipelines to communicate between the main and forked processes. The forked processes use lower-level functions (getUsers, getCpuUsage, getMemoryUsage) to retrieve the needed info and write back to the main process with the wanted information through pipes.
+Each of the beginning 10 high-level functions stated above utilize forking to create separate processes that handle the retrieving of users, CPU usage, and memory usage. When any or all of these three processes are activated, the above-stated functions also set up pipelines to communicate between the main and forked processes. The forked processes use lower-level functions (getUsers, getCpuUsage, getMemoryUsage) to retrieve the needed info and write back to the main process with the wanted information through pipes. Note that the main program waits for all the forked processes to finish before exiting thus leaving no orphan or zombie children.
 
 FORE MORE INFO ON HOW THIS IS IMPLEMENTED REFER TO THE stats_functions.c FILE
 

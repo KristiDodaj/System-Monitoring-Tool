@@ -1021,8 +1021,8 @@ void allInfoUpdateGraphic(int samples, int tdelay)
 
         if (i == samples - 1)
         {
-            printf("\033[1A"); // move the cursor up one line
-            printf("\033[2K"); // clear the entire line
+            // printf("\033[1A"); // move the cursor up one line
+            // printf("\033[2K"); // clear the entire line
         }
 
         // update line numbers
