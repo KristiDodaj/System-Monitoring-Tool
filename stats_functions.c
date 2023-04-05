@@ -13,7 +13,6 @@
 #include <math.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <sys/signal.h>
 
 void header(int samples, int tdelay)
 {
@@ -580,8 +579,6 @@ void allInfoUpdate(int samples, int tdelay)
         exit(1);
     }
 
-    fcntl(sigint_pipe[0], F_GETFL, 0);
-
     /////////////////////////////////
     //          CHILD
     /////////////////////////////////
@@ -596,6 +593,10 @@ void allInfoUpdate(int samples, int tdelay)
     else if (mem_pid == 0)
     {
         close(mem_pipe[0]); // close unused read end
+
+        // Set the sigint_pipe[0] as non-blocking
+        int flags = fcntl(sigint_pipe[0], F_GETFL, 0);
+        fcntl(sigint_pipe[0], F_SETFL, flags | O_NONBLOCK);
 
         for (int i = 0; i < samples; i++)
         {
@@ -633,6 +634,10 @@ void allInfoUpdate(int samples, int tdelay)
     else if (cpu_pid == 0)
     {
 
+        // Set the sigint_pipe[0] as non-blocking
+        int flags = fcntl(sigint_pipe[0], F_GETFL, 0);
+        fcntl(sigint_pipe[0], F_SETFL, flags | O_NONBLOCK);
+
         close(cpu_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
@@ -668,6 +673,10 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (user_pid == 0)
     {
+
+        // Set the sigint_pipe[0] as non-blocking
+        int flags = fcntl(sigint_pipe[0], F_GETFL, 0);
+        fcntl(sigint_pipe[0], F_SETFL, flags | O_NONBLOCK);
 
         close(user_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
