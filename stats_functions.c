@@ -675,8 +675,8 @@ void allInfoUpdate(int samples, int tdelay)
             int happened = read(sigint_pipe[0], &pause_flag, sizeof(pause_flag));
             if (happened < 0)
             {
-                getUsers(user_pipe[1]); // write to pipe
-                sleep(tdelay);          // sleep for tdelay seconds
+                getUsers(user_pipe[1], size_pipe[1]); // write to pipe
+                sleep(tdelay);                        // sleep for tdelay seconds
             }
             else
             {
