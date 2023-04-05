@@ -447,6 +447,8 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     return buf;
 }
 
+int sigint_pipe_fd;
+
 void handle_ctrl_c(int signal_number, siginfo_t *info, void *context)
 {
     // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
@@ -565,15 +567,9 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(sa));
-    sa.sa_sigaction = handle_ctrl_c;
-    sa.sa_flags = SA_SIGINFO;
+    sigint_pipe_fd = sigint_pipe[0];
 
-    // Pass the sigint_pipe file descriptor to the signal handler
-    sa.sa_restorer = (void *)sigint_pipe;
-
-    if (sigaction(SIGINT, &sa, NULL) == -1)
+    if (signal(SIGINT, handle_ctrl_c) == -1)
     {
         perror("Error registering SIGINT handler");
         exit(1);
