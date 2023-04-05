@@ -1023,7 +1023,6 @@ void allInfoUpdateGraphic(int samples, int tdelay)
         {
             printf("\033[1A"); // move the cursor up one line
             printf("\033[2K"); // clear the entire line
-            printf("\n");
         }
 
         // update line numbers
