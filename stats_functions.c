@@ -460,10 +460,8 @@ void handle_ctrl_c(int signal_number)
     // if n: program exits
     // if y: program continues
 
-    int *sigint_pipe = info->si_value.sival_ptr;
-
     // Add this line to send a signal to the child processes to continue
-    write(sigint_pipe[1], "1", 1);
+    write(sigint_pipe_fd, "1", 1);
 
     char input;
     int valid = 0;
@@ -567,9 +565,9 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
-    sigint_pipe_fd = sigint_pipe[0];
+    sigint_pipe_fd = sigint_pipe[1];
 
-    if (signal(SIGINT, handle_ctrl_c) == -1)
+    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
     {
         perror("Error registering SIGINT handler");
         exit(1);
