@@ -11,6 +11,7 @@
 #include <sys/sysinfo.h>
 #include <sys/wait.h>
 #include <math.h>
+#include <fcntl.h>
 
 void header(int samples, int tdelay)
 {
@@ -445,7 +446,7 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     return buf;
 }
 
-void handle_ctrl_c(int signal_number)
+void handle_ctrl_c(int signal_number, siginfo_t *info, void *context)
 {
     // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
     // quit or continue the program through a (y/n) option.
@@ -455,6 +456,11 @@ void handle_ctrl_c(int signal_number)
     // Ctrl-C signal received. Do you want to continue? (y/n):
     // if n: program exits
     // if y: program continues
+
+    int *sigint_pipe = info->si_value.sival_ptr;
+
+    // Add this line to send a signal to the child processes to continue
+    write(sigint_pipe[1], "1", 1);
 
     char input;
     int valid = 0;
@@ -478,6 +484,8 @@ void handle_ctrl_c(int signal_number)
         {
             printf("Exiting...\n");
             valid = 1;
+            // Add this line to send a signal to the child processes to continue
+            write(sigint_pipe[1], "2", 1);
             exit(0);
         }
         else if (input == 'y' || input == 'Y')
@@ -498,6 +506,8 @@ void handle_ctrl_c(int signal_number)
             printf("\033[1;A");
         }
     }
+    // Add this line to send a signal to the child processes to continue
+    write(sigint_pipe[1], "0", 1);
 }
 
 void allInfoUpdate(int samples, int tdelay)
@@ -546,6 +556,30 @@ void allInfoUpdate(int samples, int tdelay)
         exit(EXIT_FAILURE);
     }
 
+    // Create the sigint_pipe
+    int sigint_pipe[2];
+    if (pipe(sigint_pipe) < 0)
+    {
+        perror("Error creating sigint_pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_sigaction = handle_ctrl_c;
+    sa.sa_flags = SA_SIGINFO;
+
+    // Pass the sigint_pipe file descriptor to the signal handler
+    sa.sa_restorer = (void *)sigint_pipe;
+
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("Error registering SIGINT handler");
+        exit(1);
+    }
+
+    fcntl(sigint_pipe[0], F_GETFL, 0);
+
     /////////////////////////////////
     //          CHILD
     /////////////////////////////////
@@ -559,13 +593,29 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
-        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
-
         close(mem_pipe[0]); // close unused read end
+
         for (int i = 0; i < samples; i++)
         {
-            getMemoryUsage(mem_pipe[1]); // write to pipe
-            sleep(tdelay);               // sleep for tdelay seconds
+
+            char pause_flag;
+            int happened = read(sigint_pipe[0], &pause_flag, sizeof(pause_flag));
+            if (happened < 0)
+            {
+                getMemoryUsage(mem_pipe[1]); // write to pipe
+                sleep(tdelay);               // sleep for tdelay seconds
+            }
+            else
+            {
+                if (pause_flag == '1')
+                {
+                    sleep(1);
+                }
+                else if (pause_flag == '3')
+                {
+                    exit(0)
+                }
+            }
         }
 
         exit(0); // exit child process
@@ -580,12 +630,28 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (cpu_pid == 0)
     {
-        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
 
         close(cpu_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
-            getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
+
+            char pause_flag;
+            int happened = read(sigint_pipe[0], &pause_flag, sizeof(pause_flag));
+            if (happened < 0)
+            {
+                getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
+            }
+            else
+            {
+                if (pause_flag == '1')
+                {
+                    sleep(1);
+                }
+                else if (pause_flag == '3')
+                {
+                    exit(0)
+                }
+            }
         }
 
         exit(0); // exit child process
@@ -601,12 +667,28 @@ void allInfoUpdate(int samples, int tdelay)
     else if (user_pid == 0)
     {
 
-        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
-        close(user_pipe[0]);     // close unused read end
+        close(user_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
-            getUsers(user_pipe[1], size_pipe[1]); // write to pipe
-            sleep(tdelay);                        // sleep for tdelay seconds
+
+            char pause_flag;
+            int happened = read(sigint_pipe[0], &pause_flag, sizeof(pause_flag));
+            if (happened < 0)
+            {
+                getUsers(user_pipe[1]); // write to pipe
+                sleep(tdelay);          // sleep for tdelay seconds
+            }
+            else
+            {
+                if (pause_flag == '1')
+                {
+                    sleep(1);
+                }
+                else if (pause_flag == '3')
+                {
+                    exit(0)
+                }
+            }
         }
 
         exit(0); // exit child process
@@ -615,13 +697,6 @@ void allInfoUpdate(int samples, int tdelay)
     /////////////////////////////////
     //          PARENT
     /////////////////////////////////
-
-    // redirect incoming signals for CTRL C
-    if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-    {
-        perror("Error registering SIGINT handler");
-        exit(1);
-    }
 
     // close unused write ends of pipes
     close(mem_pipe[1]);
@@ -1023,6 +1098,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
         {
             printf("\033[1A"); // move the cursor up one line
             printf("\033[2K"); // clear the entire line
+            printf("\n");
         }
 
         // update line numbers
@@ -1038,7 +1114,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     waitpid(cpu_pid, &status, 0);
     waitpid(user_pid, &status, 0);
 
-    printf("\033[%dA", (samples - 1)); // move cursor up sample - 1 lines
+    printf("\033[%dA", (samples - 1)); // move cursor up 9 lines
 
     // print usage
     printf(" total cpu use = %.2f %%\n", usage);
