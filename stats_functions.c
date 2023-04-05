@@ -483,8 +483,11 @@ void handle_ctrl_c(int signal_number)
         else if (input == 'y' || input == 'Y')
         {
 
-            // Reset the signal handler to default after handling the current signal
-            signal(SIGINT, SIG_DFL);
+            // Unblock SIGINT after handling the current signal
+            sigset_t mask;
+            sigemptyset(&mask);
+            sigaddset(&mask, SIGINT);
+            sigprocmask(SIG_UNBLOCK, &mask, NULL);
 
             valid = 1;
 
@@ -1152,10 +1155,21 @@ void usersUpdate(int samples, int tdelay)
 
     fd_set read_fds;
 
+    // Block SIGINT initially
+    sigset_t mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGINT);
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
     // print all user information
     for (int i = 0; i < samples; i++)
     {
-        pause(); // pause the program and wait for signal
+        // Unblock SIGINT temporarily to check if the signal has been sent
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
+
+        pause(); // pause the program and wait for signal if it has been sent
+
+        // Block SIGINT again before continuing
 
         // wait for all child processes to finish
         FD_ZERO(&read_fds);
