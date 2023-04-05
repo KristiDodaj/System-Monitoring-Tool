@@ -1,5 +1,6 @@
 // Author: Kristi Dodaj
 // stats_functions.h: Responsible for defining the function definitions that are within the stats_functions.c file
+#include <signal.h>
 
 #ifndef STATS
 #define STATS
