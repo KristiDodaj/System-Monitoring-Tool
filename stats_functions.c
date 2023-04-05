@@ -486,7 +486,7 @@ void handle_ctrl_c(int signal_number)
             printf("Exiting...\n");
             valid = 1;
             // Add this line to send a signal to the child processes to continue
-            write(sigint_pipe_fd], "2", 1);
+            write(sigint_pipe_fd, "2", 1);
             exit(0);
         }
         else if (input == 'y' || input == 'Y')
