@@ -1038,7 +1038,7 @@ void allInfoUpdateGraphic(int samples, int tdelay)
     waitpid(cpu_pid, &status, 0);
     waitpid(user_pid, &status, 0);
 
-    printf("\033[%dA", (samples - 1)); // move cursor up 9 lines
+    printf("\033[%dA", (samples - 1)); // move cursor up sample - 1 lines
 
     // print usage
     printf(" total cpu use = %.2f %%\n", usage);
