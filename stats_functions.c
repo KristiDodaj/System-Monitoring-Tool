@@ -483,6 +483,9 @@ void handle_ctrl_c(int signal_number)
         else if (input == 'y' || input == 'Y')
         {
 
+            // Reset the signal handler to default after handling the current signal
+            signal(SIGINT, SIG_DFL);
+
             valid = 1;
 
             // clear the message displayed if continuing
@@ -1152,6 +1155,7 @@ void usersUpdate(int samples, int tdelay)
     // print all user information
     for (int i = 0; i < samples; i++)
     {
+        pause(); // pause the program and wait for signal
 
         // wait for all child processes to finish
         FD_ZERO(&read_fds);
