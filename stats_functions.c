@@ -12,8 +12,6 @@
 #include <sys/wait.h>
 #include <math.h>
 
-int ctrl_c_signal = 0;
-
 void header(int samples, int tdelay)
 {
     // This function will take in int samples and int tdelay as parameters and print the header of the program which displays the
@@ -447,6 +445,8 @@ char *getMemoryUsageGraphic(float current_usage, float previous_usage)
     return buf;
 }
 
+int ctrl_c_signal = 0;
+
 void handle_ctrl_c(int signal_number)
 {
     // This function will dicatate what will occur when the signal from CTRL C is activated. This will give the user to choice to either
@@ -543,6 +543,8 @@ void allInfoUpdate(int samples, int tdelay)
     // Release = 5.15.0-56-generic
     // Architecture = x86_64
     // ---------------------------------------
+
+    ctrl_c_signal = 0;
 
     // create pipes for communication
     int mem_pipe[2], cpu_pipe[2], user_pipe[2], size_pipe[2];
