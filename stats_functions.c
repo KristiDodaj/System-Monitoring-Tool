@@ -681,11 +681,6 @@ void allInfoUpdate(int samples, int tdelay)
     // print all information
     for (int i = 0; i < samples; i++)
     {
-        while (ctrl_c_signal == 1)
-        {
-            usleep(100000);
-        }
-
         // wait for all child processes to finish
         FD_ZERO(&read_fds);
         FD_SET(mem_pipe[0], &read_fds);
