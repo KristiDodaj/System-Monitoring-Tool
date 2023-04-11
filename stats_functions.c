@@ -12,7 +12,7 @@
 #include <sys/wait.h>
 #include <math.h>
 
-int pause = 0;
+int ctrl_c_signal = 0;
 
 void header(int samples, int tdelay)
 {
@@ -458,7 +458,7 @@ void handle_ctrl_c(int signal_number)
     // if n: program exits
     // if y: program continues
 
-    pause = 1;
+    ctrl_c_signal = 1;
 
     char input;
     int valid = 0;
@@ -496,7 +496,7 @@ void handle_ctrl_c(int signal_number)
             printf("\033[2K");
             printf("\033[1;B");
 
-            pause = 0;
+            ctrl_c_signal = 0;
         }
         else
         {
@@ -571,7 +571,7 @@ void allInfoUpdate(int samples, int tdelay)
             exit(1);
         }
 
-        while (pause == 1)
+        while (ctrl_c_signal == 1)
         {
             usleep(100000);
         }
@@ -601,7 +601,7 @@ void allInfoUpdate(int samples, int tdelay)
             exit(1);
         }
 
-        while (pause == 1)
+        while (ctrl_c_signal == 1)
         {
             usleep(100000);
         }
@@ -631,7 +631,7 @@ void allInfoUpdate(int samples, int tdelay)
             exit(1);
         }
 
-        while (pause == 1)
+        while (ctrl_c_signal == 1)
         {
             usleep(100000);
         }
