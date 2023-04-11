@@ -565,6 +565,7 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
+        signal(SIGTSTP, SIG_IGN);
 
         while (ctrl_c_signal == 1)
         {
@@ -590,6 +591,7 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (cpu_pid == 0)
     {
+        signal(SIGTSTP, SIG_IGN);
 
         while (ctrl_c_signal == 1)
         {
@@ -614,6 +616,7 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (user_pid == 0)
     {
+        signal(SIGTSTP, SIG_IGN);
 
         while (ctrl_c_signal == 1)
         {
