@@ -565,11 +565,6 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
-        if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-        {
-            perror("Error registering SIGINT handler");
-            exit(1);
-        }
 
         while (ctrl_c_signal == 1)
         {
@@ -595,11 +590,6 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (cpu_pid == 0)
     {
-        if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-        {
-            perror("Error registering SIGINT handler");
-            exit(1);
-        }
 
         while (ctrl_c_signal == 1)
         {
@@ -624,12 +614,6 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (user_pid == 0)
     {
-
-        if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
-        {
-            perror("Error registering SIGINT handler");
-            exit(1);
-        }
 
         while (ctrl_c_signal == 1)
         {
