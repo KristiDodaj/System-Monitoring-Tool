@@ -567,14 +567,15 @@ void allInfoUpdate(int samples, int tdelay)
     {
         signal(SIGTSTP, SIG_IGN);
 
-        while (ctrl_c_signal == 1)
-        {
-            usleep(100000);
-        }
-
         close(mem_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
+
+            while (ctrl_c_signal == 1)
+            {
+                usleep(100000);
+            }
+
             getMemoryUsage(mem_pipe[1]); // write to pipe
             sleep(tdelay);               // sleep for tdelay seconds
         }
@@ -593,14 +594,14 @@ void allInfoUpdate(int samples, int tdelay)
     {
         signal(SIGTSTP, SIG_IGN);
 
-        while (ctrl_c_signal == 1)
-        {
-            usleep(100000);
-        }
-
         close(cpu_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
+            while (ctrl_c_signal == 1)
+            {
+                usleep(100000);
+            }
+
             getCpuUsage(cpu_pipe[1], tdelay); // write to pipe
         }
 
@@ -618,14 +619,14 @@ void allInfoUpdate(int samples, int tdelay)
     {
         signal(SIGTSTP, SIG_IGN);
 
-        while (ctrl_c_signal == 1)
-        {
-            usleep(100000);
-        }
-
         close(user_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
+            while (ctrl_c_signal == 1)
+            {
+                usleep(100000);
+            }
+
             getUsers(user_pipe[1], size_pipe[1]); // write to pipe
             sleep(tdelay);                        // sleep for tdelay seconds
         }
