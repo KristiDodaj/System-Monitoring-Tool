@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <math.h>
 
+int pause = 0;
+
 void header(int samples, int tdelay)
 {
     // This function will take in int samples and int tdelay as parameters and print the header of the program which displays the
@@ -456,6 +458,8 @@ void handle_ctrl_c(int signal_number)
     // if n: program exits
     // if y: program continues
 
+    pause = 1;
+
     char input;
     int valid = 0;
 
@@ -491,6 +495,8 @@ void handle_ctrl_c(int signal_number)
             printf("\033[1;B");
             printf("\033[2K");
             printf("\033[1;B");
+
+            pause = 0;
         }
         else
         {
@@ -559,7 +565,16 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (mem_pid == 0)
     {
-        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
+        if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+        {
+            perror("Error registering SIGINT handler");
+            exit(1);
+        }
+
+        while (pause == 1)
+        {
+            usleep(100000);
+        }
 
         close(mem_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
@@ -580,7 +595,16 @@ void allInfoUpdate(int samples, int tdelay)
     }
     else if (cpu_pid == 0)
     {
-        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
+        if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+        {
+            perror("Error registering SIGINT handler");
+            exit(1);
+        }
+
+        while (pause == 1)
+        {
+            usleep(100000);
+        }
 
         close(cpu_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
@@ -601,8 +625,18 @@ void allInfoUpdate(int samples, int tdelay)
     else if (user_pid == 0)
     {
 
-        signal(SIGINT, SIG_IGN); // Add this line to ignore SIGINT in the child process
-        close(user_pipe[0]);     // close unused read end
+        if (signal(SIGINT, handle_ctrl_c) == SIG_ERR)
+        {
+            perror("Error registering SIGINT handler");
+            exit(1);
+        }
+
+        while (pause == 1)
+        {
+            usleep(100000);
+        }
+
+        close(user_pipe[0]); // close unused read end
         for (int i = 0; i < samples; i++)
         {
             getUsers(user_pipe[1], size_pipe[1]); // write to pipe
