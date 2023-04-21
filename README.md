@@ -2,8 +2,6 @@
 
 NOTE: The actual function descriptions with further details on their design are provided within the source code.
 
-NOTE: FOR the CTRL-C case, the program continues to run if selected in most cases. HOWEVER, it sometimes winds up printing wrong outputs when continued and I can't figure out how to resolve this bug 😢. When chosing to exit, the program will always sucesfully exit. The rest of the parts assigned are explained below and fully work!
-
 ## GENERAL OVERVIEW:
 
 This project was approached in a very modular structure where smaller functions serve as building blocks for bigger ones.
@@ -56,8 +54,6 @@ FORE MORE INFO ON HOW THIS IS IMPLEMENTED REFER TO THE stats_functions.c FILE (s
 ## SIGNALS & ERROR CHECKING
 
 1. The program will ignore the users CTRL-Z input and is handled in main.c and fully works. On the other hand, CTRL-C is handled in stats_functions.c where the handler funtion is included and where each of the 10 output functions redirect the incoming signal to the handler.
-
-NOTE: FOR the CTRL-C case, the program continues to run if selected in most cases. HOWEVER, it sometimes winds up printing wrong outputs when continued and I can't figure out how to resolve this bug 😢. When chosing to exit, the program will always sucesfully exit but may sometimes leave orphan children.
 
 2. The code has been fully error-checked using perror statements that report to STDERR. This means that the program will report if there was any failure in retrieving or accessing wanted information from the system. (see the codebase for further details)
 
